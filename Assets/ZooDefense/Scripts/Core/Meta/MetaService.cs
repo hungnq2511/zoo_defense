@@ -8,7 +8,7 @@ namespace ZooDefense.Core
     /// so the logic is testable and can run unchanged on a server. Methods return false (or an empty
     /// list) when the action is not allowed; nothing is changed in that case.
     /// </summary>
-    public sealed class MetaService
+    public sealed partial class MetaService
     {
         public const int SecondsPerDay = 86400;
 
@@ -49,7 +49,12 @@ namespace ZooDefense.Core
             for (int i = 0; i < Content.Units.Count; i++)
             {
                 var id = Content.Units[i].id;
-                if (!_cards.ContainsKey(id)) { var c = new CardState { id = id }; State.cards.Add(c); _cards[id] = c; }
+                if (!_cards.ContainsKey(id))
+                {
+                    // New content in an update: new Commons are unlocked right away, the rest come from chests / gacha.
+                    var c = new CardState { id = id, level = Content.Units[i].rarity == Rarity.Common ? 1 : 0 };
+                    State.cards.Add(c); _cards[id] = c;
+                }
             }
             if (State.chests == null || State.chests.Length != Config.chestSlots)
             {
@@ -64,6 +69,7 @@ namespace ZooDefense.Core
             if (State.dealUnits == null) State.dealUnits = new List<string>();
             if (State.dealBought == null) State.dealBought = new List<bool>();
             if (State.rng == 0) State.rng = new DetRandom(State.trophies + 12345).State;
+            NormalizeModes();
         }
 
         // ------------------------------------------------------------------ helpers
@@ -84,6 +90,7 @@ namespace ZooDefense.Core
         public void Refresh(long now)
         {
             int day = Day(now);
+            RefreshModes(now);
             if (State.missionsDay != day) RollMissions(day);
             if (State.shopDay != day) RollDeals(day);
             int season = Season(now);
@@ -309,6 +316,8 @@ namespace ZooDefense.Core
             }
 
             State.trophies += r.trophies;
+            State.seasonBestTrophies = Math.Max(State.seasonBestTrophies, State.trophies);
+            CountStats(m);
             State.gold += r.gold;
             State.passXp += r.passXp;
 

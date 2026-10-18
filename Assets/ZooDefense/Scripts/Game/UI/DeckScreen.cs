@@ -31,6 +31,9 @@ namespace ZooDefense.Game
             Deco.ScreenBackground(Root, App, Art.Hex(0x3D8BFF));
             new CurrencyBar(Root, App, false);
             float top = Deco.Header(Root, Loc.T("nav.deck"), Art.Hex(0x3D8BFF));
+            var guide = UIKit.ChunkyButton(Root, "guide", Loc.T("guide.button"), Art.Hex(0x2E7D4A), () => ElementGuide.Open(App), 26);
+            guide.GetComponent<RectTransform>().Place(new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-14, -CurrencyBar.Height - 22), new Vector2(170, 84));
+            if (!ElementGuide.Seen) UIKit.Motion(guide.GetComponent<RectTransform>()).Pulse(0.05f, 4f);
 
             var area = UIKit.Rect("deckArea", Root).Stretch(20, 20, top, NavBar.Height + 6);
             var list = ScrollKit.Vertical(area);
@@ -40,6 +43,15 @@ namespace ZooDefense.Game
             // Battle deck
             Deco.Section(list, Loc.T("deck.title"), y, Palette.Primary);
             y += 74;
+            // 3 saved decks
+            profile.decks[profile.activeDeck].units = (string[])profile.deck.Clone();
+            for (int d = 0; d < 3; d++)
+            {
+                int slot = d;
+                var tab = UIKit.ChunkyButton(list, "deckTab" + d, Loc.F("deck.preset", d + 1), d == profile.activeDeck ? Palette.Primary : Palette.Panel, () => SwitchDeck(slot), 30);
+                tab.GetComponent<RectTransform>().Place(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(6 + d * 346, -y), new Vector2(330, 84));
+            }
+            y += 100;
             for (int i = 0; i < profile.deck.Length; i++)
             {
                 var def = content.Unit(profile.deck[i]);
@@ -279,6 +291,11 @@ namespace ZooDefense.Game
                 var chip = UIKit.Panel(chips, "chip" + i, Color.Lerp(chipColor[i], Color.black, 0.3f)).rectTransform;
                 chip.Place(new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(i * 290, 0), new Vector2(276, 56));
                 UIKit.Label(chip, chipText[i], 28, Palette.Text).rectTransform.Stretch();
+                if (i == 1)
+                {
+                    var tap = UIKit.Button(chip, "guide", "", new Color(0f, 0f, 0f, 0f), () => ElementGuide.Open(App));
+                    tap.GetComponent<RectTransform>().Stretch();
+                }
             }
 
             // Stats
@@ -287,7 +304,7 @@ namespace ZooDefense.Game
             stats.Place(new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0, -560), new Vector2(860, 300));
             var head = unlocked ? Loc.F("deck.card_level", level, App.MetaConfig.maxCardLevel) : Loc.T("deck.locked_hint");
             UIKit.Label(stats, head, 32, Palette.Primary, TextAnchor.UpperLeft).rectTransform.Stretch(24, 24, 14, 240);
-            UIKit.Label(stats, Describe(def, pct, level), 28, Palette.Text, TextAnchor.UpperLeft).rectTransform.Stretch(24, 24, 64, 14);
+            UIKit.Label(stats, Describe(def, pct, level, App.Content.Balance), 26, Palette.Text, TextAnchor.UpperLeft).rectTransform.Stretch(24, 24, 64, 10);
 
             if (!unlocked) return;
 
@@ -325,14 +342,26 @@ namespace ZooDefense.Game
             use.onClick.AddListener(() => Rebuild(unitId));
         }
 
-        static string Describe(UnitDef d, int pct, int level)
+        void SwitchDeck(int slot)
+        {
+            var p = App.Profile;
+            if (slot == p.activeDeck) return;
+            p.decks[p.activeDeck].units = (string[])p.deck.Clone();
+            p.activeDeck = slot;
+            p.deck = (string[])p.decks[slot].units.Clone();
+            App.SaveProfile();
+            App.Show(new DeckScreen());
+        }
+
+        static string Describe(UnitDef d, int pct, int level, BalanceConfig b)
         {
             int dmg = d.damage * pct / 100;
-            string s = Loc.F("deck.stat_damage", dmg, (d.attackIntervalTicks / 20f).ToString("0.0"));
+            string s = d.damage > 0 ? Loc.F("deck.stat_damage", dmg, (d.attackIntervalTicks / 20f).ToString("0.0")) : "";
             if (d.splashRadius > 0) s += Loc.F("deck.stat_splash", (d.splashRadius / 1000f).ToString("0.0"));
             if (d.slowPercent > 0) s += Loc.F("deck.stat_slow", d.slowPercent);
             if (d.stunTicks > 0) s += Loc.T("deck.stat_stun");
-            if (d.skill != UnitSkill.None) s += "\n" + Loc.SkillText(d);
+            if (d.skill != UnitSkill.None) s += (s.Length > 0 ? "\n" : "") + Loc.SkillText(d);
+            s += "\n<color=#B6F25A>" + ElementGuide.MatchupLine(d, b) + "</color>";
             if (level > 1) s += "\n" + Loc.F("deck.level_bonus", pct - 100);
             return s;
         }

@@ -69,10 +69,13 @@ namespace ZooDefense.Core
         /// <summary>Deck slot worth paying extra for (a merge partner on the board), or -1 to take the random summon.</summary>
         int PickSummonSlot(Match m, Board b)
         {
-            int best = -1;
-            for (int s = 0; s < b.Deck.Length; s++)
+            int best = -1, n = b.Deck.Length, start = n > 0 ? _rng.Next(n) : 0;
+            for (int k = 0; k < n; k++)
             {
+                int s = (start + k) % n;
                 if (b.Candy < b.SummonPrice(s)) continue;
+                // Pure supports (no damage) help the team but cannot carry it: keep at most two on the board.
+                if (m.Content.Units[b.Deck[s]].damage <= 0 && b.CountOnBoard(b.Deck[s]) >= 2) continue;
                 for (int i = 0; i < b.Cells.Length; i++)
                     if (b.Cells[i] != null && b.Cells[i].def == b.Deck[s] && b.Cells[i].level == 1) { best = s; break; }
                 if (best >= 0) break;

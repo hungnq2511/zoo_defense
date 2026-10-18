@@ -28,7 +28,7 @@ namespace ZooDefense.Core
 
     /// <summary>Everything the economy owns for one player. Serialized as JSON (local now, Cloud Save later).</summary>
     [Serializable]
-    public class PlayerState
+    public partial class PlayerState
     {
         public int version = 1;
         public int gold;
@@ -72,6 +72,17 @@ namespace ZooDefense.Core
         public int cardsBought;
         /// <summary>Rematch against the player who just beat you (bonus gold if you win).</summary>
         public bool revenge;
+        /// <summary>Game mode (MatchMode). Versus = ranked / practice.</summary>
+        public MatchMode mode;
+        /// <summary>Hits that countered the monster's element (missions / achievements).</summary>
+        public int effectiveHits;
+        public int bossKills;
+        public int heartsLeft;
+        /// <summary>Campaign level index (Campaign mode).</summary>
+        public int level;
+        /// <summary>Monster and animal ids met in the match (bestiary).</summary>
+        public List<string> enemiesSeen;
+        public List<string> unitsUsed;
     }
 
     public struct MatchRewards

@@ -31,9 +31,36 @@ namespace ZooDefense.Core
         Knockback = 7,        // pushes hit enemies back by value milli-tiles
         PullStun = 8,         // pulls target back value milli-tiles and stuns value2 ticks
         AlwaysCounter = 9,    // always gets the element bonus
+        // ---- Expansion 1. Level 4 and 7 unlock the upgrades described next to each value.
+        BurnStack = 10,       // every hit adds a burn stack (max 3), value = burn per pulse; L4 longer, L7 every 5th hit spreads
+        Pierce = 11,          // hits value targets in a line (70% after the first); L4 +1 target, L7 knockback 200 (not bosses)
+        ArmorBreak = 12,      // -value % armor for 4 s (L4 value2); L7 every 4th hit explodes wider
+        ChillSlow = 13,       // slow value % (L4 value2 %); L7 every 6th hit freezes 0.5 s (bosses: slow instead)
+        Vulnerable = 14,      // +value % damage taken for 3 s (L4 value2); L7 every 5th hit spreads to 2 enemies
+        Burst = 15,           // value shots per attack (L4 +1); L7 last shot +50% on slowed enemies
+        NectarHaste = 16,     // support: +value % attack speed to the nearest attacker for 4 s (L4 value2, L7 2 allies)
+        RootArea = 17,        // area root value ticks (L4 value2), 4 s immunity per enemy; bosses slowed instead
+        Silence = 18,         // every 4th hit silences for value ticks (L4 value2): stops enemy abilities
+        AegisGuard = 19,      // support: shields value allies (L4 +1) for 3 s: blocks stuns / cell locks, +value2 % damage
     }
 
-    public enum BossSkill { None = 0, Summon = 1, StunUnit = 2, Heal = 3 }
+    /// <summary>Special behaviour of wave / elite monsters (bosses use BossSkill).</summary>
+    public enum EnemyAbility
+    {
+        None = 0,
+        DrumHaste = 1,   // every abilityInterval: +abilityValue % speed to up to 3 allies nearby for 2 s
+        Enrage = 2,      // below 30% HP: +abilityValue % speed (once)
+        Dash = 3,        // every abilityInterval: +abilityValue % speed for 0.7 s
+    }
+
+    public enum BossSkill
+    {
+        None = 0, Summon = 1, StunUnit = 2, Heal = 3,
+        /// <summary>Telegraphs a cell for 0.8 s, then locks that animal for 1.5 s. At 50% HP: +15% speed once.</summary>
+        LockCell = 4,
+        /// <summary>Telegraphs, then gains a shield of 8% max HP for 3 s. A broken shield makes it take +15% damage.</summary>
+        VoidShield = 5,
+    }
 
     /// <summary>Keeper spells: the player casts them from the spell bar, paid with candy, then on cooldown.</summary>
     public enum SpellKind
@@ -104,6 +131,9 @@ namespace ZooDefense.Core
         public int bossSkillIntervalTicks;
         public string summonEnemyId;
         public int size;                 // presentation hint, milli-tiles
+        public EnemyAbility ability;
+        public int abilityIntervalTicks;
+        public int abilityValue;
     }
 
     [Serializable]
@@ -140,6 +170,9 @@ namespace ZooDefense.Core
     [Serializable]
     public class BalanceConfig
     {
+        /// <summary>Shallow copy (arrays are shared: replace them, never edit them in place).</summary>
+        public BalanceConfig Clone() { return (BalanceConfig)MemberwiseClone(); }
+
         public int tickRate = 20;
         public int gridCols = 5;
         public int gridRows = 4;
@@ -160,6 +193,12 @@ namespace ZooDefense.Core
         public int maxLevel = 7;
         public int[] levelDamagePercent = { 100, 210, 330, 480, 680, 950, 1300 };
         public int elementBonusPercent = 30;
+        /// <summary>Element triangle, the other way round: a Fire animal hitting a Water monster deals this % less.</summary>
+        public int elementResistPercent = 25;
+        /// <summary>Light is outside the triangle: never resisted, and this % extra against elites and bosses.</summary>
+        public int lightVsBigPercent = 20;
+        /// <summary>Chance (%) that a wave monster takes the element of the wave ("Fire wave"), shown in advance.</summary>
+        public int waveElementPercent = 60;
 
         public int firstWaveDelayTicks = 100;
         public int waveDurationTicks = 400;
@@ -167,9 +206,9 @@ namespace ZooDefense.Core
         public int baseEnemiesPerWave = 6;
         public int enemiesPerWaveStep = 1;
         public int maxEnemiesPerWave = 22;
-        public int hpGrowthPercentPerWave = 10;
+        public int hpGrowthPercentPerWave = 9;
         /// <summary>Enemy HP scale of wave 1 (permille). Higher start + gentler growth = pressure from the first minute.</summary>
-        public int waveHpStartPermille = 2000;
+        public int waveHpStartPermille = 1700;
         public int eliteEveryNWaves = 3;
         public int bossEveryNWaves = 5;
         public int suddenDeathWave = 13;
@@ -191,6 +230,13 @@ namespace ZooDefense.Core
         public int comebackHeartGap = 3;
         public int comebackDiscountPercent = 20;
         public int lockWaves = 2;
+        /// <summary>After being pushed or pulled back, a monster cannot be pushed again for this long (3 s).</summary>
+        public int pushImmuneTicks = 60;
+        /// <summary>Nectar Bee / Aegis Ram buff pulse (4 s).</summary>
+        public int supportPulseTicks = 80;
+        /// <summary>Send price and income scale (Mayhem "send storm").</summary>
+        public int sendCostPercent = 100;
+        public int sendIncomePercent = 100;
         public int unitStunTicks = 40;
         /// <summary>Extra damage per out-of-match card level above 1 (8 => level 15 deals 212%).</summary>
         public int cardLevelDamagePercent = 8;
@@ -238,9 +284,10 @@ namespace ZooDefense.Core
         public int skillChargeTicks = 360;
         public int skillChargeReductionPerLevel = 30;
 
-        public string[] normalEnemyIds = { "slime", "imp", "rock_beetle" };
-        public string[] eliteEnemyIds = { "armored_knight" };
-        public string[] bossEnemyIds = { "boss_summoner", "boss_stunner", "boss_healer" };
+        public string[] normalEnemyIds = { "slime", "imp", "rock_beetle", "bandit_raccoon", "crystal_bat" };
+        public string[] eliteEnemyIds = { "armored_knight", "drum_goblin", "armored_scorpion" };
+        /// <summary>Boss rotation; each match starts at a different point (from the seed) so bosses vary.</summary>
+        public string[] bossEnemyIds = { "boss_summoner", "clockwork_gorilla", "boss_stunner", "void_hermit_crab", "boss_healer" };
     }
 
     /// <summary>Serializable root used for the balance JSON (Resources/ZooBalance.json, later Remote Config).</summary>
@@ -262,6 +309,35 @@ namespace ZooDefense.Core
             return (attacker == Element.Fire && defender == Element.Grass)
                 || (attacker == Element.Grass && defender == Element.Water)
                 || (attacker == Element.Water && defender == Element.Fire);
+        }
+
+        /// <summary>The element this one beats (None for Light / None).</summary>
+        public static Element Beats(Element e)
+        {
+            switch (e) { case Element.Fire: return Element.Grass; case Element.Grass: return Element.Water; case Element.Water: return Element.Fire; default: return Element.None; }
+        }
+
+        /// <summary>The element that beats this one (None for Light / None).</summary>
+        public static Element WeakTo(Element e)
+        {
+            switch (e) { case Element.Fire: return Element.Water; case Element.Grass: return Element.Fire; case Element.Water: return Element.Grass; default: return Element.None; }
+        }
+
+        /// <summary>-1 resisted, 0 neutral, 1 effective: how an attack of this element lands on a monster.</summary>
+        public static int Matchup(Element attacker, Element defender, bool alwaysCounter = false)
+        {
+            if (alwaysCounter || Counters(attacker, defender)) return 1;
+            if (Counters(defender, attacker)) return -1;
+            return 0;
+        }
+
+        /// <summary>Damage % of a hit (100 = neutral). Light gets its bonus against elites and bosses instead.</summary>
+        public static int DamagePercent(BalanceConfig b, Element attacker, Element defender, bool alwaysCounter, bool bigEnemy)
+        {
+            int m = Matchup(attacker, defender, alwaysCounter);
+            int pct = m > 0 ? 100 + b.elementBonusPercent : (m < 0 ? 100 - b.elementResistPercent : 100);
+            if (attacker == Element.Light && bigEnemy && m <= 0) pct += b.lightVsBigPercent;
+            return pct;
         }
     }
 }

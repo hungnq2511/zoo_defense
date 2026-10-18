@@ -60,6 +60,7 @@ namespace ZooDefense.Core
         Summon = 14,        // A = cell (-1 = random free cell): a random animal from the deck
         UpgradeUnit = 15,   // A = deck slot: powers up that animal for the rest of the match
         SummonUnit = 16,    // A = deck slot, B = cell (-1 = random free cell): summon a chosen animal (costs more)
+        Assist = 17,        // raid only. A = 0: give candy to the partner, 1: rage the partner's team
     }
 
     /// <summary>
@@ -93,6 +94,12 @@ namespace ZooDefense.Core
         public int stunTicks;
         public int lastTargetUid;   // presentation: who it shot last
         public int energy;          // active skill charge (ticks)
+        // Expansion 1
+        public int attackCount;     // attacks made (every Nth-hit effects)
+        public int supportTimer;    // support pulse countdown (bee, ram)
+        public int hasteTicks, hastePercent;   // nectar bee buff
+        public int guardTicks, guardCharges, guardBonus;   // aegis ram shield
+        public int knockbackReadyTick;
     }
 
     public sealed class EnemyInstance
@@ -113,6 +120,18 @@ namespace ZooDefense.Core
         public int sender = -1;  // player index who sent it, -1 for wave enemies
         public int skillTimer;
         public bool alive = true;
+        // Expansion 1 status effects
+        public int burnStacks;
+        public int shredPercent, shredTicks;     // armor break
+        public int vulnPercent, vulnTicks;       // takes more damage
+        public int hastePercent, hasteTicks;     // drum / dash speed buff
+        public int silenceTicks;                 // abilities paused
+        public int rootImmuneUntil, silenceImmuneUntil, pushImmuneUntil;
+        public bool enraged, phaseDone;
+        public int shield, shieldTicks;          // void shield HP
+        public int pendingTicks = -1, pendingCell = -1;   // telegraphed boss skill
+        public bool raid;                        // the shared raid boss (HP lives in Match.RaidHp)
+        public int speedPercent = 100;
     }
 
     public struct PendingSpawn
@@ -155,6 +174,22 @@ namespace ZooDefense.Core
         UnitUpgraded,
         // a = candy won, b = loser board (boss duel: this board killed the shared boss first)
         BossDuelWon,
+        // a = target unit uid, b = 0 haste / 1 guard, c = source unit uid
+        UnitBuffed,
+        // a = unit uid (a guard shield blocked a stun / lock)
+        GuardBlocked,
+        // a = boss uid, b = target cell (-1 = self), c = (int)BossSkill: warning before the skill lands
+        BossTelegraph,
+        // a = enemy uid, b = (int)EnemyAbility or 100 + (int)BossSkill, c = extra
+        EnemyAbilityUsed,
+        // a = enemy uid (void shield broken: vulnerable)
+        ShieldBroken,
+        // a = enemy uid, b = status (1 root, 2 silence, 3 freeze, 4 armor break, 5 vulnerable)
+        StatusApplied,
+        // a = assist kind, b = receiving board, c = amount (raid)
+        AssistGiven,
+        // raid boss arrived (a = boss uid on this board, b = shared HP)
+        RaidBossArrived,
     }
 
     public enum RejectReason : byte
@@ -171,11 +206,13 @@ namespace ZooDefense.Core
         public SimEventType type;
         public int board;
         public int a, b, c;
+        /// <summary>UnitAttacked: element matchup of the hit on the main target (-1 resisted, 0 neutral, 1 effective).</summary>
+        public int d;
         public RejectReason reason;
 
         public SimEvent(SimEventType type, int board, int a = 0, int b = 0, int c = 0, RejectReason reason = RejectReason.None)
         {
-            this.type = type; this.board = board; this.a = a; this.b = b; this.c = c; this.reason = reason;
+            this.type = type; this.board = board; this.a = a; this.b = b; this.c = c; this.d = 0; this.reason = reason;
         }
     }
 
@@ -196,6 +233,8 @@ namespace ZooDefense.Core
     {
         public int seed;
         public PlayerSetup[] players = new PlayerSetup[2];
+        /// <summary>Game mode rules (null = normal 1v1).</summary>
+        public MatchRules rules;
     }
 
     public static class PathMath

@@ -59,6 +59,9 @@ namespace ZooDefense.Core
         public int SkillsUsed { get; private set; }
         public int BalloonsPopped { get; private set; }
         public int Reflects { get; private set; }
+        /// <summary>Hits on the main target that countered its element (missions, achievements).</summary>
+        public int EffectiveHits { get; private set; }
+        public int BossKills { get; private set; }
         int _nextBalloonTick, _pointRemainder;
 
         readonly Match _m;
@@ -175,7 +178,7 @@ namespace ZooDefense.Core
         /// <summary>Income a send adds (Mischief perk: +50%).</summary>
         public int SendIncome(int slot)
         {
-            int inc = _c.Sends[SendDeck[slot]].income;
+            int inc = _c.Sends[SendDeck[slot]].income * _b.sendIncomePercent / 100;
             return HasPerk(PerkType.SendPoints) ? inc * 3 / 2 : inc;
         }
 
@@ -220,6 +223,7 @@ namespace ZooDefense.Core
             var d = _c.Units[u.def];
             int pct = 100 + _b.elementUpgradePercent * ElementLevel[(int)d.element] + UnitUpgradePercent(u.def);
             if (_m.IsStarCell(u.cell)) pct += _b.starCellBonusPercent;
+            if (u.guardTicks > 0) pct += u.guardBonus;
             int col = u.cell % _b.gridCols, row = u.cell / _b.gridCols;
             pct += _b.elementLinkPercent * (SameElement(col - 1, row, d.element) + SameElement(col + 1, row, d.element)
                 + SameElement(col, row - 1, d.element) + SameElement(col, row + 1, d.element));
@@ -249,7 +253,7 @@ namespace ZooDefense.Core
 
         public int SendCost(int slot)
         {
-            int cost = _c.Sends[SendDeck[slot]].cost;
+            int cost = _c.Sends[SendDeck[slot]].cost * _b.sendCostPercent / 100;
             if (HasPerk(PerkType.CheapSends)) cost = cost * 80 / 100;
             return HasComebackDiscount ? cost * (100 - _b.comebackDiscountPercent) / 100 : cost;
         }
@@ -434,6 +438,60 @@ namespace ZooDefense.Core
         }
 
         // ------------------------------------------------------------------ wave flow
+
+        /// <summary>True while monsters of this wave are still waiting to come out.</summary>
+        public bool HasPendingSpawns { get { return _spawns.Count > 0; } }
+
+        internal EnemyInstance SpawnRaidBoss(int def, int hp, int speedPercent, Element element)
+        {
+            var e = CreateEnemy(def, element, 1000, -1, 0);
+            e.hp = e.maxHp = hp;
+            e.raid = true;
+            e.speedPercent = speedPercent;
+            return e;
+        }
+
+        internal void SyncRaidBoss(int hp)
+        {
+            for (int i = 0; i < Enemies.Count; i++)
+            {
+                var e = Enemies[i];
+                if (!e.raid || !e.alive) continue;
+                e.hp = hp;
+                if (hp <= 0) Kill(e);
+            }
+        }
+
+        // ------------------------------------------------------------------ raid assists
+
+        public const int AssistCandyCost = 40, AssistCandyGift = 50, AssistRageCost = 60;
+
+        /// <summary>Raid: 0 = gift candy to the partner, 1 = make the partner's animals rage for 5 s.</summary>
+        internal RejectReason Assist(int kind)
+        {
+            var partner = Opponent;
+            if (kind == 0)
+            {
+                if (Candy < AssistCandyCost) return RejectReason.NotEnoughCandy;
+                Candy -= AssistCandyCost;
+                partner.GainCandy(AssistCandyGift);
+                _m.Emit(new SimEvent(SimEventType.AssistGiven, Index, 0, partner.Index, AssistCandyGift));
+                _m.Emit(new SimEvent(SimEventType.AssistGiven, partner.Index, 0, partner.Index, AssistCandyGift));
+                return RejectReason.None;
+            }
+            if (kind == 1)
+            {
+                if (Candy < AssistRageCost) return RejectReason.NotEnoughCandy;
+                if (partner.IsRaging) return RejectReason.Cooldown;
+                Candy -= AssistRageCost;
+                partner.RagePercent = 50;
+                partner.RageUntilTick = _m.Tick + 100;
+                _m.Emit(new SimEvent(SimEventType.AssistGiven, Index, 1, partner.Index, 50));
+                _m.Emit(new SimEvent(SimEventType.AssistGiven, partner.Index, 1, partner.Index, 50));
+                return RejectReason.None;
+            }
+            return RejectReason.InvalidSlot;
+        }
 
         internal void BeginTick()
         {
@@ -818,21 +876,41 @@ namespace ZooDefense.Core
                 if (e.burnTicks > 0)
                 {
                     e.burnTicks--;
-                    if (e.burnTicks % 10 == 0) { ApplyDamage(e, e.burnDamage); if (!e.alive) continue; }
+                    if (e.burnTicks % 10 == 0) { ApplyDamage(e, e.burnDamage * Math.Max(1, e.burnStacks)); if (!e.alive) continue; }
+                    if (e.burnTicks == 0) { e.burnStacks = 0; e.burnDamage = 0; }
                 }
+                if (e.shredTicks > 0) e.shredTicks--;
+                if (e.vulnTicks > 0) e.vulnTicks--;
+                if (e.hasteTicks > 0) e.hasteTicks--;
+                if (e.silenceTicks > 0) e.silenceTicks--;
+                if (e.shieldTicks > 0 && --e.shieldTicks == 0) e.shield = 0;
+                UpdatePhases(e, def);
 
                 if (e.stunTicks > 0) e.stunTicks--;
                 else
                 {
                     int speed = def.speed * _b.enemySpeedPercent / 100;
+                    if (e.speedPercent != 100) speed = speed * e.speedPercent / 100;
+                    int bonus = (e.hasteTicks > 0 ? e.hastePercent : 0) + (e.enraged ? def.abilityValue : 0) + (e.phaseDone ? 15 : 0);
+                    if (bonus > 0) speed = speed * (100 + bonus) / 100;
                     if (e.slowTicks > 0) { speed = speed * (100 - e.slowPercent) / 100; e.slowTicks--; }
                     e.distance += speed;
                 }
 
-                if (def.bossSkill != BossSkill.None && ++e.skillTimer >= def.bossSkillIntervalTicks)
+                if (e.pendingTicks >= 0 && --e.pendingTicks < 0) ResolveBossSkill(e, def);
+                // Silenced monsters keep walking but their skill timer stops.
+                if (e.silenceTicks == 0)
                 {
-                    e.skillTimer = 0;
-                    UseBossSkill(e, def);
+                    if (def.bossSkill != BossSkill.None && ++e.skillTimer >= def.bossSkillIntervalTicks)
+                    {
+                        e.skillTimer = 0;
+                        UseBossSkill(e, def);
+                    }
+                    else if (def.ability != EnemyAbility.None && def.abilityIntervalTicks > 0 && ++e.skillTimer >= def.abilityIntervalTicks)
+                    {
+                        e.skillTimer = 0;
+                        UseAbility(e, def);
+                    }
                 }
 
                 if (e.distance >= _m.PathLength) Leak(e, def);
@@ -860,10 +938,26 @@ namespace ZooDefense.Core
                     for (int i = 0; i < Cells.Length; i++) if (Cells[i] != null && Cells[i].stunTicks == 0) _scratch.Add(i);
                     if (_scratch.Count == 0) break;
                     var u = Cells[_scratch[_rng.Next(_scratch.Count)]];
-                    u.stunTicks = _b.unitStunTicks;
-                    _m.Emit(new SimEvent(SimEventType.UnitStunned, Index, u.uid, boss.uid));
+                    StunUnit(u, _b.unitStunTicks, boss.uid);
                     break;
                 }
+                case BossSkill.LockCell:
+                {
+                    if (boss.pendingTicks >= 0) break;
+                    _scratch.Clear();
+                    for (int i = 0; i < Cells.Length; i++) if (Cells[i] != null && Cells[i].stunTicks == 0) _scratch.Add(i);
+                    if (_scratch.Count == 0) break;
+                    boss.pendingCell = _scratch[_rng.Next(_scratch.Count)];
+                    boss.pendingTicks = 16;
+                    _m.Emit(new SimEvent(SimEventType.BossTelegraph, Index, boss.uid, boss.pendingCell, (int)BossSkill.LockCell));
+                    break;
+                }
+                case BossSkill.VoidShield:
+                    if (boss.pendingTicks >= 0 || boss.shieldTicks > 0) break;
+                    boss.pendingCell = -1;
+                    boss.pendingTicks = 16;
+                    _m.Emit(new SimEvent(SimEventType.BossTelegraph, Index, boss.uid, -1, (int)BossSkill.VoidShield));
+                    break;
                 case BossSkill.Heal:
                 {
                     int bx, by;
@@ -876,6 +970,81 @@ namespace ZooDefense.Core
                         PathMath.Point(_b, e.distance, out ex, out ey);
                         if (Dist2(bx, by, ex, ey) <= 1500L * 1500L) e.hp = Math.Min(e.maxHp, e.hp + e.maxHp * 15 / 100);
                     }
+                    break;
+                }
+            }
+        }
+
+        /// <summary>Second half of a telegraphed boss skill (after the 0.8 s warning).</summary>
+        void ResolveBossSkill(EnemyInstance boss, EnemyDef def)
+        {
+            if (def.bossSkill == BossSkill.LockCell)
+            {
+                var u = boss.pendingCell >= 0 ? Cells[boss.pendingCell] : null;
+                if (u != null) StunUnit(u, 30, boss.uid);
+            }
+            else if (def.bossSkill == BossSkill.VoidShield)
+            {
+                boss.shield = Math.Max(1, boss.maxHp * 8 / 100);
+                boss.shieldTicks = 60;
+                _m.Emit(new SimEvent(SimEventType.EnemyAbilityUsed, Index, boss.uid, 100 + (int)BossSkill.VoidShield, boss.shield));
+            }
+            boss.pendingCell = -1;
+        }
+
+        /// <summary>Stuns an animal unless an Aegis Ram shield absorbs it.</summary>
+        void StunUnit(UnitInstance u, int ticks, int sourceUid)
+        {
+            if (u.guardTicks > 0 && u.guardCharges > 0)
+            {
+                u.guardCharges--;
+                _m.Emit(new SimEvent(SimEventType.GuardBlocked, Index, u.uid));
+                return;
+            }
+            u.stunTicks = Math.Max(u.stunTicks, ticks);
+            _m.Emit(new SimEvent(SimEventType.UnitStunned, Index, u.uid, sourceUid));
+        }
+
+        /// <summary>One-time HP thresholds: scorpion enrage (30%) and gorilla overdrive (50%).</summary>
+        void UpdatePhases(EnemyInstance e, EnemyDef def)
+        {
+            if (def.ability == EnemyAbility.Enrage && !e.enraged && (long)e.hp * 100 < (long)e.maxHp * 30)
+            {
+                e.enraged = true;
+                _m.Emit(new SimEvent(SimEventType.EnemyAbilityUsed, Index, e.uid, (int)EnemyAbility.Enrage, 0));
+            }
+            if (def.bossSkill == BossSkill.LockCell && !e.phaseDone && (long)e.hp * 2 < e.maxHp)
+            {
+                e.phaseDone = true;
+                _m.Emit(new SimEvent(SimEventType.EnemyAbilityUsed, Index, e.uid, 100 + (int)BossSkill.LockCell, 0));
+            }
+        }
+
+        void UseAbility(EnemyInstance e, EnemyDef def)
+        {
+            switch (def.ability)
+            {
+                case EnemyAbility.Dash:
+                    e.hastePercent = Math.Max(e.hasteTicks > 0 ? e.hastePercent : 0, def.abilityValue);
+                    e.hasteTicks = Math.Max(e.hasteTicks, 14);
+                    _m.Emit(new SimEvent(SimEventType.EnemyAbilityUsed, Index, e.uid, (int)def.ability, 0));
+                    break;
+                case EnemyAbility.DrumHaste:
+                {
+                    int ex, ey, n = 0;
+                    PathMath.Point(_b, e.distance, out ex, out ey);
+                    for (int i = 0; i < Enemies.Count && n < 3; i++)
+                    {
+                        var o = Enemies[i];
+                        if (o == e || !o.alive) continue;
+                        int ox, oy;
+                        PathMath.Point(_b, o.distance, out ox, out oy);
+                        if (Dist2(ex, ey, ox, oy) > 1200L * 1200L) continue;
+                        o.hastePercent = Math.Max(o.hasteTicks > 0 ? o.hastePercent : 0, def.abilityValue);
+                        o.hasteTicks = Math.Max(o.hasteTicks, 40);
+                        n++;
+                    }
+                    _m.Emit(new SimEvent(SimEventType.EnemyAbilityUsed, Index, e.uid, (int)def.ability, n));
                     break;
                 }
             }
@@ -901,17 +1070,17 @@ namespace ZooDefense.Core
         {
             e.alive = false;
             Leaks++;
-            Hearts = Math.Max(0, Hearts - def.leakHearts);
+            Hearts = e.raid ? 0 : Math.Max(0, Hearts - def.leakHearts);   // the raid boss through the gate ends the raid
             _m.Emit(new SimEvent(SimEventType.EnemyLeaked, Index, e.uid, def.leakHearts, e.sender));
             if (e.sender >= 0 && e.sender != Index) _m.Boards[e.sender].HeartsDealt += def.leakHearts;
 
-            if (def.stealCandy > 0 && e.sender >= 0 && e.sender != Index)
+            if (def.stealCandy > 0 && e.sender != Index)
             {
                 int amount = Math.Min(def.stealCandy, Candy);
                 if (amount > 0)
                 {
                     Candy -= amount;
-                    _m.Boards[e.sender].Candy += amount;
+                    if (e.sender >= 0) _m.Boards[e.sender].Candy += amount;   // wave thieves (raccoon) just run off with it
                     _m.Emit(new SimEvent(SimEventType.CandyStolen, Index, amount, e.sender));
                 }
             }
@@ -923,10 +1092,17 @@ namespace ZooDefense.Core
             {
                 var u = Cells[cell];
                 if (u == null) continue;
+                if (u.hasteTicks > 0) u.hasteTicks--;
+                if (u.guardTicks > 0 && --u.guardTicks == 0) { u.guardCharges = 0; u.guardBonus = 0; }
                 if (u.stunTicks > 0) { u.stunTicks--; continue; }
                 if (IsCellLocked(cell)) continue;
                 if (_m.Wave >= 1 && u.level >= _b.skillMinLevel && u.energy < SkillCharge(u)) u.energy++;
                 var def = _c.Units[u.def];
+                if ((def.skill == UnitSkill.NectarHaste || def.skill == UnitSkill.AegisGuard) && _m.Wave >= 1 && --u.supportTimer <= 0)
+                {
+                    u.supportTimer = _b.supportPulseTicks;
+                    SupportPulse(u, def);
+                }
                 if (def.damage <= 0) continue;
                 if (u.cooldown > 0) { u.cooldown--; if (u.cooldown > 0) continue; }
 
@@ -938,9 +1114,48 @@ namespace ZooDefense.Core
             }
         }
 
+        /// <summary>Nectar Bee (attack speed to the nearest attackers) and Aegis Ram (shields + blessing).</summary>
+        void SupportPulse(UnitInstance src, UnitDef def)
+        {
+            bool bee = def.skill == UnitSkill.NectarHaste;
+            int count = bee ? (src.level >= 7 ? 4 : 3) : def.skillValue + (src.level >= 4 ? 1 : 0);
+            int col = src.cell % _b.gridCols, row = src.cell / _b.gridCols;
+            for (int k = 0; k < count; k++)
+            {
+                UnitInstance best = null;
+                int bestScore = int.MaxValue;
+                for (int i = 0; i < Cells.Length; i++)
+                {
+                    var t = Cells[i];
+                    if (t == null || t == src) continue;
+                    var td = _c.Units[t.def];
+                    if (bee && (td.damage <= 0 || td.role == Role.Support)) continue;   // never buffs supports (no loops)
+                    if (bee ? (t.hasteTicks > 40) : (t.guardTicks > 40)) continue;      // spread over the team
+                    int dist = Math.Abs(i % _b.gridCols - col) + Math.Abs(i / _b.gridCols - row);
+                    int score = dist * 100 + i;
+                    if (score < bestScore) { bestScore = score; best = t; }
+                }
+                if (best == null) break;
+                if (bee)
+                {
+                    int pct = src.level >= 7 ? def.skillValue2 + 5 : (src.level >= 4 ? def.skillValue2 : def.skillValue);
+                    best.hastePercent = Math.Max(best.hasteTicks > 0 ? best.hastePercent : 0, pct);
+                    best.hasteTicks = 80;
+                }
+                else
+                {
+                    best.guardTicks = 80;
+                    best.guardCharges = Math.Max(best.guardCharges, src.level >= 7 ? 2 : 1);
+                    best.guardBonus = Math.Max(best.guardBonus, def.skillValue2 + (src.level >= 4 ? 5 : 0) + (src.level >= 7 ? 5 : 0));
+                }
+                _m.Emit(new SimEvent(SimEventType.UnitBuffed, Index, best.uid, bee ? 0 : 1, src.uid));
+            }
+        }
+
         int EffectiveInterval(UnitInstance u, UnitDef def)
         {
             int bonus = 0;
+            if (u.hasteTicks > 0) bonus += u.hastePercent;
             int col = u.cell % _b.gridCols, row = u.cell / _b.gridCols;
             bonus += AuraFrom(col - 1, row) + AuraFrom(col + 1, row) + AuraFrom(col, row - 1) + AuraFrom(col, row + 1);
             if (bonus > 100) bonus = 100;
@@ -995,13 +1210,21 @@ namespace ZooDefense.Core
 
         void Attack(UnitInstance u, UnitDef def, EnemyInstance target)
         {
+            u.attackCount++;
+            int lvl = u.level;
+            bool l4 = lvl >= 4, l7 = lvl >= 7;
+            int nth = u.attackCount;
+            var skill = def.skill;
+
             _hitList.Clear();
-            bool splash = def.splashRadius > 0;
+            int radius = def.splashRadius;
+            if (l7 && ((skill == UnitSkill.ArmorBreak && nth % 4 == 0) || skill == UnitSkill.RootArea)) radius = 1000;
+            bool splash = radius > 0;
             if (splash)
             {
                 int tx, ty;
                 PathMath.Point(_b, target.distance, out tx, out ty);
-                long r2 = (long)def.splashRadius * def.splashRadius;
+                long r2 = (long)radius * radius;
                 for (int i = 0; i < Enemies.Count; i++)
                 {
                     var e = Enemies[i];
@@ -1011,10 +1234,14 @@ namespace ZooDefense.Core
                     if (e == target || Dist2(tx, ty, ex, ey) <= r2) _hitList.Add(e);
                 }
             }
-            else _hitList.Add(target);
+            else
+            {
+                _hitList.Add(target);
+                if (skill == UnitSkill.Pierce) AddPierced(target, def, def.skillValue + (l4 ? 1 : 0) - 1);
+            }
 
-            int targetDamage = 0;
-            int levelPct = _b.levelDamagePercent[u.level - 1];
+            int targetDamage = 0, matchup = 0;
+            int levelPct = _b.levelDamagePercent[lvl - 1];
             int posPct = PositionPercent(u);
             bool crit = HasPerk(PerkType.LuckyCrit) && _rng.Chance(15);
             for (int i = 0; i < _hitList.Count; i++)
@@ -1022,47 +1249,225 @@ namespace ZooDefense.Core
                 var e = _hitList[i];
                 var ed = _c.Enemies[e.def];
                 bool bossLike = ed.kind == EnemyKind.Boss || ed.bossSkill != BossSkill.None;
+                bool big = bossLike || ed.kind == EnemyKind.Elite;
 
                 if (def.canHitInvisible) e.revealed = true;
                 if (def.slowPercent > 0)
                 {
-                    e.slowPercent = Math.Max(e.slowTicks > 0 ? e.slowPercent : 0, Math.Min(80, def.slowPercent + 2 * (u.level - 1)));
+                    e.slowPercent = Math.Max(e.slowTicks > 0 ? e.slowPercent : 0, Math.Min(80, def.slowPercent + 2 * (lvl - 1)));
                     e.slowTicks = Math.Max(e.slowTicks, def.slowTicks);
                 }
                 if (def.stunTicks > 0)
                     e.stunTicks = Math.Max(e.stunTicks, bossLike ? def.stunTicks / 2 : def.stunTicks);
-                if (def.skill == UnitSkill.Knockback)
+                // Push-backs have a per-monster cooldown, otherwise a monster can be held in place forever.
+                if (skill == UnitSkill.Knockback && _m.Tick >= e.pushImmuneUntil)
                 {
-                    int push = def.skillValue * (100 + 10 * (u.level - 1)) / 100 * (100 - ed.knockbackResistPercent) / 100;
+                    int push = def.skillValue * (100 + 10 * (lvl - 1)) / 100 * (100 - ed.knockbackResistPercent) / 100;
                     e.distance = Math.Max(0, e.distance - push);
+                    e.pushImmuneUntil = _m.Tick + _b.pushImmuneTicks;
                 }
-                if (def.skill == UnitSkill.PullStun && e == target)
+                if (skill == UnitSkill.PullStun && e == target && _m.Tick >= e.pushImmuneUntil)
                 {
                     e.distance = Math.Max(0, e.distance - def.skillValue * (100 - ed.knockbackResistPercent) / 100);
                     e.stunTicks = Math.Max(e.stunTicks, bossLike ? def.skillValue2 / 2 : def.skillValue2);
+                    e.pushImmuneUntil = _m.Tick + _b.pushImmuneTicks + 20;
                 }
-                if (def.skill == UnitSkill.Burn && u.level >= 4)
+                if (skill == UnitSkill.Burn && l4)
                 {
-                    e.burnTicks = 60;
-                    e.burnDamage = Math.Max(1, def.skillValue * levelPct / 100 * _cardPct[u.def] / 100 / 2);
+                    e.burnTicks = Math.Max(e.burnTicks, 60);
+                    e.burnDamage = Math.Max(e.burnDamage, Math.Max(1, def.skillValue * levelPct / 100 * _cardPct[u.def] / 100 / 2));
                 }
+                if (skill != UnitSkill.None && skill >= UnitSkill.BurnStack) ApplyExpansionEffect(u, def, e, target, bossLike, nth, levelPct);
 
                 int dmg = def.damage * levelPct / 100 * _cardPct[u.def] / 100 * posPct / 100;
                 if (crit) dmg *= 2;
-                if (def.skill == UnitSkill.AlwaysCounter || ElementRules.Counters(def.element, e.element))
-                    dmg = dmg * (100 + _b.elementBonusPercent) / 100;
-                if (ed.armorPercent > 0) dmg = dmg * (100 - ed.armorPercent) / 100;
+                if (skill == UnitSkill.Pierce && e != target) dmg = dmg * 70 / 100;
+                bool always = skill == UnitSkill.AlwaysCounter;
+                dmg = dmg * ElementRules.DamagePercent(_b, def.element, e.element, always, big) / 100;
+                int armor = ed.armorPercent - (e.shredTicks > 0 ? e.shredPercent : 0);
+                if (armor < 0) armor /= 2;   // armor broken below zero: half of it becomes extra damage
+                if (armor != 0) dmg = dmg * (100 - armor) / 100;
                 if (splash && ed.areaResistPercent > 0) dmg = dmg * (100 - ed.areaResistPercent) / 100;
                 if (dmg < 1) dmg = 1;
-                if (e == target) targetDamage = dmg;
+
+                if (skill == UnitSkill.Burst && e == target)
+                {
+                    // Several quick shots; armor counts on each one. The last shot bites slowed enemies at level 7.
+                    int shots = def.skillValue + (l4 ? 1 : 0), total = 0;
+                    for (int k = 0; k < shots && e.alive; k++)
+                    {
+                        int shot = (l7 && k == shots - 1 && e.slowTicks > 0) ? dmg * 150 / 100 : dmg;
+                        total += shot;
+                        ApplyDamage(e, shot);
+                    }
+                    targetDamage = total;
+                    matchup = ElementRules.Matchup(def.element, e.element, always);
+                    continue;
+                }
+                if (e == target) { targetDamage = dmg; matchup = ElementRules.Matchup(def.element, e.element, always); }
                 ApplyDamage(e, dmg);
             }
-            _m.Emit(new SimEvent(SimEventType.UnitAttacked, Index, u.uid, target.uid, targetDamage));
+            var ev = new SimEvent(SimEventType.UnitAttacked, Index, u.uid, target.uid, targetDamage);
+            ev.d = matchup;
+            if (matchup > 0) EffectiveHits++;
+            _m.Emit(ev);
+        }
+
+        /// <summary>Ember Boar: also hits the next enemies behind the target along the path.</summary>
+        void AddPierced(EnemyInstance target, UnitDef def, int extra)
+        {
+            for (int k = 0; k < extra; k++)
+            {
+                EnemyInstance best = null;
+                int last = _hitList[_hitList.Count - 1].distance;
+                for (int i = 0; i < Enemies.Count; i++)
+                {
+                    var e = Enemies[i];
+                    if (!e.alive || _hitList.Contains(e) || (!e.revealed && !def.canHitInvisible)) continue;
+                    if (e.distance > last || last - e.distance > 2000) continue;
+                    if (best == null || e.distance > best.distance) best = e;
+                }
+                if (best == null) return;
+                _hitList.Add(best);
+            }
+        }
+
+        /// <summary>Status effects of the Expansion 1 animals (applied before the hit's damage).</summary>
+        void ApplyExpansionEffect(UnitInstance u, UnitDef def, EnemyInstance e, EnemyInstance target, bool bossLike, int nth, int levelPct)
+        {
+            bool l4 = u.level >= 4, l7 = u.level >= 7;
+            int now = _m.Tick;
+            switch (def.skill)
+            {
+                case UnitSkill.BurnStack:
+                {
+                    int pulse = Math.Max(1, def.skillValue * levelPct / 100 * _cardPct[u.def] / 100);
+                    AddBurn(e, pulse, l4 ? 80 : 60);
+                    if (l7 && nth % 5 == 0 && e == target)
+                    {
+                        var near = NearestOther(e, 700);
+                        if (near != null) AddBurn(near, pulse, l4 ? 80 : 60);
+                    }
+                    break;
+                }
+                case UnitSkill.Pierce:
+                    if (l7 && e == target && !bossLike && now >= u.knockbackReadyTick && now >= e.pushImmuneUntil)
+                    {
+                        e.pushImmuneUntil = now + _b.pushImmuneTicks;
+                        var ed = _c.Enemies[e.def];
+                        e.distance = Math.Max(0, e.distance - 200 * (100 - ed.knockbackResistPercent) / 100);
+                        u.knockbackReadyTick = now + 100;
+                    }
+                    break;
+                case UnitSkill.ArmorBreak:
+                {
+                    int pct = l4 ? def.skillValue2 : def.skillValue;
+                    if (e.shredTicks == 0 || pct >= e.shredPercent) { e.shredPercent = pct; e.shredTicks = 80; }
+                    if (e == target) _m.Emit(new SimEvent(SimEventType.StatusApplied, Index, e.uid, 4));
+                    break;
+                }
+                case UnitSkill.ChillSlow:
+                    Slow(e, l4 ? def.skillValue2 : def.skillValue, 40);
+                    if (l7 && nth % 6 == 0 && e == target)
+                    {
+                        if (bossLike) Slow(e, 15, 40);
+                        else { e.stunTicks = Math.Max(e.stunTicks, 10); _m.Emit(new SimEvent(SimEventType.StatusApplied, Index, e.uid, 3)); }
+                    }
+                    break;
+                case UnitSkill.Vulnerable:
+                {
+                    int pct = l4 ? def.skillValue2 : def.skillValue;
+                    MarkVulnerable(e, pct, 60);
+                    if (e == target) _m.Emit(new SimEvent(SimEventType.StatusApplied, Index, e.uid, 5));
+                    if (l7 && nth % 5 == 0 && e == target)
+                    {
+                        var a = NearestOther(e, 800);
+                        if (a != null) { MarkVulnerable(a, pct, 60); var b2 = NearestOther(e, 800, a); if (b2 != null) MarkVulnerable(b2, pct, 60); }
+                    }
+                    break;
+                }
+                case UnitSkill.RootArea:
+                    if (bossLike) Slow(e, 12, 30);
+                    else if (now >= e.rootImmuneUntil)
+                    {
+                        int root = l4 ? def.skillValue2 : def.skillValue;
+                        e.stunTicks = Math.Max(e.stunTicks, root);
+                        e.rootImmuneUntil = now + 80;
+                        if (l7) Slow(e, 15, root + 20);
+                        _m.Emit(new SimEvent(SimEventType.StatusApplied, Index, e.uid, 1));
+                    }
+                    break;
+                case UnitSkill.Silence:
+                    if (e == target && nth % 4 == 0 && now >= e.silenceImmuneUntil)
+                    {
+                        int dur = l4 ? def.skillValue2 : def.skillValue;
+                        if (bossLike) { dur /= 2; if (e.pendingTicks >= 0) e.pendingTicks += 5; }
+                        e.silenceTicks = Math.Max(e.silenceTicks, dur);
+                        e.silenceImmuneUntil = now + 100;
+                        e.hasteTicks = 0;   // silence also ends drum / dash speed-ups
+                        if (l7) Slow(e, 20, 30);
+                        _m.Emit(new SimEvent(SimEventType.StatusApplied, Index, e.uid, 2));
+                    }
+                    break;
+            }
+        }
+
+        static void AddBurn(EnemyInstance e, int pulse, int ticks)
+        {
+            e.burnStacks = Math.Min(3, e.burnStacks + 1);
+            e.burnDamage = Math.Max(e.burnDamage, pulse);
+            e.burnTicks = Math.Max(e.burnTicks, ticks);
+        }
+
+        static void Slow(EnemyInstance e, int percent, int ticks)
+        {
+            e.slowPercent = Math.Max(e.slowTicks > 0 ? e.slowPercent : 0, percent);
+            e.slowTicks = Math.Max(e.slowTicks, ticks);
+        }
+
+        static void MarkVulnerable(EnemyInstance e, int percent, int ticks)
+        {
+            if (e.vulnTicks == 0 || percent >= e.vulnPercent) e.vulnPercent = percent;   // strongest mark only
+            e.vulnTicks = Math.Max(e.vulnTicks, ticks);
+        }
+
+        EnemyInstance NearestOther(EnemyInstance center, int radius, EnemyInstance skip = null)
+        {
+            int cx, cy;
+            PathMath.Point(_b, center.distance, out cx, out cy);
+            EnemyInstance best = null;
+            long bestD = (long)radius * radius;
+            for (int i = 0; i < Enemies.Count; i++)
+            {
+                var e = Enemies[i];
+                if (e == center || e == skip || !e.alive) continue;
+                int ex, ey;
+                PathMath.Point(_b, e.distance, out ex, out ey);
+                long d = Dist2(cx, cy, ex, ey);
+                if (d <= bestD) { bestD = d; best = e; }
+            }
+            return best;
         }
 
         void ApplyDamage(EnemyInstance e, int dmg)
         {
             if (!e.alive) return;
+            if (e.vulnTicks > 0) dmg = dmg * (100 + e.vulnPercent) / 100;
+            if (e.raid) { _m.DamageRaid(dmg); return; }   // shared pool: the match kills both copies
+            if (e.shield > 0)
+            {
+                int absorbed = Math.Min(e.shield, dmg);
+                e.shield -= absorbed;
+                dmg -= absorbed;
+                if (e.shield == 0)
+                {
+                    // Broken void shield: the crab is exposed for 2 s.
+                    e.shieldTicks = 0;
+                    MarkVulnerable(e, 15, 40);
+                    _m.Emit(new SimEvent(SimEventType.ShieldBroken, Index, e.uid));
+                }
+                if (dmg <= 0) return;
+            }
             e.hp -= dmg;
             if (e.hp <= 0) Kill(e);
         }
@@ -1073,6 +1478,7 @@ namespace ZooDefense.Core
             e.hp = 0;
             var def = _c.Enemies[e.def];
             Kills++;
+            if (def.kind == EnemyKind.Boss) BossKills++;
             int reward = KillReward(def);
             if (_m.Tick < CandyRainUntilTick) reward = reward * (100 + CandyRainPercent) / 100;
             Candy += reward;
@@ -1111,6 +1517,13 @@ namespace ZooDefense.Core
                 for (int i = 0; i < Cells.Length; i++) if (!IsCellLocked(i)) _scratch.Add(i);
             if (_scratch.Count == 0) return;
             int cell = _scratch[_rng.Next(_scratch.Count)];
+            var guarded = Cells[cell];
+            if (guarded != null && guarded.guardTicks > 0 && guarded.guardCharges > 0)
+            {
+                guarded.guardCharges--;
+                _m.Emit(new SimEvent(SimEventType.GuardBlocked, Index, guarded.uid));
+                return;
+            }
             LockedUntilWave[cell] = _m.Wave + _b.lockWaves;
             _m.Emit(new SimEvent(SimEventType.CellLocked, Index, cell, LockedUntilWave[cell]));
         }
@@ -1138,6 +1551,7 @@ namespace ZooDefense.Core
                 var u = Cells[i];
                 Match.Mix(ref h, u == null ? -1 : u.def * 16 + u.level);
                 Match.Mix(ref h, u == null ? 0 : u.energy);
+                Match.Mix(ref h, u == null ? 0 : u.hasteTicks * 7 + u.guardCharges * 131 + u.attackCount);
                 Match.Mix(ref h, LockedUntilWave[i]);
             }
             for (int i = 0; i < Shop.Length; i++) Match.Mix(ref h, Shop[i]);
@@ -1145,6 +1559,7 @@ namespace ZooDefense.Core
             for (int i = 0; i < Enemies.Count; i++)
             {
                 Match.Mix(ref h, Enemies[i].uid); Match.Mix(ref h, Enemies[i].hp); Match.Mix(ref h, Enemies[i].distance);
+                Match.Mix(ref h, Enemies[i].shield + Enemies[i].burnStacks * 1009 + Enemies[i].silenceTicks * 31);
             }
         }
     }

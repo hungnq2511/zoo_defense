@@ -23,6 +23,9 @@ namespace ZooDefense.Game
         public string[] sendDeck = (string[])DefaultContent.DefaultSendDeck.Clone();
         /// <summary>4 keeper spells taken into battle.</summary>
         public string[] spells = (string[])DefaultContent.DefaultSpells.Clone();
+        /// <summary>3 saved decks; `deck` is the active one (activeDeck = its slot).</summary>
+        public List<DeckPreset> decks = new List<DeckPreset>();
+        public int activeDeck;
         public bool tutorialDone;
         public float musicVolume = 0.6f;
         public float sfxVolume = 0.8f;
@@ -83,6 +86,11 @@ namespace ZooDefense.Game
             if (!ValidDeck(p.deck, 5, id => content.UnitIndex(id) >= 0 && service.IsUnlocked(id))) p.deck = (string[])DefaultContent.DefaultDeck.Clone();
             if (!ValidDeck(p.sendDeck, 4, id => content.SendIndex(id) >= 0)) p.sendDeck = (string[])DefaultContent.DefaultSendDeck.Clone();
             if (!ValidDeck(p.spells, 4, id => content.SpellIndex(id) >= 0)) p.spells = (string[])DefaultContent.DefaultSpells.Clone();
+            if (p.decks == null) p.decks = new List<DeckPreset>();
+            while (p.decks.Count < 3) p.decks.Add(new DeckPreset { units = (string[])p.deck.Clone() });
+            for (int i = 0; i < p.decks.Count; i++)
+                if (!ValidDeck(p.decks[i].units, 5, id => content.UnitIndex(id) >= 0 && service.IsUnlocked(id))) p.decks[i].units = (string[])p.deck.Clone();
+            p.activeDeck = Mathf.Clamp(p.activeDeck, 0, 2);
             p.botDifficulty = Mathf.Clamp(p.botDifficulty, 0, 2);
             p.musicVolume = Mathf.Clamp01(p.musicVolume);
             p.sfxVolume = Mathf.Clamp01(p.sfxVolume);

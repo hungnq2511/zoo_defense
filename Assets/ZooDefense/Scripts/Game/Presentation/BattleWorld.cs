@@ -26,6 +26,13 @@ namespace ZooDefense.Game
         public int ArmedSpell = -1;
         /// <summary>True while the opponent's board is shown big.</summary>
         public bool FocusRemote;
+        /// <summary>PvE modes: the idle second board is not drawn.</summary>
+        public bool HideRemote
+        {
+            get { return _hideRemote; }
+            set { _hideRemote = value; if (Remote != null) Remote.gameObject.SetActive(!value); if (value) FocusRemote = false; }
+        }
+        bool _hideRemote;
 
         MatchRunner _runner;
         Camera _cam;
@@ -74,10 +81,11 @@ namespace ZooDefense.Game
             _cam.orthographicSize = Mathf.Max((Local.Width + 0.4f) / aspect / 2f, 6.6f);
             float worldW = _cam.orthographicSize * 2f * aspect;
 
+            if (_hideRemote) FocusRemote = false;
             var big = FocusRemote ? Remote : Local;
             var small = FocusRemote ? Local : Remote;
             Fit(big, mainPx, 1.35f);
-            Fit(small, thumbPx, 1f);
+            if (!_hideRemote) Fit(small, thumbPx, 1f);
 
             if (_background != null)
             {
@@ -142,7 +150,7 @@ namespace ZooDefense.Game
                     if (OnRemoteTapped != null) OnRemoteTapped();
                     return;
                 }
-                if (Remote.Contains(world)) { if (OnRemoteTapped != null) OnRemoteTapped(); return; }
+                if (!_hideRemote && Remote.Contains(world)) { if (OnRemoteTapped != null) OnRemoteTapped(); return; }
 
                 // Balloons first: they float over everything.
                 int balloon = Local.BalloonAt(world);

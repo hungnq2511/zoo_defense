@@ -33,7 +33,7 @@ namespace ZooDefense.Core
         public int gemPrice;          // shop price, 0 = not sold
     }
 
-    public enum MissionType { PlayMatches, WinMatches, KillEnemies, MergeUnits, SendMonsters, ReachWave, BuyCards, OpenChests, UpgradeUnits }
+    public enum MissionType { PlayMatches, WinMatches, KillEnemies, MergeUnits, SendMonsters, ReachWave, BuyCards, OpenChests, UpgradeUnits, EffectiveHits, KillBosses, PlayModes, DailyChallenge }
 
     [Serializable]
     public class MissionDef
@@ -162,6 +162,10 @@ namespace ZooDefense.Core
             c.missionPool.Add(new MissionDef { id = "buy40", type = MissionType.BuyCards, target = 40, gold = 60, passXp = 50 });
             c.missionPool.Add(new MissionDef { id = "chest1", type = MissionType.OpenChests, target = 1, gold = 60, passXp = 40 });
             c.missionPool.Add(new MissionDef { id = "upgrade1", type = MissionType.UpgradeUnits, target = 1, gold = 60, passXp = 40 });
+            c.missionPool.Add(new MissionDef { id = "hits150", type = MissionType.EffectiveHits, target = 150, gold = 80, passXp = 50 });
+            c.missionPool.Add(new MissionDef { id = "boss2", type = MissionType.KillBosses, target = 2, gold = 80, passXp = 50 });
+            c.missionPool.Add(new MissionDef { id = "modes2", type = MissionType.PlayModes, target = 2, gold = 70, passXp = 50 });
+            c.missionPool.Add(new MissionDef { id = "daily1", type = MissionType.DailyChallenge, target = 1, gold = 60, passXp = 40 });
 
             // 30 tiers: free track = gold and chests, premium = gems, bigger chests and a legendary shard.
             for (int t = 1; t <= 30; t++)

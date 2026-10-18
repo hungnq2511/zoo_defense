@@ -15,6 +15,7 @@ namespace ZooDefense.Game
     ///                                       /{unitId}.png     single look for all levels
     ///   Assets/ZooDefense/Resources/ZooArt/Enemies/{enemyId}.png
     ///   Assets/ZooDefense/Resources/ZooArt/EnemyWalks/{enemyId}.png   4x4 walk sheet + catalog.json (optional)
+    ///   Assets/ZooDefense/Resources/ZooArt/UnitCasts/{unitId}_{1|4|7}_cast.png   4x2 attack sheet (optional)
     ///   Assets/ZooDefense/Resources/ZooArt/Projectiles/{unitId|fire|water|grass|light}.png   (optional)
     ///   Assets/ZooDefense/Resources/ZooArt/Backgrounds/arena_{1..5}.png
     ///   Assets/ZooDefense/Resources/ZooArt/UI/{candy|heart|points|trophy|gold}.png
@@ -33,7 +34,7 @@ namespace ZooDefense.Game
             return s;
         }
 
-        public static void ClearCache() { _cache.Clear(); _walks = null; }
+        public static void ClearCache() { _cache.Clear(); _walks = null; _casts.Clear(); }
 
         public static Sprite Unit(string unitId, int level)
         {
@@ -99,6 +100,46 @@ namespace ZooDefense.Game
                     clip.frames[i].name = enemyId + "_walk_" + i;
                 }
             }
+            return clip;
+        }
+
+        // ------------------------------------------------------------------ unit cast sheets
+
+        /// <summary>Attack ("cast") animation of an animal: 4x2 sheet, 8 frames, played once per attack.</summary>
+        public sealed class CastClip
+        {
+            public float fps = 12f;
+            public Sprite[] frames;
+        }
+
+        static readonly Dictionary<string, CastClip> _casts = new Dictionary<string, CastClip>();
+
+        /// <summary>
+        /// Optional cast sheet: Resources/ZooArt/UnitCasts/{unitId}_{1|4|7}_cast.png (4 columns x 2 rows, pivot at the
+        /// feet like the still art). Returns null when the animal has none (the procedural lunge is used).
+        /// </summary>
+        public static CastClip UnitCast(string unitId, int level)
+        {
+            int tier = level >= 7 ? 7 : (level >= 4 ? 4 : 1);
+            string key = unitId + "_" + tier;
+            CastClip clip;
+            if (_casts.TryGetValue(key, out clip)) return clip;
+            var tex = Resources.Load<Texture2D>("ZooArt/UnitCasts/" + key + "_cast");
+            if (tex == null && tier > 1) tex = Resources.Load<Texture2D>("ZooArt/UnitCasts/" + unitId + "_1_cast");
+            if (tex != null)
+            {
+                const int cols = 4, rows = 2;
+                float fw = tex.width / (float)cols, fh = tex.height / (float)rows;
+                clip = new CastClip { frames = new Sprite[cols * rows] };
+                for (int i = 0; i < clip.frames.Length; i++)
+                {
+                    int col = i % cols, row = i / cols;
+                    var rect = new Rect(col * fw, tex.height - (row + 1) * fh, fw, fh);
+                    clip.frames[i] = Sprite.Create(tex, rect, new Vector2(0.5f, 0.12f), fw, 0, SpriteMeshType.FullRect, Vector4.zero);
+                    clip.frames[i].name = key + "_cast_" + i;
+                }
+            }
+            _casts[key] = clip;
             return clip;
         }
 

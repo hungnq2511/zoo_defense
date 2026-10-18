@@ -33,6 +33,12 @@ namespace ZooDefense.Core
             Validate();
         }
 
+        /// <summary>Same content with another balance (game modes). Units, enemies, sends and spells are shared.</summary>
+        public ContentDatabase WithBalance(BalanceConfig balance)
+        {
+            return new ContentDatabase(new ContentData { balance = balance, units = Data.units, enemies = Data.enemies, sends = Data.sends, spells = Data.spells });
+        }
+
         public int UnitIndex(string id) { int i; return id != null && _unitIndex.TryGetValue(id, out i) ? i : -1; }
         public int EnemyIndex(string id) { int i; return id != null && _enemyIndex.TryGetValue(id, out i) ? i : -1; }
         public int SendIndex(string id) { int i; return id != null && _sendIndex.TryGetValue(id, out i) ? i : -1; }

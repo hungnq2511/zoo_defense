@@ -222,7 +222,7 @@ namespace ZooDefense.EditorTools
             var ti = (TextureImporter)assetImporter;
 
             // Walk sheets (4x4 grid) are cut into frames at runtime: plain texture, no resizing to power of two.
-            if (assetPath.Contains("/ZooArt/EnemyWalks/"))
+            if (assetPath.Contains("/ZooArt/EnemyWalks/") || assetPath.Contains("/ZooArt/UnitCasts/"))
             {
                 ti.textureType = TextureImporterType.Default;
                 ti.alphaSource = TextureImporterAlphaSource.FromInput;

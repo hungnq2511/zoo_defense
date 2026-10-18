@@ -59,7 +59,7 @@ namespace ZooDefense.Game
 
             // Real work: warm the sprite cache so the lobby and the first match open without hitches.
             var content = App.Content;
-            foreach (var id in App.Profile.deck) { var d = id; _jobs.Add(() => { Art.Unit(d, 1); Art.Unit(d, 4); Art.Projectile(d, Element.None); }); }
+            foreach (var id in App.Profile.deck) { var d = id; _jobs.Add(() => { Art.Unit(d, 1); Art.Unit(d, 4); Art.Projectile(d, Element.None); Art.UnitCast(d, 1); }); }
             string[] ui = { "logo", "ribbon", "ribbon_defeat", "podium", "button_battle", "button_summon", "rays", "star", "candy", "heart", "gold", "gems", "trophy", "xp",
                             "chest_wood", "chest_silver", "chest_gold", "chest_magic", "board_portal", "board_gate", "balloon" };
             foreach (var n in ui) { var name = n; _jobs.Add(() => Art.Icon(name)); }
@@ -263,6 +263,11 @@ namespace ZooDefense.Game
                 .Place(new Vector2(left ? 0f : 1f, 1f), new Vector2(left ? 0f : 1f, 1f), new Vector2(left ? 380 : -380, -110), new Vector2(230, 60));
             Icons.Currency(tro, "trophy").rectTransform.Place(new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(6, 0), new Vector2(54, 54));
             UIKit.Label(tro, trophies.ToString(), 30, Palette.Text).rectTransform.Stretch(58, 8, 0, 0);
+            // Title (achievements / seasons) next to the trophies on your own card.
+            var title = left ? App.Meta.State.title : "";
+            if (!string.IsNullOrEmpty(title))
+                UIKit.Label(c, Loc.T("title." + title), 26, Art.Hex(0xFFD23F), textAnchor).rectTransform
+                    .Place(new Vector2(left ? 0f : 1f, 1f), new Vector2(left ? 0f : 1f, 1f), new Vector2(left ? 620 : -620, -110), new Vector2(330, 60));
 
             // Team row
             for (int i = 0; i < deck.Length && i < 5; i++)

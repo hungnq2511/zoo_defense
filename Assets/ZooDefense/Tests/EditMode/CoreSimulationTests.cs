@@ -42,7 +42,7 @@ namespace ZooDefense.Tests
         public void DefaultContent_IsValid()
         {
             var c = Content();
-            Assert.AreEqual(20, c.Units.Count);
+            Assert.AreEqual(30, c.Units.Count);   // 20 launch animals + Expansion 1
             Assert.AreEqual(7, c.Sends.Count);   // 6 sends + the boss-duel remnant
         }
 

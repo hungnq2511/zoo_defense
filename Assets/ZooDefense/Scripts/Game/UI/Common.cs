@@ -124,8 +124,11 @@ namespace ZooDefense.Game
             var bar = UIKit.Panel(root, "currencyBar", new Color(0f, 0f, 0f, 0.35f), false).rectTransform.Band(true, Height);
             if (showName)
             {
+                var title = app.Meta != null ? app.Meta.State.title : "";
                 var name = UIKit.Label(bar, app.Profile.playerName, 38, Palette.Text, TextAnchor.MiddleLeft);
-                name.rectTransform.Stretch(30, 760, 0, 0);
+                name.rectTransform.Stretch(30, 760, 0, string.IsNullOrEmpty(title) ? 0 : 40);
+                if (!string.IsNullOrEmpty(title))
+                    UIKit.Label(bar, Loc.T("title." + title), 24, Art.Hex(0xFFD23F), TextAnchor.MiddleLeft).rectTransform.Stretch(30, 760, 78, 8);
             }
             _gems = Pair(bar, "gems", 24);
             _gold = Pair(bar, "gold", 24 + 250);

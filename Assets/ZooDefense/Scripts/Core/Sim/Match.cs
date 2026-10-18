@@ -30,6 +30,23 @@ namespace ZooDefense.Core
         public int TicksUntilNextWave { get { return Math.Max(0, NextWaveTick - Tick); } }
         /// <summary>Cells with a damage bonus, the same on both boards (fair), moved every few waves.</summary>
         public readonly int[] StarCells;
+        /// <summary>Game mode rules (null = normal 1v1).</summary>
+        public readonly MatchRules Rules;
+        public MatchMode Mode { get { return Rules != null ? Rules.mode : MatchMode.Versus; } }
+        /// <summary>PvE: only board 0 plays.</summary>
+        public bool IsSolo { get { return Rules != null && Rules.solo; } }
+        /// <summary>Raid: both boards are one team.</summary>
+        public bool IsCoop { get { return Rules != null && Rules.coop; } }
+        /// <summary>Shared HP of the raid boss (both boards hit the same pool). 0 before it arrives.</summary>
+        public int RaidHp { get; private set; }
+        public int RaidMaxHp { get; private set; }
+        public bool RaidDefeated { get; private set; }
+        /// <summary>Waves to survive to win (campaign), 0 = none.</summary>
+        public int WinWave { get { return Rules != null ? Rules.winWave : 0; } }
+        /// <summary>Element most monsters of the current wave have (announced one wave ahead as NextWaveElement).</summary>
+        public Element WaveElement { get; private set; }
+        public Element NextWaveElement { get; private set; }
+        readonly int _bossOffset;
 
         /// <summary>Events produced by the last Step(). Cleared at the start of every Step.</summary>
         public readonly List<SimEvent> Events = new List<SimEvent>();
@@ -43,8 +60,11 @@ namespace ZooDefense.Core
 
         public Match(ContentDatabase content, MatchSetup setup)
         {
-            Content = content ?? throw new ArgumentNullException(nameof(content));
+            if (content == null) throw new ArgumentNullException(nameof(content));
             Setup = setup ?? throw new ArgumentNullException(nameof(setup));
+            Rules = setup.rules;
+            if (Rules != null) content = content.WithBalance(Rules.Apply(content.Balance));
+            Content = content;
             Balance = content.Balance;
             PathLength = PathMath.Length(Balance);
             _rng = new DetRandom(setup.seed);
@@ -54,6 +74,8 @@ namespace ZooDefense.Core
             BossDuelWinner = -1;
             StarCells = new int[Math.Max(0, Balance.starCellCount)];
             PickStarCells();
+            NextWaveElement = RandomElement(ref _rng);
+            _bossOffset = Balance.bossEnemyIds.Length > 0 ? (setup.seed & 0x7fffffff) % Balance.bossEnemyIds.Length : 0;
             for (int i = 0; i < 2; i++)
                 Boards[i] = new Board(this, i, setup.players[i], new DetRandom(setup.seed * 31 + 7 + i * 1013));
         }
@@ -134,10 +156,21 @@ namespace ZooDefense.Core
 
             if (!IsOver)
             {
-                if (Tick >= NextWaveTick) StartNextWave();
-                Boards[0].Simulate();
-                Boards[1].Simulate();
-                CheckEnd();
+                if (Tick >= NextWaveTick)
+                {
+                    // Campaign goal: the last wave's timer is over and its monsters are gone.
+                    if (WinWave > 0 && Wave >= WinWave)
+                    {
+                        if (Boards[0].Enemies.Count == 0 && !Boards[0].HasPendingSpawns) End(0);
+                    }
+                    else StartNextWave();
+                }
+                if (!IsOver)
+                {
+                    Boards[0].Simulate();
+                    if (!IsSolo) Boards[1].Simulate();
+                    CheckEnd();
+                }
             }
             Tick++;
         }
@@ -149,6 +182,8 @@ namespace ZooDefense.Core
         {
             var board = Boards[c.player];
             RejectReason r;
+            if (IsSolo && c.player == 1) return;   // the idle board takes no commands
+            if ((IsSolo || IsCoop) && c.type == CommandType.SendMonster) { Emit(new SimEvent(SimEventType.CommandRejected, c.player, (int)c.type, c.a, c.b, RejectReason.InvalidSlot)); return; }
             switch (c.type)
             {
                 case CommandType.BuyCard: r = board.Buy(c.a); break;
@@ -167,6 +202,7 @@ namespace ZooDefense.Core
                 case CommandType.UpgradeUnit: r = board.UpgradeUnit(c.a); break;
                 case CommandType.SummonUnit: r = board.SummonUnit(c.a, c.b); break;
                 case CommandType.Emote: Emit(new SimEvent(SimEventType.Emote, c.player, c.a)); r = RejectReason.None; break;
+                case CommandType.Assist: r = IsCoop ? board.Assist(c.a) : RejectReason.InvalidSlot; break;
                 default: r = RejectReason.InvalidSlot; break;
             }
             if (r != RejectReason.None)
@@ -179,7 +215,7 @@ namespace ZooDefense.Core
             {
                 int bonus = Balance.waveBonusBase + Balance.waveBonusPerWave * Wave;
                 Boards[0].GainCandy(bonus);
-                Boards[1].GainCandy(bonus);
+                if (!IsSolo) Boards[1].GainCandy(bonus);
             }
 
             Wave++;
@@ -194,21 +230,29 @@ namespace ZooDefense.Core
                 for (int i = 0; i < 2; i++) Emit(new SimEvent(SimEventType.StarCellsMoved, i, StarCells.Length));
             }
 
-            if (Balance.bossEveryNWaves > 0 && Wave % Balance.bossEveryNWaves == 0) { BossDuelWave = Wave; BossDuelWinner = -1; }
+            if (!IsSolo && !IsCoop && Balance.bossEveryNWaves > 0 && Wave % Balance.bossEveryNWaves == 0) { BossDuelWave = Wave; BossDuelWinner = -1; }
             else BossDuelWave = 0;
 
+            WaveElement = NextWaveElement;
+            NextWaveElement = RandomElement(ref _rng);
+            if (Rules != null && Rules.waveElements != null && Rules.waveElements.Length > 0)
+            {
+                WaveElement = (Element)Rules.waveElements[(Wave - 1) % Rules.waveElements.Length];
+                NextWaveElement = (Element)Rules.waveElements[Wave % Rules.waveElements.Length];
+            }
             BuildWave(_waveSpawns);
             Boards[0].OnWaveStart(_waveSpawns);
-            Boards[1].OnWaveStart(_waveSpawns);
+            if (!IsSolo) Boards[1].OnWaveStart(_waveSpawns);
             if (Balance.perkEveryNWaves > 0 && Wave % Balance.perkEveryNWaves == 0)
             {
                 Boards[0].OfferPerks();
-                Boards[1].OfferPerks();
+                if (!IsSolo) Boards[1].OfferPerks();
             }
+            if (IsCoop && Wave == Rules.raidBossWave) SpawnRaidBoss();
 
             for (int i = 0; i < 2; i++)
             {
-                Emit(new SimEvent(SimEventType.WaveStarted, i, Wave, IsSuddenDeath ? 1 : 0));
+                Emit(new SimEvent(SimEventType.WaveStarted, i, Wave, IsSuddenDeath ? 1 : 0, (int)WaveElement));
                 if (Wave % Balance.bossEveryNWaves == 0) Emit(new SimEvent(SimEventType.BossIncoming, i, Wave));
             }
         }
@@ -220,7 +264,11 @@ namespace ZooDefense.Core
             var b = Balance;
             int count = Math.Min(b.maxEnemiesPerWave, b.baseEnemiesPerWave + b.enemiesPerWaveStep * (Wave - 1));
             for (int i = 0; i < count; i++)
-                list.Add(Spawn(b.normalEnemyIds[_rng.Next(b.normalEnemyIds.Length)], Tick + i * b.spawnWindowTicks / count));
+            {
+                var sp = Spawn(b.normalEnemyIds[_rng.Next(b.normalEnemyIds.Length)], Tick + i * b.spawnWindowTicks / count);
+                if (_rng.Chance(b.waveElementPercent)) sp.element = WaveElement;   // "Water wave": plan your counters
+                list.Add(sp);
+            }
 
             if (b.eliteEveryNWaves > 0 && Wave % b.eliteEveryNWaves == 0)
             {
@@ -231,7 +279,7 @@ namespace ZooDefense.Core
 
             if (b.bossEveryNWaves > 0 && Wave % b.bossEveryNWaves == 0)
             {
-                string bossId = b.bossEnemyIds[(Wave / b.bossEveryNWaves - 1) % b.bossEnemyIds.Length];
+                string bossId = b.bossEnemyIds[(Wave / b.bossEveryNWaves - 1 + _bossOffset) % b.bossEnemyIds.Length];
                 list.Add(Spawn(bossId, Tick + b.spawnWindowTicks / 2));
             }
         }
@@ -253,8 +301,42 @@ namespace ZooDefense.Core
             switch (rng.Next(3)) { case 0: return Element.Fire; case 1: return Element.Water; default: return Element.Grass; }
         }
 
+        void SpawnRaidBoss()
+        {
+            int def = Content.EnemyIndex(Rules.raidBossId);
+            if (def < 0) return;
+            RaidMaxHp = RaidHp = (int)Math.Max(1L, (long)Content.Enemies[def].hp * WaveHpPermille / 1000 * Rules.raidHpPercent / 100);
+            for (int i = 0; i < 2; i++)
+            {
+                var e = Boards[i].SpawnRaidBoss(def, RaidHp, Rules.raidSpeedPercent, WaveElement);
+                Emit(new SimEvent(SimEventType.RaidBossArrived, i, e.uid, RaidHp));
+            }
+        }
+
+        /// <summary>Damage dealt to the raid boss on either board goes to the shared pool.</summary>
+        internal void DamageRaid(int dmg)
+        {
+            if (RaidHp <= 0) return;
+            RaidHp = Math.Max(0, RaidHp - dmg);
+            for (int i = 0; i < 2; i++) Boards[i].SyncRaidBoss(RaidHp);
+            if (RaidHp == 0) RaidDefeated = true;
+        }
+
         void CheckEnd()
         {
+            if (IsSolo)
+            {
+                if (Boards[0].Hearts <= 0) End(1);
+                else if (Wave > 500) End(1);
+                return;
+            }
+            if (IsCoop)
+            {
+                if (RaidDefeated) End(0);
+                else if (Boards[0].Hearts <= 0 || Boards[1].Hearts <= 0) End(1);   // the team falls together
+                else if (Wave > HardWaveCap) End(1);
+                return;
+            }
             bool dead0 = Boards[0].Hearts <= 0, dead1 = Boards[1].Hearts <= 0;
             if (dead0 && dead1) End(-1);
             else if (dead0) End(1);
@@ -284,6 +366,8 @@ namespace ZooDefense.Core
             Mix(ref h, (int)_rng.State);
             for (int i = 0; i < StarCells.Length; i++) Mix(ref h, StarCells[i]);
             Mix(ref h, BossDuelWave); Mix(ref h, BossDuelWinner);
+            Mix(ref h, (int)WaveElement * 8 + (int)NextWaveElement);
+            Mix(ref h, RaidHp);
             for (int i = 0; i < 2; i++) Boards[i].HashInto(ref h);
             return h;
         }

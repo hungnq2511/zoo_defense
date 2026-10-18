@@ -18,7 +18,7 @@ namespace ZooDefense.Game
     ///                    (2 spells | big SUMMON | 2 spells)
     /// Overlays: unit info sheet over the bottom panel, perk choice every 5 waves, emote picker, banners, pause.
     /// </summary>
-    public sealed class BattleScreen : ScreenBase
+    public sealed partial class BattleScreen : ScreenBase
     {
         const float TopBarHeight = 112f;
         const float StripTop = 142f;
@@ -70,7 +70,8 @@ namespace ZooDefense.Game
         TutorialDirector _tutor;
         int _sendsMade;
         float _endTimer = -1f;
-        RectTransform _tugMine, _duelPanel;
+        RectTransform _tugMine, _duelPanel, _waveChip;
+        Element _shownWaveElement = (Element)(-1), _shownNextElement = (Element)(-1);
         Image _thumbFlash;
         Bar _duelMine, _duelOpp;
         float _tugShare = 0.5f;
@@ -79,6 +80,14 @@ namespace ZooDefense.Game
 
         readonly string[] _botDeckOverride;
         readonly bool _revenge;
+
+        /// <summary>Game mode set-up (rules, decks, levels, replay). Null = normal ranked / practice match.</summary>
+        readonly BattleConfig _cfg;
+
+        public BattleScreen(BattleConfig cfg) : this(cfg.seed, cfg.opponentName, cfg.difficulty, cfg.ranked, false, cfg.botDeck, cfg.revenge)
+        {
+            _cfg = cfg;
+        }
 
         public BattleScreen(int seed, string opponentName, int difficulty, bool ranked, bool tutorial = false, string[] botDeck = null, bool revenge = false)
         {
@@ -102,11 +111,11 @@ namespace ZooDefense.Game
             var content = App.Content;
             var profile = App.Profile;
             // Out-of-match card levels: the player's upgrades, the bot near the player's average.
-            var deck = _tutorial ? (string[])TutorialDeck.Clone() : profile.deck;
-            var levels = _tutorial ? null : App.Meta.DeckLevels(deck);
+            var deck = _tutorial ? (string[])TutorialDeck.Clone() : (_cfg != null && _cfg.playerDeck != null ? _cfg.playerDeck : profile.deck);
+            var levels = _tutorial ? null : (_cfg != null && _cfg.playerLevels != null ? _cfg.playerLevels : App.Meta.DeckLevels(deck));
             var botDeck = _tutorial ? (string[])TutorialDeck.Clone() : (_botDeckOverride != null ? (string[])_botDeckOverride.Clone() : BotBrain.RandomDeck(content, _seed ^ 0x5bd1e995));
-            var botLevels = _tutorial ? null : MetaRules.BotCardLevels(levels, botDeck.Length, _seed ^ 0x2c1b3c6d);
-            var setup = new MatchSetup
+            var botLevels = _tutorial ? null : (_cfg != null && _cfg.botLevels != null ? _cfg.botLevels : MetaRules.BotCardLevels(levels, botDeck.Length, _seed ^ 0x2c1b3c6d));
+            var setup = _cfg != null && _cfg.replay != null ? _cfg.replay.setup : new MatchSetup
             {
                 seed = _seed,
                 players = new[]
@@ -122,14 +131,28 @@ namespace ZooDefense.Game
                     },
                 },
             };
+            if (_cfg != null && _cfg.replay == null) setup.rules = _cfg.rules;
+            else if (_cfg == null && !_tutorial)
+            {
+                // Live-ops week (element week, boss week, candy festival) applies to ranked and practice for both players.
+                var rules = new MatchRules { mode = MatchMode.Versus };
+                LiveOps.ApplyTo(LiveOps.Of(GameCalendar.WeekIndex(App.Now)), rules);
+                setup.rules = rules;
+            }
             _match = new Match(content, setup);
-            _runner = new MatchRunner(_match, 0, new LocalBotTransport(new BotBrain(1, _difficulty, _seed + 17)));
+            IMatchTransport transport;
+            if (_cfg != null && _cfg.replay != null) transport = new ReplayTransport(_cfg.replay);
+            else if (_match.IsSolo) transport = new SoloTransport();
+            else transport = new LocalBotTransport(new BotBrain(1, _difficulty, _seed + 17));
+            _runner = new MatchRunner(_match, 0, transport);
             _runner.OnEvent += OnSimEvent;
             _me = _runner.LocalBoard;
             _opp = _runner.RemoteBoard;
 
             var arena = MetaRules.ArenaFor(App.Meta.State.trophies);
+            if (_cfg != null && _cfg.arena > 0) arena = MetaRules.Arenas[Mathf.Clamp(_cfg.arena - 1, 0, MetaRules.Arenas.Length - 1)];
             _world = BattleWorld.Create(_runner, App.Cam, arena);
+            _world.HideRemote = _match.IsSolo;
             _world.OnUnitTapped = OnUnitTapped;
             _world.OnSpellTarget = (slot, distance) => { _runner.Submit(CommandType.CastSpell, slot, distance); ArmSpell(-1); };
             _world.OnRemoteTapped = ToggleFocus;
@@ -150,11 +173,12 @@ namespace ZooDefense.Game
             BuildEmotePicker();
             BuildBanner();
             BuildPausePanel();
+            BuildModeHud();
 
             Services.Analytics.LogEvent("match_start", new Dictionary<string, object> { { "ranked", _ranked }, { "difficulty", _difficulty }, { "tutorial", _tutorial } });
             AudioService.PlayMusic("music_battle");
             if (_tutorial) _tutor = new TutorialDirector(this);
-            else ShowBanner(Loc.T("battle.get_ready"), Palette.Text, 1.5f);
+            else ShowBanner(ModeIntro(), Palette.Text, 1.8f);
         }
 
         public override void Close()
@@ -246,9 +270,16 @@ namespace ZooDefense.Game
             _myHearts.rectTransform.Stretch(86, 6, 0, 0);
 
             var wave = CreamPill(_topBar, "wave", left, left, new Vector2(212, 0), new Vector2(400, 96));
+            var waveTap = UIKit.Button(wave, "guide", "", new Color(0f, 0f, 0f, 0f), () => ElementGuide.Open(App));
+            waveTap.GetComponent<RectTransform>().Stretch();
             _wave = InkLabel(wave, "", 32, TextAnchor.UpperLeft);
             _wave.rectTransform.Stretch(18, 110, 4, 40);
+            _wave.raycastTarget = false;
+            // This wave's element -> next wave's element (tap the box for the element guide).
+            _waveChip = UIKit.Rect("elements", wave).Place(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(150, -4), new Vector2(110, 40));
+            if (!ElementGuide.Seen) UIKit.Motion(_waveChip).Pulse(0.08f, 5f);
             _timer = InkLabel(wave, "", 28, TextAnchor.UpperRight);
+            _timer.raycastTarget = false;
             _timer.rectTransform.Stretch(18, 16, 6, 40);
             _waveBar = new Bar(wave, Art.Hex(0x6CC24A), 1);
             _waveBar.Root.Stretch(16, 16, 46, 10);
@@ -463,10 +494,13 @@ namespace ZooDefense.Game
             _emotePicker = UIKit.Panel(Root, "emotes", new Color(0.12f, 0.08f, 0.2f, 0.95f)).rectTransform
                 .Place(new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-12, -(TopBarHeight + 8)), new Vector2(560, 290));
             _emotePicker.GetComponent<Image>().raycastTarget = true;
-            for (int i = 0; i < 6; i++)
+            var emotes = new List<int>();
+            for (int i = 0; i < MetaContent.BaseEmotes + MetaContent.ExtraEmotes; i++) if (App.Meta.HasEmote(i)) emotes.Add(i);
+            ((RectTransform)_emotePicker).sizeDelta = new Vector2(560, 20 + 90 * ((emotes.Count + 1) / 2));
+            for (int k = 0; k < emotes.Count; k++)
             {
-                int id = i;
-                var b = UIKit.Button(_emotePicker, "emote" + i, Loc.T("emote." + i), Palette.Panel, () => SendEmote(id), 30);
+                int i = k, id = emotes[k];
+                var b = UIKit.Button(_emotePicker, "emote" + i, Loc.T("emote." + id), id >= MetaContent.BaseEmotes ? Art.Hex(0x6B3FA0) : Palette.Panel, () => SendEmote(id), 30);
                 b.GetComponent<RectTransform>().Place(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(14 + (i % 2) * 272, -14 - (i / 2) * 90), new Vector2(260, 80));
             }
             _emotePicker.gameObject.SetActive(false);
@@ -607,6 +641,7 @@ namespace ZooDefense.Game
             _runner.Update(dt);
             _world.Layout(ScreenRect(_boardArea), ScreenRect(_thumb, 6f * Mathf.Max(0.01f, _thumb.lossyScale.x)));
             RefreshHud(dt);
+            RefreshModeHud(dt);
             _sheet.Refresh();
             if (_tutor != null) _tutor.Tick(dt);
 
@@ -631,7 +666,9 @@ namespace ZooDefense.Game
                 _endTimer -= dt;
                 if (_endTimer <= 0f)
                 {
+                    if (IsReplay) { App.Show(new ReplaysScreen()); return; }
                     var record = MatchRecord.From(_match);
+                    if (!_tutorial) ReplayStore.Add(record, _opponentName, _match.Winner == _runner.LocalPlayer ? 0 : (_match.Winner < 0 ? -1 : 1), App.Now);
                     var summary = new MatchSummary
                     {
                         winner = _match.Winner == _runner.LocalPlayer ? 0 : (_match.Winner < 0 ? -1 : 1),
@@ -642,8 +679,17 @@ namespace ZooDefense.Game
                         wave = _match.Wave,
                         cardsBought = _me.Purchases,
                         revenge = _revenge,
+                        mode = _match.Mode,
+                        effectiveHits = _me.EffectiveHits,
+                        bossKills = _me.BossKills,
+                        heartsLeft = _me.Hearts,
+                        level = _cfg != null ? _cfg.campaignLevel : -1,
+                        enemiesSeen = new List<string>(_seenEnemies),
+                        unitsUsed = new List<string>(_me.Deck.Length),
                     };
-                    App.Show(new ResultScreen(record, _ranked, summary, _tutorial));
+                    foreach (var d in _me.Deck) summary.unitsUsed.Add(App.Content.Units[d].id);
+                    if (_match.Mode == MatchMode.Versus) App.Show(new ResultScreen(record, _ranked, summary, _tutorial));
+                    else App.Show(new ModeResultScreen(_cfg, record, summary));
                 }
             }
         }
@@ -665,6 +711,13 @@ namespace ZooDefense.Game
                 _wave.text = _match.Wave == 0 ? Loc.T("battle.ready") : Loc.F("battle.wave", _match.Wave);
                 _wave.color = _match.IsSuddenDeath ? Palette.Red : Ink;
                 _timer.text = (seconds / 60) + ":" + (seconds % 60).ToString("00");
+            }
+            var waveEl = _match.Wave == 0 ? Element.None : _match.WaveElement;
+            if (waveEl != _shownWaveElement || _match.NextWaveElement != _shownNextElement)
+            {
+                _shownWaveElement = waveEl;
+                _shownNextElement = _match.NextWaveElement;
+                WaveChip.Draw(_waveChip, waveEl, _match.NextWaveElement);
             }
             int span = _match.Wave == 0 ? b.firstWaveDelayTicks : b.waveDurationTicks;
             _waveBar.Set(1f - ticksLeft / (float)Mathf.Max(1, span), "");
@@ -906,6 +959,7 @@ namespace ZooDefense.Game
             var c = App.Content;
             bool mine = e.board == _runner.LocalPlayer;
             if (mine && _tutor != null) _tutor.OnEvent(e);
+            OnModeEvent(e, mine);
             switch (e.type)
             {
                 case SimEventType.UnitPlaced:
@@ -946,7 +1000,13 @@ namespace ZooDefense.Game
                     break;
                 case SimEventType.WaveStarted:
                     if (mine) AudioService.Play(Sfx.Wave);
-                    if (mine) ShowBanner(Loc.F(e.b == 1 ? "battle.sudden_death_wave" : "battle.wave", e.a), Palette.Text, 1.2f, e.b == 1 ? Palette.Red : Palette.Green);
+                    if (mine)
+                    {
+                        string title = Loc.F(e.b == 1 ? "battle.sudden_death_wave" : "battle.wave", e.a);
+                        var el = (Element)e.c;
+                        if (el != Element.None) title = Loc.F("battle.wave_element", title, Loc.ElementName(el));
+                        ShowBanner(title, Palette.Text, 1.3f, e.b == 1 ? Palette.Red : (el != Element.None ? Color.Lerp(Art.ElementColor(el), Color.black, 0.25f) : Palette.Green));
+                    }
                     break;
                 case SimEventType.BossIncoming:
                     if (mine) AudioService.Play(Sfx.Boss);
@@ -964,7 +1024,7 @@ namespace ZooDefense.Game
                     ShowBanner(Loc.F(mine ? "battle.reflected" : "battle.opp_reflected", Loc.SendName(c.Sends[e.a])), Palette.Text, 1.6f, mine ? Palette.Green : Palette.Red);
                     break;
                 case SimEventType.CandyStolen:
-                    if (mine) App.Toast(Loc.F("battle.crow", e.a));
+                    if (mine) App.Toast(Loc.F(e.b < 0 ? "battle.raccoon" : "battle.crow", e.a));
                     break;
                 case SimEventType.CellLocked:
                     if (mine) App.Toast(Loc.T("battle.golem"));
@@ -998,6 +1058,15 @@ namespace ZooDefense.Game
                     break;
                 case SimEventType.Emote:
                     ShowEmote(mine, e.a);
+                    break;
+                case SimEventType.BossTelegraph:
+                    if (mine && e.c == (int)BossSkill.LockCell) { AudioService.Play(Sfx.Boss, 0.5f); App.Toast(Loc.T("battle.lock_warning")); }
+                    break;
+                case SimEventType.GuardBlocked:
+                    if (mine) AudioService.Play(Sfx.Upgrade, 0.6f);
+                    break;
+                case SimEventType.ShieldBroken:
+                    if (mine) AudioService.Play(Sfx.Kill, 0.8f);
                     break;
                 case SimEventType.CommandRejected:
                     if (mine && (CommandType)e.a != CommandType.PopBalloon) { App.Toast(Loc.RejectText(e.reason)); AudioService.Play(Sfx.Error); }
@@ -1036,7 +1105,7 @@ namespace ZooDefense.Game
             readonly BattleScreen _s;
             readonly RectTransform _root, _portrait;
             readonly Image _glow, _elementDot;
-            readonly Text _name, _level, _element, _atk, _spd, _bonus, _skill, _upgradePrice, _summonPrice, _upgradeTitle;
+            readonly Text _name, _level, _element, _atk, _spd, _bonus, _skill, _upgradePrice, _summonPrice, _upgradeTitle, _matchup;
             readonly Button _upgrade, _summon;
             int _uid = -1, _shownDef = -1, _shownLevel = -1;
 
@@ -1069,6 +1138,10 @@ namespace ZooDefense.Game
                 _elementDot.rectTransform.Place(new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(8, 0), new Vector2(36, 36));
                 _element = InkLabel(elChip, "", 26, TextAnchor.MiddleLeft);
                 _element.rectTransform.Stretch(52, 6, 0, 0);
+                // Element matchup at a glance; tap for the full guide.
+                var mu = UIKit.Button(c, "matchup", "", new Color(0.18f, 0.49f, 0.29f, 0.9f), () => ElementGuide.Open(s.App), 22);
+                mu.GetComponent<RectTransform>().Place(top, top, new Vector2(704, -78), new Vector2(250, 50));
+                _matchup = mu.GetComponentInChildren<Text>();
 
                 _atk = StatBox(c, 0, Loc.T("battle.atk"));
                 _spd = StatBox(c, 1, Loc.T("battle.spd"));
@@ -1167,8 +1240,11 @@ namespace ZooDefense.Game
                     _glow.color = new Color(rc.r, rc.g, rc.b, 0.75f);
                     _name.text = Loc.UnitName(def);
                     _level.text = Loc.F("battle.lv", u.level);
-                    _elementDot.color = Art.ElementColor(def.element);
+                    var emblem = ElementGuide.Emblem(def.element);
+                    _elementDot.sprite = emblem != null ? emblem : Art.Circle;
+                    _elementDot.color = emblem != null ? Color.white : Art.ElementColor(def.element);
                     _element.text = Loc.ElementName(def.element) + " · " + Loc.RoleName(def.role);
+                    _matchup.text = ElementGuide.ShortLine(def);
                     _upgradeTitle.text = Loc.F("battle.upgrade", Loc.UnitName(def));
                 }
                 _atk.text = me.HitDamage(u).ToString();

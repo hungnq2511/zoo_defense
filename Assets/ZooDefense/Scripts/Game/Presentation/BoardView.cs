@@ -44,6 +44,8 @@ namespace ZooDefense.Game
         readonly List<int> _remove = new List<int>();
         readonly Stack<EnemyView> _enemyPool = new Stack<EnemyView>();
         readonly HashSet<int> _killed = new HashSet<int>();
+        /// <summary>enemy uid * 16 + note: element / status notes already shown once for that monster.</summary>
+        readonly HashSet<int> _noted = new HashSet<int>();
         readonly List<EnemyView> _dying = new List<EnemyView>();
 
         public int DraggingUid = -1;
@@ -450,6 +452,7 @@ namespace ZooDefense.Game
                 v.seen = true;
                 v.SetLevel(u.level);
                 v.SetStunned(u.stunTicks > 0 || Board.IsCellLocked(c));
+                v.SetBuffs(u.guardTicks > 0 && u.guardCharges > 0, u.hasteTicks > 0);
                 int charge = Board.SkillCharge(u);
                 v.SetEnergy(charge > 0 ? Mathf.Clamp01((float)u.energy / charge) : -1f, charge > 0 && u.energy >= charge);
                 if (u.uid == DraggingUid)
@@ -521,6 +524,7 @@ namespace ZooDefense.Game
                 _dying.RemoveAt(i);
             }
             _killed.Clear();
+            if (_noted.Count > 4000) _noted.Clear();
 
             if (_gateFlash > 0f)
             {
@@ -560,7 +564,95 @@ namespace ZooDefense.Game
                         u.Attack();
                         if (!Compact) _fx.Shot(u.MuzzleWorld, en.CenterWorld, u.Def, WorldScale);
                         en.Hit();
+                        // Element feedback: a spark on every effective hit, a word the first time per monster.
+                        if (!Compact && e.d != 0)
+                        {
+                            if (e.d > 0) _fx.Puff(en.CenterWorld, Art.Hex(0xFFF27A), 0.55f * WorldScale, 0.22f);
+                            if (_noted.Add(e.b * 16 + (e.d > 0 ? 1 : 2)))
+                                _fx.FloatText(en.CenterWorld + new Vector3(0f, 0.25f, 0f), Loc.T(e.d > 0 ? "battle.effective" : "battle.resisted"),
+                                    e.d > 0 ? Art.Hex(0xB6F25A) : Art.Hex(0xB9B3C9), 0.3f);
+                        }
                     }
+                    break;
+                }
+                case SimEventType.UnitBuffed:
+                {
+                    UnitView src, dst;
+                    if (_units.TryGetValue(e.c, out src)) src.Attack();
+                    if (_units.TryGetValue(e.a, out dst))
+                    {
+                        var col = e.b == 0 ? Art.Hex(0xB6F25A) : Art.Hex(0xFFD23F);
+                        if (src != null && !Compact)
+                        {
+                            var art = Art.SpeciesProjectile(src.Def.id);
+                            if (art != null) _fx.SpriteFx(art, src.MuzzleWorld, dst.MuzzleWorld, 0.4f * WorldScale, 0.3f * WorldScale, 0.35f, Color.white, 0f, 0f, false, 0.7f * WorldScale);
+                            else _fx.Projectile(src.MuzzleWorld, dst.MuzzleWorld, col, 0.25f * WorldScale);
+                        }
+                        _fx.Puff(dst.root.transform.position, col, 0.9f * WorldScale, 0.35f);
+                    }
+                    break;
+                }
+                case SimEventType.GuardBlocked:
+                {
+                    UnitView u;
+                    if (_units.TryGetValue(e.a, out u))
+                    {
+                        _fx.Puff(u.root.transform.position, Art.Hex(0xFFD23F), 1.5f * WorldScale, 0.45f);
+                        if (!Compact) _fx.FloatText(u.root.transform.position, Loc.T("battle.blocked"), Art.Hex(0xFFE066), 0.34f);
+                    }
+                    break;
+                }
+                case SimEventType.BossTelegraph:
+                {
+                    if (e.b >= 0)
+                    {
+                        // Red target ring on the animal the gorilla will lock (0.8 s warning).
+                        var at = CellWorld(e.b);
+                        _fx.SpriteFx(Art.Ring, at, at, 1.3f * WorldScale, 0.85f * WorldScale, 0.8f, Art.Hex(0xFF4D4D), 0f, 0f, false, 0f, 0.05f, 0.1f);
+                        _fx.SpriteFx(Art.Glow, at, at, 0.6f * WorldScale, 1.1f * WorldScale, 0.8f, new Color(1f, 0.25f, 0.25f, 0.6f));
+                    }
+                    else
+                    {
+                        EnemyView boss;
+                        if (_enemies.TryGetValue(e.a, out boss))
+                            _fx.SpriteFx(Art.Glow, boss.CenterWorld, boss.CenterWorld, 0.5f * WorldScale, 1.8f * WorldScale, 0.8f, new Color(0.7f, 0.4f, 1f, 0.7f));
+                    }
+                    break;
+                }
+                case SimEventType.EnemyAbilityUsed:
+                {
+                    EnemyView en;
+                    if (!_enemies.TryGetValue(e.a, out en)) break;
+                    if (e.b == (int)EnemyAbility.DrumHaste)
+                        _fx.SpriteFx(Art.Ring, en.CenterWorld, en.CenterWorld, 0.4f * WorldScale, 2.4f * WorldScale, 0.5f, Art.Hex(0xFFA040));
+                    else if (e.b == (int)EnemyAbility.Dash)
+                    {
+                        _fx.Puff(en.CenterWorld, Art.Hex(0xBFE8FF), 0.7f * WorldScale, 0.25f);
+                        break;   // frequent: no text
+                    }
+                    else _fx.Puff(en.CenterWorld, e.b >= 100 ? Art.Hex(0xA45CFF) : Art.Hex(0xFF4D4D), 1.3f * WorldScale, 0.4f);
+                    if (!Compact)
+                        _fx.FloatText(en.CenterWorld + new Vector3(0f, 0.3f, 0f),
+                            e.b == 100 + (int)BossSkill.VoidShield ? Loc.T("battle.shield_up") : Loc.T("ability." + e.b), Art.Hex(0xFFB0B0), 0.32f);
+                    break;
+                }
+                case SimEventType.ShieldBroken:
+                {
+                    EnemyView en;
+                    if (_enemies.TryGetValue(e.a, out en))
+                    {
+                        _fx.Puff(en.CenterWorld, Art.Hex(0xC9A0FF), 2f * WorldScale, 0.45f);
+                        if (!Compact) _fx.FloatText(en.CenterWorld + new Vector3(0f, 0.3f, 0f), Loc.T("battle.shield_broken"), Art.Hex(0xE6CCFF), 0.36f);
+                    }
+                    break;
+                }
+                case SimEventType.StatusApplied:
+                {
+                    EnemyView en;
+                    if (!_enemies.TryGetValue(e.a, out en)) break;
+                    if (e.b == 3) _fx.Puff(en.CenterWorld, Art.Hex(0x9AE6FF), 0.9f * WorldScale, 0.35f);
+                    if (!Compact && _noted.Add(e.a * 16 + 3 + e.b))
+                        _fx.FloatText(en.CenterWorld + new Vector3(0f, 0.2f, 0f), Loc.T("status." + e.b), StatusColor(e.b), 0.26f);
                     break;
                 }
                 case SimEventType.EnemyKilled:
@@ -641,6 +733,18 @@ namespace ZooDefense.Game
                 case SimEventType.StarCellsMoved:
                     foreach (var cell in _runner.Match.StarCells) _fx.Puff(CellWorld(cell), Art.Hex(0xFFD23F), 1.4f * WorldScale, 0.6f);
                     break;
+            }
+        }
+
+        static Color StatusColor(int status)
+        {
+            switch (status)
+            {
+                case 1: return Art.Hex(0x9BE36B);   // rooted
+                case 2: return Art.Hex(0xD6B8FF);   // silenced
+                case 3: return Art.Hex(0x9AE6FF);   // frozen
+                case 4: return Art.Hex(0xFFB070);   // armor break
+                default: return Art.Hex(0xFF9AD5);  // marked
             }
         }
 
@@ -758,9 +862,12 @@ namespace ZooDefense.Game
             readonly TextMesh _initials, _level;
             readonly bool _compact;
             readonly MotionDriver _motion = new MotionDriver();
-            readonly SpriteRenderer _energyBg, _energyFill, _readyGlow;
+            readonly SpriteRenderer _energyBg, _energyFill, _readyGlow, _aura;
             int _shownLevel = -1;
-            bool _dragging, _stunned, _hasArt, _ready;
+            bool _dragging, _stunned, _hasArt, _ready, _guard, _haste;
+            Sprite _still;              // art for the current level
+            Art.CastClip _cast;         // optional attack animation sheet for the current level
+            float _castT = -1f;
 
             public UnitView(Transform parent, UnitDef def, bool compact, int uid)
             {
@@ -782,6 +889,10 @@ namespace ZooDefense.Game
                 _energyBg.transform.localScale = new Vector3(0.6f, 0.07f, 1f);
                 _energyFill = WorldKit.Sprite("energy", root.transform, Art.Square, Art.Hex(0x5BD6FF), Order.Units + 5, new Vector3(0f, -0.43f, 0f));
                 _readyGlow.gameObject.SetActive(false);
+                // Buff ring at the feet: gold = Aegis Ram shield, green = Nectar Bee haste.
+                _aura = WorldKit.Sprite("aura", root.transform, Art.Ring, Color.white, Order.Units - 1, new Vector3(0f, FeetY + 0.06f, 0f), 0.9f);
+                _aura.transform.localScale = new Vector3(0.9f, 0.32f, 1f);
+                _aura.gameObject.SetActive(false);
                 _energyBg.gameObject.SetActive(false);
                 _energyFill.gameObject.SetActive(false);
                 _motion.Bind(MotionLibrary.Get(def.id, false), false, uid);
@@ -812,6 +923,9 @@ namespace ZooDefense.Game
                 _level.text = level.ToString();
                 var sprite = Art.Unit(_def.id, level);
                 _art.sprite = sprite;
+                _still = sprite;
+                _cast = sprite != null ? Art.UnitCast(_def.id, level) : null;
+                _castT = -1f;
                 _hasArt = sprite != null;
                 _art.gameObject.SetActive(_hasArt);
                 _placeholder.gameObject.SetActive(!_hasArt);
@@ -823,6 +937,15 @@ namespace ZooDefense.Game
             }
 
             public void SetStunned(bool stunned) { _stunned = stunned; }
+
+            public void SetBuffs(bool guard, bool haste)
+            {
+                _guard = guard;
+                _haste = haste;
+                bool show = (guard || haste) && !_dragging;
+                if (_aura.gameObject.activeSelf != show) _aura.gameObject.SetActive(show);
+                if (show) _aura.color = guard ? new Color(1f, 0.84f, 0.25f, 0.9f) : new Color(0.7f, 0.95f, 0.35f, 0.85f);
+            }
 
             public void SetDragging(bool dragging)
             {
@@ -838,12 +961,29 @@ namespace ZooDefense.Game
             }
 
             public void Pop() { _motion.Play(ZooDefense.Animation.ZooMotionState.Spawn, true); }
-            public void Attack() { if (!_stunned) _motion.Play(ZooDefense.Animation.ZooMotionState.Attack); }
+            public void Attack()
+            {
+                if (_stunned) return;
+                if (_cast != null && !_compact && !_dragging) _castT = 0f;   // hand-made cast sheet replaces the procedural lunge
+                else _motion.Play(ZooDefense.Animation.ZooMotionState.Attack);
+            }
             public void Hit() { _motion.Play(ZooDefense.Animation.ZooMotionState.Hit); }
 
             public void Tick(float dt)
             {
                 _motion.Tick(_dragging ? 0f : dt);
+                if (_castT >= 0f && _cast != null)
+                {
+                    _castT += dt;
+                    int f = (int)(_castT * _cast.fps);
+                    if (f >= _cast.frames.Length || _dragging) { _castT = -1f; _art.sprite = _still; }
+                    else _art.sprite = _cast.frames[f];
+                }
+                if (_guard || _haste)
+                {
+                    float p = 0.9f + 0.06f * Mathf.Sin(Time.time * 6f);
+                    _aura.transform.localScale = new Vector3(p, p * 0.36f, 1f);
+                }
                 float artScale = 1f;
                 if (_hasArt && _art.sprite != null)
                 {
@@ -875,7 +1015,8 @@ namespace ZooDefense.Game
             public readonly GameObject root;
             public bool seen;
             readonly Transform _visual, _placeholder;
-            readonly SpriteRenderer _body, _ring, _art, _barBg, _barFill, _sentMark, _elementRing, _elementDot;
+            readonly SpriteRenderer _body, _ring, _art, _barBg, _barFill, _sentMark, _elementRing, _elementDot, _shield;
+            bool _silenced, _burning, _marked;
             readonly TextMesh _label;
             readonly MotionDriver _motion = new MotionDriver();
             Color _color;
@@ -900,6 +1041,9 @@ namespace ZooDefense.Game
                 // Element marker at the feet: enemy art is neutral purple, the element is rolled per spawn.
                 _elementRing = WorldKit.Sprite("element_ring", root.transform, Art.Circle, Art.Hex(0x2B2140), Order.Enemies - 2, Vector3.zero, 0.2f);
                 _elementDot = WorldKit.Sprite("element", _elementRing.transform, Art.Circle, Color.white, Order.Enemies - 1, Vector3.zero, 0.72f);
+                // Void shield bubble (crab boss).
+                _shield = WorldKit.Sprite("shield", root.transform, Art.Glow, new Color(0.65f, 0.4f, 1f, 0.55f), Order.Enemies + 3, Vector3.zero);
+                _shield.gameObject.SetActive(false);
             }
 
             public void Bind(EnemyDef def, EnemyInstance e, bool compact)
@@ -971,6 +1115,7 @@ namespace ZooDefense.Game
                 _barFill.gameObject.SetActive(false);
                 _sentMark.gameObject.SetActive(false);
                 _elementRing.gameObject.SetActive(false);
+                _shield.gameObject.SetActive(false);
                 _motion.Play(ZooDefense.Animation.ZooMotionState.Death, true);
                 return true;
             }
@@ -993,6 +1138,17 @@ namespace ZooDefense.Game
 
                 _slowed = e.slowTicks > 0;
                 _stunned = e.stunTicks > 0;
+                _silenced = e.silenceTicks > 0;
+                _burning = e.burnTicks > 0 && e.burnStacks > 0;
+                _marked = e.vulnTicks > 0;
+                bool shield = e.shield > 0;
+                if (_shield.gameObject.activeSelf != shield) _shield.gameObject.SetActive(shield);
+                if (shield)
+                {
+                    float sz = (0.55f + 0.6f * _size) * (1.15f + 0.05f * Mathf.Sin(Time.time * 5f));
+                    _shield.transform.localPosition = new Vector3(0f, _centerY, 0f);
+                    WorldKit.FitSprite(_shield, sz);
+                }
                 _alpha = e.revealed ? 1f : 0.3f;
                 _motion.Tick(_stunned ? 0f : dt);
                 if (_walk != null)
@@ -1011,6 +1167,9 @@ namespace ZooDefense.Game
                 var tint = Color.white;
                 if (_slowed) tint = Color.Lerp(tint, Art.Hex(0x7FE7FF), 0.35f);
                 if (_stunned) tint = Color.Lerp(tint, Art.Hex(0xFFF27A), 0.45f);
+                if (_burning) tint = Color.Lerp(tint, Art.Hex(0xFF8A3D), 0.25f + 0.15f * Mathf.Sin(Time.time * 12f));
+                if (_marked) tint = Color.Lerp(tint, Art.Hex(0xFF9AD5), 0.3f);
+                if (_silenced) tint = Color.Lerp(tint, Art.Hex(0x8E7FB0), 0.5f);
                 tint.a = _alpha;
                 _art.color = _motion.Tint(tint);
 

@@ -14,7 +14,7 @@ namespace ZooDefense.Game
         Button _difficulty, _battle;
         ChestSlotView[] _chests;
         Text _missionsLabel, _passLabel;
-        Image _missionsBadge, _passBadge;
+        Image _missionsBadge, _passBadge, _modesBadge;
         Showcase _showcase;
         RectTransform _battleRoot, _rays;
         float _refresh, _t;
@@ -48,9 +48,10 @@ namespace ZooDefense.Game
             float sideTop = -CurrencyBar.Height - 390;
             var missions = SideButton("missions", Loc.T("lobby.missions"), Palette.Blue, "xp", new Vector2(24, sideTop), true, () => MissionsPopup.Show(App, Refresh), out _missionsLabel, out _missionsBadge);
             var pass = SideButton("pass", "", Palette.Purple, "trophy", new Vector2(24, sideTop - 190), true, () => App.Show(new PassScreen()), out _passLabel, out _passBadge);
-            Text practiceLabel, diffLabel;
-            Image practiceBadge, diffBadge;
-            SideButton("practice", Loc.T("lobby.practice_short"), Palette.Green, "heart", new Vector2(-24, sideTop), false, () => App.Show(new MatchmakingScreen(false)), out practiceLabel, out practiceBadge);
+            Text modesLabel, diffLabel;
+            Image diffBadge;
+            // Game modes hub (daily, endless, campaign, mayhem, tournament, raid, practice, bestiary, achievements, replays)
+            SideButton("modes", Loc.T("lobby.modes"), Palette.Green, "star", new Vector2(-24, sideTop), false, () => App.Show(new ModesScreen()), out modesLabel, out _modesBadge);
             _difficulty = SideButton("difficulty", "", Palette.Panel, "candy", new Vector2(-24, sideTop - 190), false, CycleDifficulty, out diffLabel, out diffBadge);
             RefreshDifficulty();
 
@@ -88,6 +89,7 @@ namespace ZooDefense.Game
             Refresh();
 
             if (!App.Profile.tutorialDone) OfferTutorial();
+            else if (s.pendingSeasonTier > 0) SeasonEndPopup();
         }
 
         /// <summary>Round-cornered square button with an icon, a caption and a red badge (hidden by default).</summary>
@@ -112,6 +114,23 @@ namespace ZooDefense.Game
         {
             if (!App.Profile.tutorialDone) { OfferTutorial(); return; }
             App.Show(new MatchmakingScreen(true));
+        }
+
+        /// <summary>A ranked season ended: show the reward for the best arena reached.</summary>
+        void SeasonEndPopup()
+        {
+            var st = App.Meta.State;
+            var box = Modal.Open(App, Loc.T("season.ended"), 700);
+            UIKit.Label(box, Loc.F("season.ended_text", st.pendingSeasonTier, MetaService.SeasonResetFloor), 34, Palette.Text).rectTransform.Stretch(50, 50, 130, 300);
+            var claim = UIKit.ChunkyButton(box, "claim", Loc.T("season.claim"), Palette.Green, () =>
+            {
+                var r = App.Meta.ClaimSeasonReward();
+                App.SaveProfile();
+                Modal.CloseAll();
+                if (r != null) Modal.Rewards(App, Loc.T("season.reward_title"), r, null, true, "magic");
+                Refresh();
+            }, 46);
+            claim.GetComponent<RectTransform>().Place(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0, 60), new Vector2(560, 130));
         }
 
         void OfferTutorial()
@@ -144,6 +163,8 @@ namespace ZooDefense.Game
             var meta = App.Meta;
             _bar.Refresh();
             int claimable = meta.ClaimableMissions();
+            var st = meta.State;
+            _modesBadge.gameObject.SetActive(st.dailyBest == 0 || st.pendingSeasonTier > 0 || meta.ClaimableAchievements() > 0 || meta.ClaimableBestiary() > 0);
             _missionsBadge.gameObject.SetActive(claimable > 0);
             int tier = meta.PassTier, max = App.MetaConfig.passTiers.Count;
             _passLabel.text = Loc.F("lobby.pass_short", tier, max);

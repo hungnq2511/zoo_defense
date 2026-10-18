@@ -1,7 +1,7 @@
 namespace ZooDefense.Core
 {
     /// <summary>
-    /// Launch roster from the design doc: 20 animals (8 Common, 6 Rare, 4 Epic, 2 Legendary),
+    /// Launch roster from the design doc: 20 animals (8 Common, 6 Rare, 4 Epic, 2 Legendary) plus Expansion 1 (10 animals, 6 monsters),
     /// wave enemies, bosses and 6 send-monsters. Numbers are starting values for playtesting;
     /// export them to JSON from the editor menu (Zoo Defense > Export Balance JSON) to tune
     /// without touching code.
@@ -42,11 +42,42 @@ namespace ZooDefense.Core
             d.units.Add(Unit("meteor_deer", "Meteor Deer", Element.Light, Role.Area, Rarity.Epic, 55, 40, splash: 1400, target: TargetMode.Densest));
             d.units.Add(Unit("rainbow_unicorn", "Rainbow Unicorn", Element.Light, Role.Damage, Rarity.Legendary, 48, 16, skill: UnitSkill.AlwaysCounter));
 
+            // ---------- Expansion 1 (10 animals). Numbers converted to this game's damage / tick scale. ----------
+            d.units.Add(Unit("lava_salamander", "Lava Salamander", Element.Fire, Role.Damage, Rarity.Common, 24, 23, skill: UnitSkill.BurnStack, v1: 6));
+            d.units.Add(Unit("ember_boar", "Ember Boar", Element.Fire, Role.Damage, Rarity.Rare, 40, 33, skill: UnitSkill.Pierce, v1: 2));
+            d.units.Add(Unit("forge_mole", "Forge Mole", Element.Fire, Role.Area, Rarity.Epic, 55, 42, splash: 650, skill: UnitSkill.ArmorBreak, v1: 15, v2: 25));
+            d.units.Add(Unit("snow_seal", "Snow Seal", Element.Water, Role.Control, Rarity.Common, 22, 26, invis: true, skill: UnitSkill.ChillSlow, v1: 22, v2: 28));
+            d.units.Add(Unit("coral_axolotl", "Coral Axolotl", Element.Water, Role.Control, Rarity.Rare, 20, 30, invis: true, skill: UnitSkill.Vulnerable, v1: 12, v2: 18));
+            d.units.Add(Unit("snap_shrimp", "Snap Shrimp", Element.Water, Role.Damage, Rarity.Common, 14, 28, skill: UnitSkill.Burst, v1: 3));
+            d.units.Add(Unit("nectar_bee", "Nectar Bee", Element.Grass, Role.Support, Rarity.Common, 0, 80, skill: UnitSkill.NectarHaste, v1: 25, v2: 30));
+            d.units.Add(Unit("sprout_elephant", "Sprout Elephant", Element.Grass, Role.Control, Rarity.Epic, 45, 48, splash: 750, invis: true, skill: UnitSkill.RootArea, v1: 12, v2: 15));
+            d.units.Add(Unit("moon_moth", "Moon Moth", Element.Light, Role.Control, Rarity.Rare, 30, 35, invis: true, skill: UnitSkill.Silence, v1: 20, v2: 25));
+            d.units.Add(Unit("aegis_ram", "Aegis Ram", Element.Light, Role.Support, Rarity.Legendary, 30, 24, skill: UnitSkill.AegisGuard, v1: 4, v2: 30));
+
             // ---------- Wave enemies ----------
             d.enemies.Add(Enemy("slime", "Slime", EnemyKind.Normal, 120, 50, leak: 1, candy: 8, points: 1, size: 600));
             d.enemies.Add(Enemy("imp", "Imp", EnemyKind.Normal, 80, 80, leak: 1, candy: 8, points: 1, size: 500));
             d.enemies.Add(Enemy("rock_beetle", "Rock Beetle", EnemyKind.Normal, 220, 35, leak: 1, candy: 10, points: 1, size: 700));
             d.enemies.Add(Enemy("armored_knight", "Armored Knight", EnemyKind.Elite, 700, 40, leak: 3, candy: 30, points: 3, size: 800, armor: 30, kbResist: 50));
+
+            var raccoon = Enemy("bandit_raccoon", "Bandit Raccoon", EnemyKind.Normal, 140, 70, leak: 1, candy: 8, points: 1, size: 600);
+            raccoon.stealCandy = 10;   // takes candy when it reaches the gate
+            d.enemies.Add(raccoon);
+            var bat = Enemy("crystal_bat", "Crystal Bat", EnemyKind.Normal, 100, 72, leak: 1, candy: 8, points: 1, size: 500);
+            bat.ability = EnemyAbility.Dash; bat.abilityIntervalTicks = 100; bat.abilityValue = 30;
+            d.enemies.Add(bat);
+            var drum = Enemy("drum_goblin", "Drum Goblin", EnemyKind.Elite, 600, 40, leak: 3, candy: 30, points: 3, size: 800, armor: 10, kbResist: 40);
+            drum.ability = EnemyAbility.DrumHaste; drum.abilityIntervalTicks = 100; drum.abilityValue = 12;
+            d.enemies.Add(drum);
+            var scorpion = Enemy("armored_scorpion", "Armored Scorpion", EnemyKind.Elite, 650, 38, leak: 3, candy: 30, points: 3, size: 800, armor: 40, kbResist: 50);
+            scorpion.ability = EnemyAbility.Enrage; scorpion.abilityValue = 15;
+            d.enemies.Add(scorpion);
+            var gorilla = Enemy("clockwork_gorilla", "Clockwork Gorilla", EnemyKind.Boss, 3300, 26, leak: 5, candy: 60, points: 8, size: 1100, armor: 25, kbResist: 80);
+            gorilla.bossSkill = BossSkill.LockCell; gorilla.bossSkillIntervalTicks = 140;
+            d.enemies.Add(gorilla);
+            var crab = Enemy("void_hermit_crab", "Void Hermit Crab", EnemyKind.Boss, 3400, 24, leak: 5, candy: 60, points: 8, size: 1100, armor: 15, kbResist: 80);
+            crab.bossSkill = BossSkill.VoidShield; crab.bossSkillIntervalTicks = 160;
+            d.enemies.Add(crab);
 
             var summoner = Enemy("boss_summoner", "Summoner King", EnemyKind.Boss, 3000, 28, leak: 5, candy: 60, points: 8, size: 1100, kbResist: 80);
             summoner.bossSkill = BossSkill.Summon; summoner.bossSkillIntervalTicks = 100; summoner.summonEnemyId = "imp";
