@@ -1,0 +1,19 @@
+{
+    "name": "ZooDefense.Editor",
+    "rootNamespace": "ZooDefense.EditorTools",
+    "references": [
+        "ZooDefense.Core",
+        "ZooDefense.Game"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

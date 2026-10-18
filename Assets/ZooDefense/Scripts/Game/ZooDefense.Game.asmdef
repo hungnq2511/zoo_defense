@@ -1,0 +1,16 @@
+{
+    "name": "ZooDefense.Game",
+    "rootNamespace": "ZooDefense.Game",
+    "references": [
+        "ZooDefense.Core"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

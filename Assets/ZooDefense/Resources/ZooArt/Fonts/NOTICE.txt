@@ -1,0 +1,2 @@
+Main.ttf = Baloo 2 Bold (Ek Type), SIL Open Font License 1.1, see OFL.txt.
+The file LICENSE-APACHE-2.0.txt belonged to the previous font (Roboto) and is no longer needed.

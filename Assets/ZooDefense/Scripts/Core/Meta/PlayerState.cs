@@ -1,0 +1,89 @@
+using System;
+using System.Collections.Generic;
+
+namespace ZooDefense.Core
+{
+    [Serializable]
+    public class CardState
+    {
+        public string id;
+        public int level;    // 0 = locked
+        public int shards;   // spare shards toward the next level
+    }
+
+    [Serializable]
+    public class ChestSlot
+    {
+        public string chestId = "";   // "" = empty slot
+        public long unlockEndsAt;     // 0 = not started (unix seconds)
+    }
+
+    [Serializable]
+    public class MissionState
+    {
+        public string id;
+        public int progress;
+        public bool claimed;
+    }
+
+    /// <summary>Everything the economy owns for one player. Serialized as JSON (local now, Cloud Save later).</summary>
+    [Serializable]
+    public class PlayerState
+    {
+        public int version = 1;
+        public int gold;
+        public int gems;
+        public int trophies;
+        public List<CardState> cards = new List<CardState>();
+
+        public ChestSlot[] chests = new ChestSlot[0];
+        public int chestCycle;
+
+        public int missionsDay = -1;
+        public List<MissionState> missions = new List<MissionState>();
+
+        public int passSeason = -1;
+        public int passXp;
+        public bool passPremium;
+        public List<int> passClaimedFree = new List<int>();
+        public List<int> passClaimedPremium = new List<int>();
+
+        public int shopDay = -1;
+        public List<string> dealUnits = new List<string>();
+        public List<bool> dealBought = new List<bool>();
+        public int freeGoldDay = -1;
+        public int adGemsDay = -1;
+
+        public int gachaPity;
+        /// <summary>Ranked wins in a row (bonus gold from the second one).</summary>
+        public int winStreak;
+        public uint rng;
+    }
+
+    /// <summary>Per-match numbers the economy needs (missions, rewards).</summary>
+    public struct MatchSummary
+    {
+        public int winner;      // 0 = local player won, 1 = lost, -1 = draw
+        public bool ranked;
+        public int kills;
+        public int merges;
+        public int sends;
+        public int wave;
+        public int cardsBought;
+        /// <summary>Rematch against the player who just beat you (bonus gold if you win).</summary>
+        public bool revenge;
+    }
+
+    public struct MatchRewards
+    {
+        public int trophies;
+        public int gold;
+        public int passXp;
+        public string chestId;      // chest placed in a slot, or null
+        public bool chestSlotsFull; // a chest was earned but there was no room
+        public int winStreak;       // ranked win streak after this match
+        public int bonusGold;       // part of `gold` that came from the streak / revenge bonus
+    }
+
+    public enum ChestStatus { Empty, Locked, Unlocking, Ready }
+}
