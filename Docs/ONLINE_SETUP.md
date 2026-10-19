@@ -2,7 +2,7 @@
 
 ## Đã có trong code
 - **Đăng nhập ẩn danh** (mỗi máy một mã người chơi, giữ giữa các lần mở game).
-- **Ghép trận theo đấu trường**: tìm phòng 2 người cùng đấu trường (và cùng phiên bản game); không có thì tự tạo phòng và chờ. Chờ một mình ~9 s thì tìm lại; quá ~25 s không thấy ai → đấu bot như cũ.
+- **Ghép trận theo đấu trường**: tìm phòng 2 người cùng đấu trường (và cùng phiên bản game); không có thì tự tạo phòng và chờ. Chờ một mình ~5 s thì tìm lại; quá ~10 s không thấy ai → đấu bot như cũ.
 - **Kết nối qua Relay** (không cần server riêng, không lộ IP).
 - **Lockstep**: hai máy chỉ gửi lệnh (đặt thú, gộp, gửi quái…), không gửi trạng thái. Trễ nhập 0,2 s. Mỗi giây so mã trạng thái để phát hiện lệch.
 - Đối thủ thoát / mất mạng 15 s → bạn thắng do đối thủ bỏ cuộc. Trận online không tạm dừng được.

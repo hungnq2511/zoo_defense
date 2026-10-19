@@ -17,7 +17,7 @@
  * Returns: { valid: bool, reason: string, environment?: string }
  */
 
-const BUNDLE_ID = "site.nutrica.zoodefense";
+const BUNDLE_ID = "com.hungnq.zoodefense";
 // Apple Root CA - G3, SHA-256 (https://www.apple.com/certificateauthority/)
 const APPLE_ROOT_G3_SHA256 = "63:34:3A:BF:B8:9A:6A:03:EB:B5:7E:9B:3F:5F:A7:BE:7C:4F:5C:75:6F:30:17:B3:A8:C4:88:C3:65:3E:91:79";
 // DER of OID 1.2.840.113635.100.6.11.1 (leaf: receipt signing) and 1.2.840.113635.100.6.2.1 (WWDR intermediate)

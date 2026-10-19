@@ -26,7 +26,7 @@ namespace ZooDefense.EditorTools
         [Serializable]
         public class Config
         {
-            public string bundleId = "site.nutrica.zoodefense";
+            public string bundleId = "com.hungnq.zoodefense";
             public string teamId = "";            // Apple Developer Team ID (10 characters), developer.apple.com > Membership
             public string displayName = "Zoo Defense";
             public string companyName = "Nutrica";
@@ -76,7 +76,7 @@ namespace ZooDefense.EditorTools
             PlayerSettings.SetApiCompatibilityLevel(ios, ApiCompatibilityLevel.NET_Standard);
             PlayerSettings.iOS.targetOSVersionString = c.minIosVersion;
             PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK;
-            PlayerSettings.iOS.targetDevice = iOSTargetDevice.iPhoneAndiPad;
+            PlayerSettings.iOS.targetDevice = iOSTargetDevice.iPhoneOnly;
             PlayerSettings.iOS.requiresFullScreen = true;
             PlayerSettings.iOS.hideHomeButton = false;
             PlayerSettings.iOS.appleEnableAutomaticSigning = true;

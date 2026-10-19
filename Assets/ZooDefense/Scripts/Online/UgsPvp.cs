@@ -21,9 +21,9 @@ namespace ZooDefense.Online
     {
         const string SessionType = "zoo_pvp";
         /// <summary>Waiting alone in our own session this long: leave it and quick-join again (someone else may be waiting).</summary>
-        const float RerollAfter = 9f;
+        const float RerollAfter = 5f;
         /// <summary>Total search time before giving up (bot fallback).</summary>
-        const float GiveUpAfter = 25f;
+        const float GiveUpAfter = 10f;
         /// <summary>Connected but the handshake does not finish.</summary>
         const float HandshakeTimeout = 10f;
 
