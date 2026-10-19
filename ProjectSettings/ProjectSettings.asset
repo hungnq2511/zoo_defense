@@ -168,7 +168,7 @@ PlayerSettings:
   buildNumber:
     Standalone: 0
     VisionOS: 0
-    iPhone: 2610190923
+    iPhone: 2610191139
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
   AndroidBundleVersionCode: 1
@@ -687,7 +687,7 @@ PlayerSettings:
   scriptingDefineSymbols:
     Android: ZOO_LEVELPLAY;ZOO_IAP
     Standalone: ZOO_LEVELPLAY;ZOO_IAP
-    iPhone: LEVELPLAY_DEPENDENCIES_INSTALLED;ZOO_LEVELPLAY;ZOO_IAP
+    iPhone: ZOO_LEVELPLAY;ZOO_IAP;LEVELPLAY_DEPENDENCIES_INSTALLED
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
@@ -787,11 +787,11 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: 092e80f3-29fc-4305-86e7-e2d1bc7ba816
+  cloudProjectId: 
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Zoo Defense
-  organizationId: unity_d9df4c51681c7546dc08
+  projectName: 
+  organizationId: 
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
