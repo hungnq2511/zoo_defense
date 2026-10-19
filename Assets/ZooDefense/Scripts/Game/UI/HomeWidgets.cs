@@ -83,7 +83,14 @@ namespace ZooDefense.Game
             var img = UIKit.Icon(parent, top ? "fade_top" : "fade_bottom", Art.GradientV, color);
             img.preserveAspect = false;
             img.rectTransform.Band(top, height);
-            if (top) img.rectTransform.localScale = new Vector3(1f, -1f, 1f);
+            if (top)
+            {
+                // Flip the gradient (dark at the top edge). Flip around the centre so it stays in place:
+                // flipping around the top-edge pivot would push it above the screen.
+                img.rectTransform.pivot = new Vector2(0.5f, 0.5f);
+                img.rectTransform.anchoredPosition = new Vector2(0f, -height * 0.5f);
+                img.rectTransform.localScale = new Vector3(1f, -1f, 1f);
+            }
         }
 
         /// <summary>Progress toward the next arena: [arena icon] ===== 640 / 700 [next].</summary>

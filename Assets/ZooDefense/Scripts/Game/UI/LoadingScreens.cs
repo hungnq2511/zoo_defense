@@ -11,7 +11,8 @@ namespace ZooDefense.Game
     /// </summary>
     public sealed class SplashScreen : ScreenBase
     {
-        const float MinTime = 1.8f;
+        /// <summary>The loading screen shows at least this long (art, tips), even when everything is already loaded.</summary>
+        const float MinTime = 5f;
         readonly List<System.Action> _jobs = new List<System.Action>();
         int _done;
         float _t, _shown, _tipTime;
@@ -74,8 +75,10 @@ namespace ZooDefense.Game
             // A couple of loads per frame keeps the animation smooth.
             for (int k = 0; k < 2 && _done < _jobs.Count; k++) { _jobs[_done](); _done++; }
             float real = _jobs.Count == 0 ? 1f : _done / (float)_jobs.Count;
-            float target = Mathf.Min(real, _t / MinTime);
-            _shown = Mathf.MoveTowards(_shown, target, dt * 1.5f);
+            // Eased: fast start, slows down near the end, like a real download.
+            float p = Mathf.Clamp01(_t / MinTime);
+            float target = Mathf.Min(real, 1f - (1f - p) * (1f - p));
+            _shown = Mathf.MoveTowards(_shown, target, dt * 0.8f);
             _fill.anchorMax = new Vector2(Mathf.Max(0.02f, _shown), 1f);
             _percent.text = Mathf.RoundToInt(_shown * 100f) + "%";
             var parentW = ((RectTransform)_fill.parent).rect.width;
@@ -83,9 +86,13 @@ namespace ZooDefense.Game
             _paw.localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(_t * 9f) * 10f);
 
             _tipTime += dt;
-            if (_tipTime > 2.6f) { _tipTime = 0f; _tip = (_tip + 1) % TipCount; _tipText.text = Loc.T("tip." + _tip); }
+            if (_tipTime > 2.5f) { _tipTime = 0f; _tip = (_tip + 1) % TipCount; _tipText.text = Loc.T("tip." + _tip); }
 
-            if (_shown >= 0.999f && _done >= _jobs.Count) App.Show(new LobbyScreen());
+            if (_shown >= 0.999f && _done >= _jobs.Count)
+            {
+                App.Show(new LobbyScreen());
+                Privacy.AskIfNeeded(App);   // first launch: personalised ads yes / no
+            }
         }
     }
 
@@ -112,6 +119,10 @@ namespace ZooDefense.Game
         readonly string _fixedOpponent;
         readonly string[] _fixedDeck;
         readonly bool _revenge;
+        // Online: looking for a real player of the same arena first; a bot if nobody is found in time.
+        bool _online, _handedOff;
+        OnlineMatchInfo _onlineMatch;
+        string _oppTitle;
 
         public MatchmakingScreen(bool ranked) { _ranked = ranked; }
 
@@ -146,6 +157,12 @@ namespace ZooDefense.Game
 
             BuildSearch();
             BuildVs();
+
+            if (_ranked && _fixedOpponent == null && Online.Pvp != null && App.Profile.onlinePvp)
+            {
+                _online = true;
+                Online.Pvp.StartSearch(Online.MyHello(App), arena.index);
+            }
 
             var cancel = UIKit.ChunkyButton(Root, "cancel", Loc.T("common.cancel"), Palette.Red, () => App.Show(new LobbyScreen()), 42);
             UIKit.Outlined(cancel.GetComponentInChildren<Text>(), 2.5f);
@@ -264,7 +281,7 @@ namespace ZooDefense.Game
             Icons.Currency(tro, "trophy").rectTransform.Place(new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(6, 0), new Vector2(54, 54));
             UIKit.Label(tro, trophies.ToString(), 30, Palette.Text).rectTransform.Stretch(58, 8, 0, 0);
             // Title (achievements / seasons) next to the trophies on your own card.
-            var title = left ? App.Meta.State.title : "";
+            var title = left ? App.Meta.State.title : _oppTitle;
             if (!string.IsNullOrEmpty(title))
                 UIKit.Label(c, Loc.T("title." + title), 26, Art.Hex(0xFFD23F), textAnchor).rectTransform
                     .Place(new Vector2(left ? 0f : 1f, 1f), new Vector2(left ? 0f : 1f, 1f), new Vector2(left ? 620 : -620, -110), new Vector2(330, 60));
@@ -302,10 +319,24 @@ namespace ZooDefense.Game
                 }
                 float b = Mathf.Abs(Mathf.Sin(_t * 4f));
                 _hero.anchoredPosition = new Vector2(0f, b * 12f);
-                // Prototype: always a bot. Later: UGS Matchmaker ticket here, bot fallback after ~10 s.
+                if (_online)
+                {
+                    var pvp = Online.Pvp;
+                    pvp.Update(dt);
+                    if (pvp.State == OnlineState.Ready && pvp.Match != null) FoundOnline(pvp.Match);
+                    else if (pvp.State == OnlineState.Failed || pvp.State == OnlineState.Idle)
+                    {
+                        // Nobody of this arena is online right now: play a bot instead.
+                        _online = false;
+                        _searchTime = _t + 0.4f;
+                    }
+                    else if (pvp.State == OnlineState.Handshake) _status.text = Loc.T("online.connecting");
+                    return;
+                }
                 if (_t > _searchTime) Found();
                 return;
             }
+            if (_online && Online.Pvp != null) Online.Pvp.Update(dt);   // keep the connection alive during the countdown
 
             // VS act: cards slide in, VS bursts, then 3-2-1.
             float slide = Deco.EaseOutBack(Mathf.Clamp01(_t / 0.45f));
@@ -324,7 +355,34 @@ namespace ZooDefense.Game
                 UIKit.Motion(_countBg).PopIn(0f, 0.25f);
                 AudioService.Play(Sfx.Click);
             }
-            if (_t >= 1.0f + 3 * 0.6f) App.Show(new BattleScreen(_seed, _opponent, App.Profile.botDifficulty, _ranked, false, _oppDeck, _revenge));
+            if (_t >= 1.0f + 3 * 0.6f)
+            {
+                if (_onlineMatch != null)
+                {
+                    _handedOff = true;
+                    App.Show(new BattleScreen(new BattleConfig { seed = _onlineMatch.setup.seed, opponentName = _opponent, ranked = true, online = _onlineMatch }));
+                }
+                else App.Show(new BattleScreen(_seed, _opponent, App.Profile.botDifficulty, _ranked, false, _oppDeck, _revenge));
+            }
+        }
+
+        void FoundOnline(OnlineMatchInfo info)
+        {
+            _onlineMatch = info;
+            _opponent = info.opponentName;
+            _oppDeck = info.opponentDeck;
+            _oppTrophies = info.opponentTrophies;
+            _oppTitle = info.opponentTitle;
+            // Rebuild the VS cards with the real opponent.
+            Object.Destroy(_vs.gameObject);
+            BuildVs();
+            Found();
+        }
+
+        public override void Close()
+        {
+            // Left the screen without starting the online match (cancel, back): stop searching.
+            if (_online && !_handedOff && Online.Pvp != null) Online.Pvp.Leave();
         }
 
         void Found()

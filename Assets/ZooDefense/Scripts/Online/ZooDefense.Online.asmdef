@@ -1,0 +1,37 @@
+{
+    "name": "ZooDefense.Online",
+    "rootNamespace": "ZooDefense.Online",
+    "references": [
+        "ZooDefense.Core",
+        "ZooDefense.Game",
+        "Unity.Services.Core",
+        "Unity.Services.Authentication",
+        "Unity.Services.Multiplayer",
+        "Unity.Networking.Transport",
+        "Unity.Collections",
+        "Unity.Services.Authentication.PlayerAccounts",
+        "Unity.Services.CloudSave"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "ZOO_UGS"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.services.multiplayer",
+            "expression": "1.1.0",
+            "define": "ZOO_UGS"
+        },
+        {
+            "name": "com.unity.services.cloudsave",
+            "expression": "3.0.0",
+            "define": "ZOO_CLOUDSAVE"
+        }
+    ],
+    "noEngineReferences": false
+}

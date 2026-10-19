@@ -152,6 +152,9 @@ namespace ZooDefense.Core
             c.gemPacks.Add(new GemPack { id = "gems_small", gems = 80, price = "$0.99" });
             c.gemPacks.Add(new GemPack { id = "gems_medium", gems = 500, price = "$4.99" });
             c.gemPacks.Add(new GemPack { id = "gems_large", gems = 1200, price = "$9.99" });
+            c.gemPacks.Add(new GemPack { id = "gems_huge", gems = 2600, price = "$19.99" });
+            c.gemPacks.Add(new GemPack { id = "gems_mega", gems = 7000, price = "$49.99" });
+            c.gemPacks.Add(new GemPack { id = "gems_ultra", gems = 15000, price = "$99.99" });
 
             c.missionPool.Add(new MissionDef { id = "play3", type = MissionType.PlayMatches, target = 3, gold = 60, passXp = 50 });
             c.missionPool.Add(new MissionDef { id = "win2", type = MissionType.WinMatches, target = 2, gold = 100, passXp = 60 });

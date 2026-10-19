@@ -24,6 +24,8 @@ namespace ZooDefense.Game
         public int arena;
         /// <summary>Set to watch a recorded match instead of playing.</summary>
         public MatchRecord replay;
+        /// <summary>Set for a real online 1v1 (see Online / LockstepSync).</summary>
+        public OnlineMatchInfo online;
 
         public MatchMode Mode { get { return replay != null && replay.setup != null && replay.setup.rules != null ? replay.setup.rules.mode : (rules != null ? rules.mode : MatchMode.Versus); } }
     }

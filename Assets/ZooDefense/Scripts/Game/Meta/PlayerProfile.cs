@@ -17,6 +17,8 @@ namespace ZooDefense.Game
         public int matchesPlayed;
         public int wins;
         public int botDifficulty = 1;
+        /// <summary>Ranked: look for a real player online first (bot if nobody is found).</summary>
+        public bool onlinePvp = true;
         /// <summary>"en", "vi", or "" to follow the device language.</summary>
         public string language = "";
         public string[] deck = (string[])DefaultContent.DefaultDeck.Clone();
@@ -52,6 +54,18 @@ namespace ZooDefense.Game
                 catch (Exception e) { Debug.LogWarning("Profile reset, could not parse: " + e.Message); }
             }
             if (p == null) p = new PlayerProfile { playerName = "Player" + UnityEngine.Random.Range(1000, 9999) };
+            Sanitize(p, content, meta);
+            return p;
+        }
+
+        /// <summary>A profile from a cloud backup (null if it cannot be read).</summary>
+        public static PlayerProfile FromJson(string json, ContentDatabase content, MetaConfig meta)
+        {
+            if (string.IsNullOrEmpty(json)) return null;
+            PlayerProfile p;
+            try { p = JsonUtility.FromJson<PlayerProfile>(json); }
+            catch (Exception e) { Debug.LogWarning("Cloud profile unreadable: " + e.Message); return null; }
+            if (p == null) return null;
             Sanitize(p, content, meta);
             return p;
         }

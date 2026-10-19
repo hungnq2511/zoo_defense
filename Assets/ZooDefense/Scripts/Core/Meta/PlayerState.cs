@@ -72,6 +72,10 @@ namespace ZooDefense.Core
         public int cardsBought;
         /// <summary>Rematch against the player who just beat you (bonus gold if you win).</summary>
         public bool revenge;
+        /// <summary>Played against a real player online (not a bot).</summary>
+        public bool online;
+        /// <summary>Which board was ours (0 = host / offline, 1 = online guest).</summary>
+        public int localPlayer;
         /// <summary>Game mode (MatchMode). Versus = ranked / practice.</summary>
         public MatchMode mode;
         /// <summary>Hits that countered the monster's element (missions / achievements).</summary>

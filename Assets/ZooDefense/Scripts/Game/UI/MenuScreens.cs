@@ -574,7 +574,10 @@ namespace ZooDefense.Game
             _doubleGold.gameObject.SetActive(!_tutorial && _valid && _rewards.gold > 0 && Services.Ads.IsRewardedReady);
 
             // Rematch the same opponent; after a loss it is a Revenge match (bonus gold if you win).
-            var oppSetup = _record.setup != null && _record.setup.players != null && _record.setup.players.Length > 1 ? _record.setup.players[1] : null;
+            int oppIndex = 1 - Mathf.Clamp(_summary.localPlayer, 0, 1);
+            var oppSetup = _record.setup != null && _record.setup.players != null && _record.setup.players.Length > 1 ? _record.setup.players[oppIndex] : null;
+            // Online: a real player has gone, so "play again" starts a new search instead of a bot copy of them.
+            if (_summary.online) oppSetup = null;
             bool revenge = _lost && oppSetup != null;
             System.Action rematch = () =>
             {
@@ -591,7 +594,7 @@ namespace ZooDefense.Game
             again.gameObject.SetActive(!_tutorial);
             if (!_doubleGold.gameObject.activeSelf) agRt.Place(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0, 300), new Vector2(560, 140));
 
-            var cont = UIKit.ChunkyButton(Root, "continue", Loc.T("result.continue"), Art.Hex(0xFFB020), () => App.Show(new LobbyScreen()), 60, "button_battle");
+            var cont = UIKit.ChunkyButton(Root, "continue", Loc.T("result.continue"), Art.Hex(0xFFB020), () => AdPolicy.AfterMatch(App, () => App.Show(new LobbyScreen())), 60, "button_battle");
             UIKit.Outlined(cont.transform.Find("face").GetComponentInChildren<Text>(), 4f);
             cont.GetComponent<RectTransform>().Place(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0, 110), new Vector2(780, 176));
             AddPop(cont.GetComponent<RectTransform>(), 1.6f);

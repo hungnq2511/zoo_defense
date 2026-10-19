@@ -171,7 +171,10 @@ namespace ZooDefense.Game
 
         public static void Build(RectTransform root, GameApp app, Tab active)
         {
-            var bar = UIKit.Panel(root, "navBar", Art.Hex(0x22183A), false).rectTransform.Band(false, Height);
+            // The bar reaches the very bottom of the screen (under the home indicator); the tabs drop a little too.
+            float inset = Mathf.Max(0f, SafeBleed.Insets.y);
+            float drop = Mathf.Min(inset * 0.6f, 50f);
+            var bar = UIKit.Panel(root, "navBar", Art.Hex(0x22183A), false).rectTransform.Band(false, Height + inset, -inset);
             bar.GetComponent<Image>().raycastTarget = true;
             var sheen = UIKit.Icon(bar, "sheen", Art.GradientV, new Color(0.55f, 0.4f, 0.85f, 0.35f));
             sheen.preserveAspect = false;
@@ -188,7 +191,7 @@ namespace ZooDefense.Game
                 var cell = UIKit.Rect("tab_" + i, bar);
                 cell.anchorMin = new Vector2(i / 5f, 0f);
                 cell.anchorMax = new Vector2((i + 1) / 5f, 1f);
-                cell.offsetMin = new Vector2(5, 8);
+                cell.offsetMin = new Vector2(5, 8 + inset - drop);
                 cell.offsetMax = new Vector2(-5, on ? 30 : -12);
                 if (on)
                 {

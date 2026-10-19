@@ -62,6 +62,13 @@ namespace ZooDefense.Game
         void Start()
         {
             Services.Analytics.LogEvent("app_start");
+            // Sign in in the background (guest or linked account) so online play and backups are ready.
+            if (Accounts.Service != null) Accounts.Service.Refresh(null);
+            // A purchase finished outside the shop (app was closed while paying): show what arrived.
+            Purchases.Delivered += (id, rewards) =>
+            {
+                if (rewards != null && rewards.Count > 0) Modal.Rewards(this, Loc.T("shop.delivered"), rewards);
+            };
             Show(new SplashScreen());
         }
 
@@ -73,10 +80,57 @@ namespace ZooDefense.Game
             Modal.CloseAll();
             UIKit.Clear(ScreenLayer);
             _screen = next;
-            _screen.Open(this, UIKit.Rect(next.GetType().Name, ScreenLayer).Stretch());
+            _screenRoot = UIKit.Rect(next.GetType().Name, ScreenLayer).Stretch();
+            _screen.Open(this, _screenRoot);
+            RefreshBleed();
         }
 
-        public void SaveProfile() { ProfileStore.Save(Profile); }
+        // ------------------------------------------------------------------ full-screen backgrounds (see SafeBleed)
+        RectTransform _screenRoot;
+        int _bleedScreenCount = -1, _bleedOverlayCount = -1;
+
+        void RefreshBleed()
+        {
+            SafeBleed.Apply(_screenRoot);
+            SafeBleed.Apply(OverlayLayer);
+            _bleedScreenCount = _screenRoot != null ? _screenRoot.childCount : -1;
+            _bleedOverlayCount = OverlayLayer != null ? OverlayLayer.childCount : -1;
+        }
+
+        void WatchBleed()
+        {
+            // New full-screen panels / dialogs appear after Build (popups, modals): extend them too.
+            if ((_screenRoot != null && _screenRoot.childCount != _bleedScreenCount) || (OverlayLayer != null && OverlayLayer.childCount != _bleedOverlayCount))
+                RefreshBleed();
+        }
+
+        public void SaveProfile()
+        {
+            ProfileStore.Save(Profile);
+            if (Accounts.Service != null) Accounts.Service.MarkDirty();   // cloud backup (batched) when linked
+        }
+
+        /// <summary>Replaces this phone's progress with a cloud save (account sign-in on a new phone). Keeps device settings.</summary>
+        public bool ReplaceProfile(string json)
+        {
+            var p = ProfileStore.FromJson(json, Content, MetaConfig);
+            if (p == null) return false;
+            p.language = Profile.language;
+            p.musicVolume = Profile.musicVolume;
+            p.sfxVolume = Profile.sfxVolume;
+            p.debugTimeOffset = 0;
+            Profile = p;
+            Meta = new MetaService(MetaConfig, Content, Profile.meta);
+            Meta.Refresh(Now);
+            ProfileStore.Save(Profile);
+            return true;
+        }
+
+        void OnApplicationPause(bool paused)
+        {
+            // Going to the background: back up now (the app may be closed from there).
+            if (paused && Accounts.Service != null && Accounts.Service.IsLinked && !Accounts.Service.Busy) Accounts.Service.BackupNow(null);
+        }
 
         public void ResetProfile()
         {
@@ -93,6 +147,8 @@ namespace ZooDefense.Game
         {
             KeepLayout();
             if (_screen != null) _screen.Tick(Time.deltaTime);
+            WatchBleed();
+            if (Accounts.Service != null) Accounts.Service.Update(Time.unscaledDeltaTime);
             if (_toastTime > 0f)
             {
                 _toastTime -= Time.unscaledDeltaTime;
@@ -192,6 +248,9 @@ namespace ZooDefense.Game
                 _safeArea.anchorMin = new Vector2(sa.xMin / Screen.width, sa.yMin / Screen.height);
                 _safeArea.anchorMax = new Vector2(sa.xMax / Screen.width, sa.yMax / Screen.height);
                 _safeArea.offsetMin = _safeArea.offsetMax = Vector2.zero;
+                float k = _scaler.scaleFactor;
+                SafeBleed.Insets = new Vector4(sa.xMin / k, sa.yMin / k, (Screen.width - sa.xMax) / k, (Screen.height - sa.yMax) / k);
+                if (_screenRoot != null) RefreshBleed();
             }
         }
     }

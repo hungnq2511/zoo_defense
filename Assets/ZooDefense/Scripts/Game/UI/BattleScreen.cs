@@ -115,7 +115,7 @@ namespace ZooDefense.Game
             var levels = _tutorial ? null : (_cfg != null && _cfg.playerLevels != null ? _cfg.playerLevels : App.Meta.DeckLevels(deck));
             var botDeck = _tutorial ? (string[])TutorialDeck.Clone() : (_botDeckOverride != null ? (string[])_botDeckOverride.Clone() : BotBrain.RandomDeck(content, _seed ^ 0x5bd1e995));
             var botLevels = _tutorial ? null : (_cfg != null && _cfg.botLevels != null ? _cfg.botLevels : MetaRules.BotCardLevels(levels, botDeck.Length, _seed ^ 0x2c1b3c6d));
-            var setup = _cfg != null && _cfg.replay != null ? _cfg.replay.setup : new MatchSetup
+            var setup = IsOnline ? _cfg.online.setup : _cfg != null && _cfg.replay != null ? _cfg.replay.setup : new MatchSetup
             {
                 seed = _seed,
                 players = new[]
@@ -131,7 +131,8 @@ namespace ZooDefense.Game
                     },
                 },
             };
-            if (_cfg != null && _cfg.replay == null) setup.rules = _cfg.rules;
+            if (IsOnline) { }   // the host already chose the rules (live event included)
+            else if (_cfg != null && _cfg.replay == null) setup.rules = _cfg.rules;
             else if (_cfg == null && !_tutorial)
             {
                 // Live-ops week (element week, boss week, candy festival) applies to ranked and practice for both players.
@@ -141,10 +142,11 @@ namespace ZooDefense.Game
             }
             _match = new Match(content, setup);
             IMatchTransport transport;
-            if (_cfg != null && _cfg.replay != null) transport = new ReplayTransport(_cfg.replay);
+            if (IsOnline) transport = _online = new OnlineLockstepTransport(_cfg.online.link);
+            else if (_cfg != null && _cfg.replay != null) transport = new ReplayTransport(_cfg.replay);
             else if (_match.IsSolo) transport = new SoloTransport();
             else transport = new LocalBotTransport(new BotBrain(1, _difficulty, _seed + 17));
-            _runner = new MatchRunner(_match, 0, transport);
+            _runner = new MatchRunner(_match, IsOnline ? _cfg.online.localPlayer : 0, transport);
             _runner.OnEvent += OnSimEvent;
             _me = _runner.LocalBoard;
             _opp = _runner.RemoteBoard;
@@ -184,6 +186,7 @@ namespace ZooDefense.Game
         public override void Close()
         {
             if (_runner != null) _runner.OnEvent -= OnSimEvent;
+            LeaveOnline();
             if (_world != null) Object.Destroy(_world.gameObject);
             App.Cam.orthographicSize = 7f;
         }
@@ -533,7 +536,7 @@ namespace ZooDefense.Game
         void SetPaused(bool paused)
         {
             // Bot matches can pause. Online PvP: show the menu but keep the match running.
-            _runner.Paused = paused;
+            _runner.Paused = paused && !IsOnline;
             _world.InputEnabled = !paused;
             _pausePanel.gameObject.SetActive(paused);
             _pausePanel.SetAsLastSibling();
@@ -639,6 +642,7 @@ namespace ZooDefense.Game
         {
             _t += dt;
             _runner.Update(dt);
+            OnlineTick(dt);
             _world.Layout(ScreenRect(_boardArea), ScreenRect(_thumb, 6f * Mathf.Max(0.01f, _thumb.lossyScale.x)));
             RefreshHud(dt);
             RefreshModeHud(dt);
@@ -660,8 +664,10 @@ namespace ZooDefense.Game
                     SetFocus(false);
                     _sheet.Hide();
                     _perkPanel.gameObject.SetActive(false);
-                    string text = Loc.T(_match.Winner == 0 ? "result.victory" : (_match.Winner == 1 ? "result.defeat" : "result.draw"));
-                    ShowBanner(text, Palette.Text, 3f, _match.Winner == 0 ? Palette.Green : Palette.Red);
+                    bool won = _match.Winner == _runner.LocalPlayer;
+                    string text = Loc.T(won ? "result.victory" : (_match.Winner < 0 ? "result.draw" : "result.defeat"));
+                    ShowBanner(text, Palette.Text, 3f, won ? Palette.Green : Palette.Red);
+                    LeaveOnline();
                 }
                 _endTimer -= dt;
                 if (_endTimer <= 0f)
@@ -684,6 +690,8 @@ namespace ZooDefense.Game
                         bossKills = _me.BossKills,
                         heartsLeft = _me.Hearts,
                         level = _cfg != null ? _cfg.campaignLevel : -1,
+                        online = IsOnline,
+                        localPlayer = _runner.LocalPlayer,
                         enemiesSeen = new List<string>(_seenEnemies),
                         unitsUsed = new List<string>(_me.Deck.Length),
                     };

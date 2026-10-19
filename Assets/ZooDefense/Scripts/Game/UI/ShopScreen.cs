@@ -9,7 +9,7 @@ namespace ZooDefense.Game
     /// Shop tab: free daily gifts, 3 daily shard deals (gold), the animal gacha (gems),
     /// chests and gold for gems, and gem packs (real money through Services.Store).
     /// </summary>
-    public sealed class ShopScreen : ScreenBase
+    public sealed partial class ShopScreen : ScreenBase
     {
         static float _scroll = 1f;
         ScrollRect _scrollRect;
@@ -40,10 +40,15 @@ namespace ZooDefense.Game
             Header(list, Loc.T("shop.free"));
             var free = Row(list, 300);
             bool goldReady = meta.CanClaimFreeGold(now), gemsReady = meta.CanClaimAdGems(now) && Services.Ads.IsRewardedReady;
-            Offer(free, 0, 2, Art.Hex(0x4CC46B), "gold", 1, Loc.F("reward.gold", cfg.freeDailyGold),
+            int freeCount = meta.MonthlyActive(now) ? 3 : 2;
+            if (freeCount == 3) MonthlyClaimTile(free, 2, 3);
+            Offer(free, 0, freeCount, Art.Hex(0x4CC46B), "gold", 1, Loc.F("reward.gold", cfg.freeDailyGold),
                 goldReady ? Loc.T("shop.claim") : Loc.T("shop.claimed"), null, goldReady, ClaimFreeGold, goldReady ? Loc.T("shop.free_tag") : null);
-            Offer(free, 1, 2, Art.Hex(0x3D8BFF), "gems", 1, Loc.F("reward.gems", cfg.adGems),
+            Offer(free, 1, freeCount, Art.Hex(0x3D8BFF), "gems", 1, Loc.F("reward.gems", cfg.adGems),
                 meta.CanClaimAdGems(now) ? Loc.T("shop.watch_ad") : Loc.T("shop.claimed"), null, gemsReady, ClaimAdGems, null);
+
+            // ---- Special offers (bundles) + monthly card
+            BuildOffers(list, now);
 
             // ---- Daily deals
             Header(list, Loc.F("shop.daily", Fmt.Duration(MetaService.SecondsPerDay - now % MetaService.SecondsPerDay)));
@@ -64,21 +69,41 @@ namespace ZooDefense.Game
             // ---- Gold for gems
             Header(list, Loc.T("shop.gold"));
             var goldRow = Row(list, 330);
-            Offer(goldRow, 0, 2, Art.Hex(0xFFC93C), "gold", 2, Loc.F("reward.gold", cfg.goldPackSmallGold), cfg.goldPackSmallGems.ToString(), "gems", true, () => BuyGold(false), null);
-            Offer(goldRow, 1, 2, Art.Hex(0xFFC93C), "gold", 4, Loc.F("reward.gold", cfg.goldPackBigGold), cfg.goldPackBigGems.ToString(), "gems", true, () => BuyGold(true), Loc.T("shop.best_value"));
+            var goldPacks = ShopCatalog.GoldPacks;
+            for (int i = 0; i < goldPacks.Length; i++)
+            {
+                int tier = i;
+                Offer(goldRow, i, goldPacks.Length, Art.Hex(0xFFC93C), "gold", 1 + i * 2, Loc.F("reward.gold", goldPacks[i].gold), goldPacks[i].gems.ToString(), "gems", true, () => BuyGold(tier),
+                    i == goldPacks.Length - 1 ? Loc.T("shop.best_value") : null);
+            }
 
             // ---- Gem packs (real money)
             Header(list, Loc.T("shop.gems"));
             var packs = cfg.gemPacks;
-            var gemRow = Row(list, 330);
+            RectTransform gemRow = null;
+            const int perRow = 3;
             for (int i = 0; i < packs.Count; i++)
             {
                 var pack = packs[i];
-                Offer(gemRow, i, packs.Count, Art.Hex(0x5BD6FF), "gems", 1 + i * 2, Loc.F("reward.gems", pack.gems), pack.price, null, true, () => BuyGems(pack),
-                    i == packs.Count - 1 ? Loc.T("shop.best_value") : (i == 1 ? Loc.T("shop.popular") : null));
+                if (i % perRow == 0) gemRow = Row(list, 330);
+                int inRow = Mathf.Min(perRow, packs.Count - i / perRow * perRow);
+                bool first = meta.IsFirstGemPurchase(pack.id);
+                string tag = first ? Loc.T("shop.first_x2") : (i == packs.Count - 1 ? Loc.T("shop.best_value") : (i == 1 ? Loc.T("shop.popular") : null));
+                Offer(gemRow, i % perRow, inRow, Art.Hex(0x5BD6FF), "gems", 1 + i, Loc.F("reward.gems", first ? pack.gems * 2 : pack.gems), Services.Store.Price(pack.id, pack.price), null, true, () => BuyGems(pack), tag);
+                int bonus = GemBonusPercent(i);
+                if (bonus > 0) BonusChip(gemRow.GetChild(gemRow.childCount - 1) as RectTransform, Loc.F("shop.bonus", bonus));
             }
-            UIKit.Label(list, Loc.T("shop.test_store"), 24, Palette.TextDim).rectTransform.Band(true, 40, _y, 10);
-            _y += 60;
+            if (!Services.Store.Ready)
+            {
+                UIKit.Label(list, Loc.T("shop.test_store"), 24, Palette.TextDim).rectTransform.Band(true, 40, _y, 10);
+                _y += 50;
+            }
+            // Paid but not received (app closed during a purchase): ask the store to deliver again.
+            var restore = UIKit.Button(list, "restore", Loc.T("shop.restore"), new Color(0f, 0f, 0f, 0f), () =>
+                Services.Store.Restore(ok => App.Toast(Loc.T(ok ? "shop.restore_done" : "shop.purchase_failed"))), 26);
+            restore.GetComponent<RectTransform>().Band(true, 60, _y, 200);
+            restore.GetComponentInChildren<Text>().color = Palette.TextDim;
+            _y += 80;
 
             ScrollKit.SetHeight(list, _y);
             _scrollRect.verticalNormalizedPosition = _scroll;
@@ -330,25 +355,23 @@ namespace ZooDefense.Game
             UIKit.Label(box, string.Join("\n", lines.ToArray()), 36, Palette.Text, TextAnchor.UpperLeft).rectTransform.Stretch(60, 60, 150, 60);
         }
 
-        void BuyGold(bool big)
+        void BuyGold(int tier)
         {
-            var c = App.MetaConfig;
-            int gems = big ? c.goldPackBigGems : c.goldPackSmallGems;
-            int gold = big ? c.goldPackBigGold : c.goldPackSmallGold;
+            int gems = ShopCatalog.GoldPacks[tier].gems;
+            int gold = ShopCatalog.GoldPacks[tier].gold;
             Modal.Confirm(App, Loc.T("shop.gold"), Loc.F("shop.confirm_gems", gems), Loc.F("shop.gems_price", gems), () =>
             {
-                if (!App.Meta.BuyGold(big)) { NotEnough(true); return; }
+                if (!App.Meta.BuyGoldPack(tier)) { NotEnough(true); return; }
                 Bought(Loc.T("shop.gold"), new List<Reward> { new Reward(RewardType.Gold, gold) }, null);
             });
         }
 
         void BuyGems(GemPack pack)
         {
-            Services.Store.Purchase(pack.id, ok =>
+            Services.Store.Purchase(pack.id, rewards =>
             {
-                if (!ok || !App.Meta.GrantGemPack(pack.id)) { App.Toast(Loc.T("shop.purchase_failed")); return; }
-                Services.Analytics.LogEvent("iap", new Dictionary<string, object> { { "product", pack.id } });
-                Bought(Loc.T("shop.gems"), new List<Reward> { new Reward(RewardType.Gems, pack.gems) }, null);
+                if (rewards == null) { App.Toast(Loc.T("shop.purchase_failed")); return; }
+                Bought(Loc.T("shop.gems"), rewards, null);
             });
         }
     }
