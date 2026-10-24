@@ -1,0 +1,30 @@
+{
+    "name": "ZooDefense.Notifications",
+    "rootNamespace": "ZooDefense.Notifications",
+    "references": [
+        "ZooDefense.Core",
+        "ZooDefense.Game",
+        "Unity.Notifications.Unified"
+    ],
+    "includePlatforms": [
+        "Android",
+        "Editor",
+        "iOS"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "ZOO_NOTIFY"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.mobile.notifications",
+            "expression": "2.3.0",
+            "define": "ZOO_NOTIFY"
+        }
+    ],
+    "noEngineReferences": false
+}

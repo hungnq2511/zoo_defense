@@ -1,0 +1,8 @@
+{
+    "packageName": "com.hungnq.zoodefense",
+    "displayName": "Zoo Defense",
+    "companyName": "Nutrica",
+    "version": "1.0",
+    "minSdk": 24,
+    "appBundle": true
+}

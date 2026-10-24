@@ -283,6 +283,12 @@ namespace ZooDefense.Core
             public int week;
         }
 
+        /// <summary>Remote Config can force a given week's event (-1 = follow the calendar).</summary>
+        public static int WeekOverride = -1;
+
+        /// <summary>This week's live event (or the one forced by Remote Config).</summary>
+        public static WeekEvent Current(long unixSeconds) { return Of(WeekOverride >= 0 ? WeekOverride : GameCalendar.WeekIndex(unixSeconds)); }
+
         public static WeekEvent Of(int week)
         {
             int k = ((week % 6) + 6) % 6;

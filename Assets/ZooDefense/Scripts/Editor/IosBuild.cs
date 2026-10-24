@@ -88,8 +88,22 @@ namespace ZooDefense.EditorTools
             if (!EditorBuildSettings.scenes.Any(s => s.path == ZooDefenseMenu.ScenePath) && File.Exists(ZooDefenseMenu.ScenePath))
                 EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ZooDefenseMenu.ScenePath, true) };
 
+            NotificationsAskLater();
             AssetDatabase.SaveAssets();
             Debug.Log("[iOS] Settings applied: " + c.bundleId + " v" + c.version + " (" + PlayerSettings.iOS.buildNumber + "), team " + (string.IsNullOrEmpty(c.teamId) ? "<missing>" : c.teamId));
+        }
+
+        /// <summary>
+        /// Mobile Notifications: never ask for permission at app launch (the game asks after the first win / chest).
+        /// Set through reflection so this script compiles with or without the package.
+        /// </summary>
+        static void NotificationsAskLater()
+        {
+            var t = Type.GetType("Unity.Notifications.NotificationSettings+iOSSettings, Unity.Notifications");
+            var prop = t != null ? t.GetProperty("RequestAuthorizationOnAppLaunch") : null;
+            if (prop == null) return;
+            try { if ((bool)prop.GetValue(null)) prop.SetValue(null, false); }
+            catch (Exception e) { Debug.LogWarning("[iOS] notification settings: " + e.Message); }
         }
 
         [MenuItem("Zoo Defense/iOS/Build Xcode Project", priority = 41)]
@@ -108,6 +122,15 @@ namespace ZooDefense.EditorTools
 
         static bool Build(bool bumpBuild)
         {
+            // Application.cloudProjectId = the id baked into the build (ProjectSettings cloudProjectId); CloudProjectSettings.projectId
+            // is empty in batch mode when the Editor is not signed in, so it is not used here.
+            // Without the Unity Cloud project link the build cannot reach Unity Services: no online matches,
+            // no purchase check (stuck on "verifying"), no account link. Stop instead of shipping that.
+            if (string.IsNullOrEmpty(Application.cloudProjectId) && !System.Text.RegularExpressions.Regex.IsMatch(System.IO.File.ReadAllText("ProjectSettings/ProjectSettings.asset"), @"cloudProjectId: [0-9a-f-]{36}"))
+            {
+                Debug.LogError("[iOS] This Unity project is not linked to Unity Cloud (Project Settings > Services). Link it to the project \"Zoo Defense\" first.");
+                return false;
+            }
             var c = LoadConfig();
             if (string.IsNullOrEmpty(c.teamId)) Debug.LogWarning("[iOS] teamId is empty in " + ConfigPath + ": signing will fail in Xcode until it is set.");
             if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.iOS)
@@ -135,6 +158,27 @@ namespace ZooDefense.EditorTools
             return s.result == BuildResult.Succeeded;
         }
 
+        /// <summary>
+        /// iOS 26 + Unity before 6000.0.62f1: with CAMetalDisplayLink on (Unity's default on iOS 17+), the screen
+        /// sometimes shows an old frame every few frames (the game "jumps" back and forth / stutters).
+        /// Unity turned it off by default in 6000.0.62f1; until the project is upgraded, turn it off in the Xcode project.
+        /// </summary>
+        static void DisableMetalDisplayLink(string path)
+        {
+            var file = Path.Combine(path, "Classes", "UnityAppController.mm");
+            if (!File.Exists(file)) return;
+            var src = File.ReadAllText(file);
+            int fn = src.IndexOf("- (BOOL)shouldUseMetalDisplayLink", StringComparison.Ordinal);
+            if (fn < 0) return;
+            int end = src.IndexOf("\n}\n", fn, StringComparison.Ordinal);
+            if (end < 0) return;
+            var body = src.Substring(fn, end - fn);
+            var fixedBody = body.Replace("return YES;", "return NO;   // Zoo Defense: CAMetalDisplayLink off (iOS 26 frame flicker)");
+            if (fixedBody == body) return;
+            File.WriteAllText(file, src.Substring(0, fn) + fixedBody + src.Substring(end));
+            Debug.Log("[iOS] CAMetalDisplayLink disabled in UnityAppController.mm");
+        }
+
         /// <summary>Info.plist / Xcode fixes App Store Connect asks for, plus ExportOptions.plist for the upload.</summary>
         [PostProcessBuild(100)]
         public static void OnPostprocess(BuildTarget target, string path)
@@ -154,6 +198,7 @@ namespace ZooDefense.EditorTools
             root.SetBoolean("UIRequiresFullScreen", true);
             root.SetBoolean("UIStatusBarHidden", true);
             if (root["UIApplicationExitsOnSuspend"] != null) root.values.Remove("UIApplicationExitsOnSuspend");   // deprecated key, rejected by validation
+            root.SetBoolean("UnityNotificationRequestAuthorizationOnAppLaunch", false);   // asked in game, at a good moment
             plist.WriteToFile(plistPath);
 
             var projPath = PBXProject.GetPBXProjectPath(path);
@@ -167,8 +212,15 @@ namespace ZooDefense.EditorTools
                 if (!string.IsNullOrEmpty(c.teamId)) proj.SetBuildProperty(t, "DEVELOPMENT_TEAM", c.teamId);
             }
             proj.SetBuildProperty(main, "CODE_SIGN_STYLE", "Automatic");
+            proj.AddFrameworkToProject(fw, "GameKit.framework", false);
             proj.WriteToFile(projPath);
+
+            // Game Center (leaderboards in the Games app): capability + entitlement.
+            var caps = new ProjectCapabilityManager(projPath, "Unity-iPhone/ZooDefense.entitlements", null, main);
+            caps.AddGameCenter();
+            caps.WriteToFile();
 #endif
+            DisableMetalDisplayLink(path);
             File.WriteAllText(Path.Combine(path, "ExportOptions.plist"),
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +

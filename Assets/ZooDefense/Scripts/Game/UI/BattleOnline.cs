@@ -11,7 +11,8 @@ namespace ZooDefense.Game
         OnlineLockstepTransport _online;
         RectTransform _waitPanel;
         Text _waitText;
-        bool _leftOnline, _desyncLogged;
+        bool _leftOnline, _desyncLogged, _reconnectLogged;
+        double _dropStarted = -1;
 
         bool IsOnline { get { return _cfg != null && _cfg.online != null; } }
 
@@ -23,6 +24,13 @@ namespace ZooDefense.Game
             if (sync == null) return;
 
             bool waiting = !_match.IsOver && !sync.Abandoned && sync.SilentFor > 1.2;
+            if (waiting && _dropStarted < 0) _dropStarted = sync.SilentFor;
+            if (!waiting && _dropStarted >= 0)
+            {
+                // The connection came back (or the match ended): one analytics event per drop.
+                if (!_match.IsOver || sync.Abandoned) Track.Reconnect(!sync.Abandoned, Mathf.RoundToInt((float)sync.SilentFor));
+                _dropStarted = -1;
+            }
             if (waiting && _waitPanel == null) BuildWaitPanel();
             if (_waitPanel != null)
             {
@@ -30,9 +38,17 @@ namespace ZooDefense.Game
                 if (waiting)
                 {
                     int dots = 1 + (int)(_t * 3f) % 3;
-                    _waitText.text = Loc.F("online.waiting", _opp.PlayerName) + new string('.', dots) + "\n" + Mathf.CeilToInt((float)(15.0 - sync.SilentFor)) + "s";
+                    // Our own network is gone -> "reconnecting"; we are online -> the opponent is the one coming back.
+                    string line = sync.WeAreOffline ? Loc.T("online.reconnecting") : Loc.F("online.opp_reconnecting", _opp.PlayerName);
+                    int left = Mathf.Max(0, Mathf.CeilToInt((float)(_online.Timeout - sync.SilentFor)));
+                    _waitText.text = line + new string('.', dots) + "\n" + left + "s";
                     _waitPanel.SetAsLastSibling();
                 }
+            }
+            if (sync.Abandoned && !_reconnectLogged)
+            {
+                _reconnectLogged = true;
+                if (sync.LostByDisconnect) Debug.LogWarning("[Online] could not reconnect in time: match lost");
             }
 
             if (sync.Desynced && !_desyncLogged)

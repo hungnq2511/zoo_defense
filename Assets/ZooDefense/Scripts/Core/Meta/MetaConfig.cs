@@ -61,7 +61,7 @@ namespace ZooDefense.Core
     }
 
     [Serializable]
-    public class MetaConfig
+    public partial class MetaConfig
     {
         // Cards
         public int maxCardLevel = 15;

@@ -10,6 +10,12 @@ TrueTypeFontImporter:
   includeFontData: 1
   fontNames:
   - Baloo 2
+  - Hiragino Sans
+  - Hiragino Kaku Gothic ProN
+  - Apple SD Gothic Neo
+  - Noto Sans CJK JP
+  - Noto Sans CJK KR
+  - Roboto
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

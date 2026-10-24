@@ -10,7 +10,8 @@
         "Unity.Networking.Transport",
         "Unity.Collections",
         "Unity.Services.Authentication.PlayerAccounts",
-        "Unity.Services.CloudSave"
+        "Unity.Services.CloudSave",
+        "Unity.Services.Analytics"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -31,6 +32,11 @@
             "name": "com.unity.services.cloudsave",
             "expression": "3.0.0",
             "define": "ZOO_CLOUDSAVE"
+        },
+        {
+            "name": "com.unity.services.analytics",
+            "expression": "6.0.0",
+            "define": "ZOO_ANALYTICS"
         }
     ],
     "noEngineReferences": false

@@ -230,25 +230,66 @@ namespace ZooDefense.Game
         void GameCard()
         {
             var p = App.Profile;
-            var card = Card(Loc.T("settings.game"), GameColor, 420);
+            var card = Card(Loc.T("settings.game"), GameColor, 560);
 
-            var lang = Line(card, 0, 3, Loc.T("settings.language"));
+            var lang = Line(card, 0, 4, Loc.T("settings.language"));
+            LanguageSelect(lang);
+
+            var online = Line(card, 1, 4, Loc.T("settings.online"), Loc.T("settings.online_hint"));
+            Toggle(online, p.onlinePvp, v => { p.onlinePvp = v; App.SaveProfile(); Rebuild(); });
+
+            // Reminders while away (chest ready, daily reward), at most a couple a day, never at night.
+            var notify = Line(card, 2, 4, Loc.T("settings.notifications"), Loc.T("settings.notifications_hint"));
+            Toggle(notify, p.notifications, v =>
+            {
+                p.notifications = v;
+                App.SaveProfile();
+                if (v && Reminders.Service != null && Reminders.Service.Supported)
+                {
+                    PlayerPrefs.SetInt("zoo_notify_asked", 1);
+                    Reminders.Service.RequestPermission(ok => { if (!ok) App.Toast(Loc.T("settings.notifications_denied")); });
+                }
+                Rebuild();
+            });
+
+            var tut = Line(card, 3, 4, Loc.T("settings.tutorial"));
+            RightButton(tut, Loc.T("settings.play"), Neutral, () => App.Show(BattleScreen.Tutorial()));
+
+            PrivacyCard();
+        }
+
+        /// <summary>Select box: the current language with a down arrow; tapping it opens the list of languages.</summary>
+        void LanguageSelect(RectTransform line)
+        {
+            var holder = UIKit.Rect("language", line).Place(new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), Vector2.zero, new Vector2(390, 100));
+            var box = Deco.Frame(holder, "frame", CardBorder, Art.Hex(0x1A1330), 4f);
+            UIKit.Label(box, Loc.NativeName(Loc.Current), 34, Palette.Text, TextAnchor.MiddleLeft).rectTransform.Stretch(28, 80, 0, 0);
+            var arrow = UIKit.Label(box, "›", 56, Palette.TextDim).rectTransform;
+            arrow.Place(new Vector2(1f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-40, 2), new Vector2(60, 60));
+            arrow.localEulerAngles = new Vector3(0f, 0f, -90f);
+            var hit = UIKit.Button(holder, "hit", "", new Color(0f, 0f, 0f, 0f), () => { AudioService.Play(Sfx.Click); OpenLanguagePicker(); });
+            hit.GetComponent<RectTransform>().Stretch();
+        }
+
+        /// <summary>One row per language, written in that language; the current one is green.</summary>
+        void OpenLanguagePicker()
+        {
             var all = Loc.Supported;
+            const float RowHeight = 100f, RowGap = 14f, Top = 130f;
+            var box = Modal.Open(App, Loc.T("settings.language"), Top + all.Length * (RowHeight + RowGap) + 50f);
             for (int i = 0; i < all.Length; i++)
             {
                 var l = all[i];
                 bool on = l == Loc.Current;
-                var b = UIKit.ChunkyButton(lang, "lang" + i, Loc.NativeName(l), on ? Palette.Green : Neutral, () => SetLanguage(l), 28);
-                b.GetComponent<RectTransform>().Place(new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-(all.Length - 1 - i) * 230, 0), new Vector2(220, 96));
+                Button row = null;
+                row = UIKit.ChunkyButton(box, "lang" + i, Loc.NativeName(l), on ? Palette.Green : Neutral, () =>
+                {
+                    Modal.CloseFrom(row.transform);
+                    SetLanguage(l);
+                }, 36);
+                row.GetComponent<RectTransform>().Place(new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0, -(Top + i * (RowHeight + RowGap))), new Vector2(720, RowHeight));
+                if (on) UIKit.Outlined(row.GetComponentInChildren<Text>(), 2.5f);
             }
-
-            var online = Line(card, 1, 3, Loc.T("settings.online"), Loc.T("settings.online_hint"));
-            Toggle(online, p.onlinePvp, v => { p.onlinePvp = v; App.SaveProfile(); Rebuild(); });
-
-            var tut = Line(card, 2, 3, Loc.T("settings.tutorial"));
-            RightButton(tut, Loc.T("settings.play"), Neutral, () => App.Show(BattleScreen.Tutorial()));
-
-            PrivacyCard();
         }
 
         /// <summary>Personalised ads on/off (GDPR consent / CCPA opt-out) and the privacy policy.</summary>

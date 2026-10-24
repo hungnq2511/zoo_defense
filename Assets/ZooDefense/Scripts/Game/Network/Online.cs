@@ -19,6 +19,10 @@ namespace ZooDefense.Game
         public string[] sendDeck;
         public int[] levels;
         public string[] spells;
+        /// <summary>Hidden rating (pairing and Elo).</summary>
+        public int mmr;
+        /// <summary>Friendly room match: no trophies or rating.</summary>
+        public bool friendly;
     }
 
     /// <summary>Sent by the host once both hellos are known: the full match setup (seed, both players, rules).</summary>
@@ -28,6 +32,8 @@ namespace ZooDefense.Game
         public MatchSetup setup;
         public int hostTrophies, guestTrophies;
         public string hostTitle, guestTitle;
+        public int hostMmr, guestMmr;
+        public bool friendly;
     }
 
     /// <summary>A found online opponent, ready to play.</summary>
@@ -38,6 +44,8 @@ namespace ZooDefense.Game
         public string opponentName, opponentTitle;
         public int opponentTrophies;
         public string[] opponentDeck;
+        public int opponentMmr;
+        public bool friendly;
         public IPacketLink link;
     }
 
@@ -52,8 +60,17 @@ namespace ZooDefense.Game
         OnlineState State { get; }
         string Error { get; }
         string PlayerId { get; }
-        /// <summary>Starts sign-in + pairing with players of the same arena (bracket).</summary>
-        void StartSearch(OnlineHello me, int bracket);
+        /// <summary>Starts sign-in + ranked pairing with players of a similar hidden rating (me.mmr; the window widens while waiting).
+        /// giveUpAfter: seconds before State = Failed (the screen then offers a bot).</summary>
+        void StartSearch(OnlineHello me, float giveUpAfter);
+        /// <summary>Friendly room: creates a private 2-player game; RoomCode is set once it exists. Waits until Leave().</summary>
+        void CreateRoom(OnlineHello me);
+        /// <summary>Joins a friend's room by its 6-character code.</summary>
+        void JoinRoom(OnlineHello me, string code);
+        /// <summary>Code of the room we host (null until created).</summary>
+        string RoomCode { get; }
+        /// <summary>During a match: the connection dropped and is being restored.</summary>
+        bool Reconnecting { get; }
         /// <summary>Must be called every frame while searching or playing (pumps the network).</summary>
         void Update(float dt);
         OnlineMatchInfo Match { get; }
@@ -86,7 +103,7 @@ namespace ZooDefense.Game
             return new OnlineHello
             {
                 content = ContentFingerprint(app.Content),
-                name = p.playerName, title = app.Meta.State.title, trophies = app.Meta.State.trophies,
+                name = p.playerName, title = app.Meta.State.title, trophies = app.Meta.State.trophies, mmr = app.Meta.State.mmr,
                 deck = (string[])p.deck.Clone(), sendDeck = (string[])p.sendDeck.Clone(),
                 levels = app.Meta.DeckLevels(p.deck), spells = (string[])p.spells.Clone(),
             };
@@ -148,24 +165,25 @@ namespace ZooDefense.Game
                     var guest = Online.Unpack<OnlineHello>(data);
                     if (guest.protocol != _me.protocol || guest.content != _me.content) { Error = "version"; return true; }
                     var rules = new MatchRules { mode = MatchMode.Versus };
-                    LiveOps.ApplyTo(LiveOps.Of(GameCalendar.WeekIndex(_now)), rules);
+                    LiveOps.ApplyTo(LiveOps.Current(_now), rules);
                     var start = new OnlineStart
                     {
                         setup = new MatchSetup { seed = UnityEngine.Random.Range(1, int.MaxValue), players = new[] { Online.ToSetup(_me), Online.ToSetup(guest) }, rules = rules },
                         hostTrophies = _me.trophies, guestTrophies = guest.trophies, hostTitle = _me.title, guestTitle = guest.title,
+                        hostMmr = _me.mmr, guestMmr = guest.mmr, friendly = _me.friendly || guest.friendly,
                     };
                     var packed = Online.Pack(NetMsg.Start, start);
                     _link.Send(packed);
                     // Use the setup exactly as the guest will read it (JSON turns null arrays into empty ones, etc.).
                     start = Online.Unpack<OnlineStart>(packed);
-                    Result = new OnlineMatchInfo { setup = start.setup, localPlayer = 0, opponentName = guest.name, opponentTitle = guest.title, opponentTrophies = guest.trophies, opponentDeck = guest.deck, link = _link };
+                    Result = new OnlineMatchInfo { setup = start.setup, localPlayer = 0, opponentName = guest.name, opponentTitle = guest.title, opponentTrophies = guest.trophies, opponentDeck = guest.deck, opponentMmr = guest.mmr, friendly = start.friendly, link = _link };
                     return true;
                 }
                 if (!_host && data[0] == (byte)NetMsg.Start)
                 {
                     var start = Online.Unpack<OnlineStart>(data);
                     var host = start.setup.players[0];
-                    Result = new OnlineMatchInfo { setup = start.setup, localPlayer = 1, opponentName = host.name, opponentTitle = start.hostTitle, opponentTrophies = start.hostTrophies, opponentDeck = host.deck, link = _link };
+                    Result = new OnlineMatchInfo { setup = start.setup, localPlayer = 1, opponentName = host.name, opponentTitle = start.hostTitle, opponentTrophies = start.hostTrophies, opponentDeck = host.deck, opponentMmr = start.hostMmr, friendly = start.friendly, link = _link };
                     return true;
                 }
             }
@@ -185,12 +203,14 @@ namespace ZooDefense.Game
         public LockstepSync Sync { get { return _sync; } }
 
         public void Attach(Match match, int localPlayer) { _sync = new LockstepSync(match, localPlayer, _link); }
+        /// <summary>Seconds a dropped player has to come back (Remote Config "reconnect_seconds").</summary>
+        public double Timeout = 20;
         public void SendLocal(Command command) { _sync.QueueLocal(command); }
 
         public bool CanStep()
         {
             _clock = Time.realtimeSinceStartup;
-            _sync.Pump(_clock);
+            _sync.Pump(_clock, Timeout);
             return _sync.CanStep;
         }
 

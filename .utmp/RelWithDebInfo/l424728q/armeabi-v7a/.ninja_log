@@ -1,0 +1,12 @@
+# ninja log v5
+3	264	1792814902461975163	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	57c12b0545646f98
+265	438	1792814902636755502	/Users/nguyenquanghung/Desktop/ZooDefender/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/l424728q/obj/armeabi-v7a/libswappywrapper.so	5fe97e7248afe225
+2	1336	1792814903532221595	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	f14bae73e7195478
+0	1361	1792814903557557739	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	45b4389be8563b8e
+1	1384	1792814903580557343	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	6cb9322b52307fb6
+2	1436	1792814903635208834	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	e35abc40002e2ae9
+1	1478	1792814903677229003	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	77bd399e16f066f
+3	1537	1792814903735708741	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	311a62e5480d73a8
+2	1583	1792814903782277948	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	687efb7a56fb906
+0	1658	1792814903857397379	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	b9bc7e2b62e2d4a
+1658	1788	1792814903985737720	/Users/nguyenquanghung/Desktop/ZooDefender/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/l424728q/obj/armeabi-v7a/libgame.so	a3e0627581d40235

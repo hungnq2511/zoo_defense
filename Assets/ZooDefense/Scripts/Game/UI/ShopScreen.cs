@@ -304,7 +304,7 @@ namespace ZooDefense.Game
         {
             App.SaveProfile();
             AudioService.Play(Sfx.Buy);
-            Services.Analytics.LogEvent("shop_buy", new Dictionary<string, object> { { "item", title } });
+            Services.Analytics.LogEvent("shop_buy", new Dictionary<string, object> { { "shop_item", title } });
             Rebuild();
             Modal.Rewards(App, title, rewards, locked, dramatic, chest);
         }

@@ -10,3 +10,6 @@
 .vs/
 .idea/
 .DS_Store
+
+# Android upload key: back it up, never commit it
+/BuildConfig/android_signing/

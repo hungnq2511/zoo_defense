@@ -13,17 +13,20 @@ namespace ZooDefense.Online
     /// <summary>
     /// Online 1v1 over Unity Gaming Services:
     ///   1. anonymous sign-in (one player id per device, kept between launches),
-    ///   2. pairing: quick-join a 2-player session of the same arena, or create one and wait,
+    ///   2. ranked pairing by hidden rating: quick-join a 2-player session whose host rating is within a window
+    ///      (±150, then ±300, ±600, anyone) that widens each time we re-roll, or create one and wait,
+    ///      friendly rooms: a private session joined with its 6-character code,
     ///   3. relay connection between the two devices (UtpLink), then the Hello/Start handshake.
-    /// Any failure or a long wait sets State = Failed: the matchmaking screen then falls back to a bot.
+    /// A ranked search that takes too long sets State = Failed: the matchmaking screen then offers a bot.
+    /// During the match a dropped relay link is rebuilt by UtpLink (Reconnecting is true meanwhile).
     /// </summary>
     public sealed class UgsPvp : IOnlinePvp
     {
-        const string SessionType = "zoo_pvp";
-        /// <summary>Waiting alone in our own session this long: leave it and quick-join again (someone else may be waiting).</summary>
-        const float RerollAfter = 5f;
-        /// <summary>Total search time before giving up (bot fallback).</summary>
-        const float GiveUpAfter = 10f;
+        const string SessionType = "zoo_pvp", RoomType = "zoo_room";
+        /// <summary>Waiting alone in our own session this long: leave it and quick-join again with a wider rating window.</summary>
+        const float RerollAfter = 3f;
+        /// <summary>A friendly room waits this long for the friend.</summary>
+        const float RoomWait = 600f;
         /// <summary>Connected but the handshake does not finish.</summary>
         const float HandshakeTimeout = 10f;
 
@@ -39,8 +42,10 @@ namespace ZooDefense.Online
         UtpLink _link;
         OnlineHandshake _handshake;
         OnlineHello _me;
-        int _bracket;
-        float _searchTime, _aloneTime, _handshakeTime;
+        int _attempt;
+        float _searchTime, _aloneTime, _handshakeTime, _giveUpAfter = 10f;
+        bool _room;
+        string _joinCode;
         bool _busy;          // an async call is in flight
         int _generation;     // bumped by Leave(): late async results of an old search are ignored
 
@@ -48,18 +53,92 @@ namespace ZooDefense.Online
         public string Error { get { return _error; } }
         public string PlayerId { get { return UgsCore.SignedIn ? AuthenticationService.Instance.PlayerId : null; } }
         public OnlineMatchInfo Match { get; private set; }
+        public string RoomCode { get; private set; }
+        public bool Reconnecting { get { return _state == OnlineState.Ready && _link != null && !_link.Connected; } }
 
-        public void StartSearch(OnlineHello me, int bracket)
+        public void StartSearch(OnlineHello me, float giveUpAfter)
+        {
+            Begin(me, false, null, Mathf.Max(2f, giveUpAfter));
+        }
+
+        public void CreateRoom(OnlineHello me) { Begin(me, true, null, RoomWait); }
+
+        public void JoinRoom(OnlineHello me, string code) { Begin(me, true, code, 25f); }
+
+        void Begin(OnlineHello me, bool room, string joinCode, float giveUpAfter)
         {
             Leave();
             _me = me;
-            _bracket = bracket;
+            _room = room;
+            _joinCode = joinCode;
+            _giveUpAfter = giveUpAfter;
+            _attempt = 0;
             _error = null;
             _searchTime = _aloneTime = _handshakeTime = 0f;
             Match = null;
+            RoomCode = null;
             _state = OnlineState.SigningIn;
             int gen = _generation;
-            Run(gen, SignInAsync, () => { if (_state == OnlineState.SigningIn) BeginPairing(gen); });
+            Run(gen, SignInAsync, () =>
+            {
+                if (_state != OnlineState.SigningIn) return;
+                if (!_room) BeginPairing(gen);
+                else if (string.IsNullOrEmpty(_joinCode)) BeginRoom(gen);
+                else BeginJoin(gen);
+            });
+        }
+
+        /// <summary>Friendly room host: a private session; its code is shown to the friend.</summary>
+        void BeginRoom(int gen)
+        {
+            _state = OnlineState.Searching;
+            _link = new UtpLink();
+            var link = _link;
+            Run(gen, async () =>
+            {
+                var options = new SessionOptions
+                {
+                    Type = RoomType,
+                    MaxPlayers = 2,
+                    IsPrivate = true,
+                    SessionProperties = new Dictionary<string, SessionProperty>
+                    {
+                        { "ver", new SessionProperty(VersionKey, VisibilityPropertyOptions.Public, PropertyIndex.String1) },
+                    },
+                }.WithRelayNetwork().WithNetworkHandler(link);
+                var session = await MultiplayerService.Instance.CreateSessionAsync(options);
+                if (gen != _generation) { try { await session.LeaveAsync(); } catch { } return; }
+                _session = session;
+                RoomCode = session.Code;
+                Debug.Log("[Online] room " + session.Code);
+            }, null);
+        }
+
+        /// <summary>Friendly room guest: join by code.</summary>
+        void BeginJoin(int gen)
+        {
+            _state = OnlineState.Searching;
+            _link = new UtpLink();
+            var link = _link;
+            string code = _joinCode.Trim().ToUpperInvariant();
+            Run(gen, async () =>
+            {
+                ISession session;
+                try { session = await MultiplayerService.Instance.JoinSessionByCodeAsync(code, new JoinSessionOptions().WithNetworkHandler(link)); }
+                catch (SessionException e)
+                {
+                    Debug.LogWarning("[Online] join room: " + e.Error + " " + e.Message);
+                    if (gen == _generation) { Fail("room_not_found"); }
+                    return;
+                }
+                if (gen != _generation) { try { await session.LeaveAsync(); } catch { } return; }
+                string ver;
+                SessionProperty prop;
+                ver = session.Properties != null && session.Properties.TryGetValue("ver", out prop) ? prop.Value : null;
+                if (ver != null && ver != VersionKey) { _session = session; Fail("version"); return; }
+                _session = session;
+                Debug.Log("[Online] joined room " + code);
+            }, null);
         }
 
         Task SignInAsync() { return UgsCore.EnsureSignedInAsync(); }
@@ -72,13 +151,20 @@ namespace ZooDefense.Online
             var link = _link;
             Run(gen, async () =>
             {
+                int window = MatchmakingRules.Window(_attempt);
+                var filters = new List<FilterOption>
+                {
+                    new FilterOption(FilterField.AvailableSlots, "1", FilterOperation.GreaterOrEqual),
+                    new FilterOption(FilterField.StringIndex1, VersionKey, FilterOperation.Equal),
+                };
+                if (window < 100000)
+                {
+                    filters.Add(new FilterOption(FilterField.NumberIndex1, Mathf.Max(0, _me.mmr - window).ToString(), FilterOperation.GreaterOrEqual));
+                    filters.Add(new FilterOption(FilterField.NumberIndex1, (_me.mmr + window).ToString(), FilterOperation.LessOrEqual));
+                }
                 var quick = new QuickJoinOptions
                 {
-                    Filters = new List<FilterOption>
-                    {
-                        new FilterOption(FilterField.AvailableSlots, "1", FilterOperation.GreaterOrEqual),
-                        new FilterOption(FilterField.StringIndex1, BracketKey, FilterOperation.Equal),
-                    },
+                    Filters = filters,
                     Timeout = TimeSpan.FromSeconds(3),
                     CreateSession = true,
                 };
@@ -89,18 +175,19 @@ namespace ZooDefense.Online
                     IsPrivate = false,
                     SessionProperties = new Dictionary<string, SessionProperty>
                     {
-                        { "bracket", new SessionProperty(BracketKey, VisibilityPropertyOptions.Public, PropertyIndex.String1) },
+                        { "ver", new SessionProperty(VersionKey, VisibilityPropertyOptions.Public, PropertyIndex.String1) },
+                        { "mmr", new SessionProperty(_me.mmr.ToString(), VisibilityPropertyOptions.Public, PropertyIndex.Number1) },
                     },
                 }.WithRelayNetwork().WithNetworkHandler(link);
                 var session = await MultiplayerService.Instance.MatchmakeSessionAsync(quick, options);
                 if (gen != _generation) { try { await session.LeaveAsync(); } catch { } return; }
                 _session = session;
-                Debug.Log("[Online] session " + session.Id + (session.IsHost ? " (host, waiting)" : " (joined)") + " players " + session.PlayerCount);
+                Debug.Log("[Online] session " + session.Id + (session.IsHost ? " (host, waiting)" : " (joined)") + " players " + session.PlayerCount + " window ±" + window);
             }, null);
         }
 
-        /// <summary>Arena bracket + protocol + content: only compatible players are paired.</summary>
-        string BracketKey { get { return "a" + _bracket + "_p" + LockstepSync.ProtocolVersion + "_c" + (_me.content & 0xFFFF); } }
+        /// <summary>Protocol + content: only players running the same game data are paired (rating does the rest).</summary>
+        string VersionKey { get { return "p" + LockstepSync.ProtocolVersion + "_c" + (_me.content & 0xFFFF); } }
 
         public void Update(float dt)
         {
@@ -110,7 +197,7 @@ namespace ZooDefense.Online
                 case OnlineState.SigningIn:
                 case OnlineState.Searching:
                     _searchTime += dt;
-                    if (_searchTime > GiveUpAfter) { Fail("timeout"); return; }
+                    if (_searchTime > _giveUpAfter) { Fail("timeout"); return; }
                     if (_state == OnlineState.Searching && _session != null && !_busy)
                     {
                         if (_link.Connected)
@@ -119,10 +206,10 @@ namespace ZooDefense.Online
                             _handshakeTime = 0f;
                             _handshake = new OnlineHandshake(_link, _session.IsHost, _me, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
                         }
-                        else if (_session.IsHost && _session.PlayerCount < 2)
+                        else if (!_room && _session.IsHost && _session.PlayerCount < 2)
                         {
                             _aloneTime += dt;
-                            if (_aloneTime > RerollAfter && _searchTime < GiveUpAfter - 4f) Reroll();
+                            if (_aloneTime > RerollAfter && _searchTime < _giveUpAfter - 1.5f) Reroll();
                         }
                     }
                     break;
@@ -153,7 +240,7 @@ namespace ZooDefense.Online
             {
                 try { await old.LeaveAsync(); } catch (Exception e) { Debug.LogWarning("[Online] leave: " + e.Message); }
                 oldLink.Dispose();
-            }, () => { if (_state == OnlineState.Searching) BeginPairing(gen); });
+            }, () => { if (_state == OnlineState.Searching) { _attempt++; BeginPairing(gen); } });
         }
 
         /// <summary>Full match: hide the session from quick-join.</summary>
@@ -187,6 +274,7 @@ namespace ZooDefense.Online
             _link = null;
             _handshake = null;
             Match = null;
+            RoomCode = null;
             _busy = false;
             _state = OnlineState.Idle;
             if (link != null && link.Connected)

@@ -14,7 +14,9 @@ namespace ZooDefense.Game
         Button _difficulty, _battle;
         ChestSlotView[] _chests;
         Text _missionsLabel, _passLabel;
-        Image _missionsBadge, _passBadge, _modesBadge;
+        Image _missionsBadge, _passBadge, _modesBadge, _friendsBadge;
+        RectTransform _inviteBanner;
+        float _invitePoll = 2f;
         Showcase _showcase;
         RectTransform _battleRoot, _rays;
         float _refresh, _t;
@@ -47,12 +49,14 @@ namespace ZooDefense.Game
             // Side buttons: missions + pass (left), practice + bot difficulty (right)
             float sideTop = -CurrencyBar.Height - 390;
             var missions = SideButton("missions", Loc.T("lobby.missions"), Palette.Blue, "xp", new Vector2(24, sideTop), true, () => MissionsPopup.Show(App, Refresh), out _missionsLabel, out _missionsBadge);
-            var pass = SideButton("pass", "", Palette.Purple, "trophy", new Vector2(24, sideTop - 190), true, () => App.Show(new PassScreen()), out _passLabel, out _passBadge);
-            Text modesLabel, diffLabel;
-            Image diffBadge;
+            var pass = SideButton("pass", "", Palette.Purple, "trophy", new Vector2(24, sideTop - 180), true, () => App.Show(new PassScreen()), out _passLabel, out _passBadge);
+            Text modesLabel, diffLabel, lbLabel, friendsLabel;
+            Image diffBadge, lbBadge;
+            SideButton("leaderboard", Loc.T("lobby.leaderboard"), Art.Hex(0xE0902F), "star", new Vector2(24, sideTop - 360), true, () => App.Show(new LeaderboardScreen()), out lbLabel, out lbBadge);
+            SideButton("friends", Loc.T("lobby.friends"), Art.Hex(0x2FA37A), "gems", new Vector2(-24, sideTop - 360), false, () => App.Show(new FriendsScreen()), out friendsLabel, out _friendsBadge);
             // Game modes hub (daily, endless, campaign, mayhem, tournament, raid, practice, bestiary, achievements, replays)
             SideButton("modes", Loc.T("lobby.modes"), Palette.Green, "star", new Vector2(-24, sideTop), false, () => App.Show(new ModesScreen()), out modesLabel, out _modesBadge);
-            _difficulty = SideButton("difficulty", "", Palette.Panel, "candy", new Vector2(-24, sideTop - 190), false, CycleDifficulty, out diffLabel, out diffBadge);
+            _difficulty = SideButton("difficulty", "", Palette.Panel, "candy", new Vector2(-24, sideTop - 180), false, CycleDifficulty, out diffLabel, out diffBadge);
             RefreshDifficulty();
 
             // Showcase: your 5 animals on a podium, between the side buttons and the battle button.
@@ -90,6 +94,32 @@ namespace ZooDefense.Game
 
             if (!App.Profile.tutorialDone) OfferTutorial();
             else if (s.pendingSeasonTier > 0) SeasonEndPopup();
+            else DailyLoginPopup.ShowIfReady(App, Refresh);
+            Leaderboards.SubmitProgress(App);
+        }
+
+        /// <summary>A friend invited us to their room: banner under the arena ribbon, polled every 20 seconds.</summary>
+        void PollInvites()
+        {
+            if (!SocialHub.Available || App.Profile.friends.Count == 0) return;
+            SocialHub.Service.LoadProfiles(new List<string>(App.Profile.friends), list =>
+            {
+                if (_friendsBadge == null || list == null) return;
+                FriendInfo inviter = null;
+                foreach (var f in list) if (f.InvitesMe(SocialHub.Service.PlayerId, App.Now)) { inviter = f; break; }
+                _friendsBadge.gameObject.SetActive(inviter != null);
+                if (_inviteBanner != null) { Object.Destroy(_inviteBanner.gameObject); _inviteBanner = null; }
+                if (inviter == null) return;
+                var banner = Deco.Frame(Root, "invite", Palette.Primary, Art.Hex(0x2B1F3F), 6f);
+                _inviteBanner = (RectTransform)banner.parent;
+                _inviteBanner.Place(new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0, -CurrencyBar.Height - 6), new Vector2(960, 150));
+                UIKit.Label(banner, Loc.F("friends.invite_banner", inviter.profile.name), 30, Palette.Text, TextAnchor.MiddleLeft).rectTransform.Stretch(30, 300, 0, 0);
+                string code = inviter.profile.room;
+                var go = UIKit.ChunkyButton(banner, "go", Loc.T("friends.accept"), Palette.Green, () => App.Show(new RoomScreen(code, null)), 32);
+                go.GetComponent<RectTransform>().Place(new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-16, 0), new Vector2(260, 110));
+                UIKit.Motion(_inviteBanner).PopIn(0f, 0.25f);
+                AudioService.Play(Sfx.Click);
+            });
         }
 
         /// <summary>Round-cornered square button with an icon, a caption and a red badge (hidden by default).</summary>
@@ -144,6 +174,7 @@ namespace ZooDefense.Game
             {
                 App.Profile.tutorialDone = true;
                 App.SaveProfile();
+                Track.TutorialComplete(true);
                 Modal.CloseFrom(skip.transform);
             });
             skip.GetComponent<RectTransform>().Place(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0, 40), new Vector2(400, 90));
@@ -180,6 +211,8 @@ namespace ZooDefense.Game
             _rays.localRotation = Quaternion.Euler(0f, 0f, -_t * 12f);
             float pulse = 1f + 0.025f * Mathf.Sin(_t * 3.2f);
             _battleRoot.localScale = new Vector3(pulse, pulse, 1f);
+            _invitePoll -= dt;
+            if (_invitePoll <= 0f) { _invitePoll = 20f; PollInvites(); }
             _refresh -= dt;
             if (_refresh > 0f) return;
             _refresh = 1f;
@@ -332,6 +365,8 @@ namespace ZooDefense.Game
                 var rewards = app.Meta.OpenChest(_slot, app.Now, payGems);
                 if (rewards == null) { app.Toast(Loc.T("shop.not_enough_gems")); AudioService.Play(Sfx.Error); return; }
                 app.SaveProfile();
+                Track.ChestOpen(chest, payGems);
+                Reminders.AskOnce(app);
                 AudioService.Play(Sfx.Chest);
                 Modal.Rewards(app, Loc.T("chest." + chest), rewards, locked, true, chest);
                 _screen.Refresh();
@@ -414,6 +449,9 @@ namespace ZooDefense.Game
             _tutorial = tutorial;
         }
 
+        /// <summary>Friendly match with a friend: no trophies, rating or rewards.</summary>
+        public bool Friendly;
+
         protected override void Build()
         {
             var p = App.Profile;
@@ -434,6 +472,7 @@ namespace ZooDefense.Game
                 meta.Grant(new Reward(RewardType.Chest, 1, "silver"), tutorialRewards);
                 tutorialRewards = MetaService.Merge(tutorialRewards);
             }
+            else if (Friendly) { p.matchesPlayed++; Track.Social("friendly_" + (_won ? "win" : "loss")); }
             else if (_valid)
             {
                 _rewards = meta.ApplyMatch(_summary, App.Now);
@@ -441,7 +480,14 @@ namespace ZooDefense.Game
                 if (_won) p.wins++;
             }
             App.SaveProfile();
-            Services.Analytics.LogEvent("match_end", new Dictionary<string, object> { { "winner", _summary.winner }, { "wave", _summary.wave }, { "ranked", _ranked }, { "tutorial", _tutorial } });
+            if (_tutorial) Track.TutorialComplete(false);
+            else if (!Friendly)
+            {
+                if (meta.ArenaIndex() > MetaRules.ArenaFor(trophiesBefore).index) Track.ArenaUp(meta.ArenaIndex());
+                Leaderboards.SubmitProgress(App);
+                // Ask for notification permission once things are going well (a win), not at launch.
+                if (_won) Reminders.AskOnce(App);
+            }
             AudioService.PlayMusic("music_lobby");
             AudioService.Play(_won ? Sfx.Win : Sfx.Lose);
 
@@ -499,11 +545,11 @@ namespace ZooDefense.Game
             // Reward card
             var card = UIKit.Panel(Root, "rewards", new Color(0.16f, 0.11f, 0.26f, 0.94f)).rectTransform;
             card.Place(new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0, -1030), new Vector2(1000, 420));
-            var head = UIKit.Label(card, Loc.T(_tutorial ? "result.tutorial_done" : (_valid ? "result.rewards" : "result.invalid")), 34, Palette.Primary);
+            var head = UIKit.Label(card, Loc.T(_tutorial ? "result.tutorial_done" : (Friendly ? "result.friendly" : (_valid ? "result.rewards" : "result.invalid"))), 34, Palette.Primary);
             head.rectTransform.Band(true, 56, 10);
             var items = new List<KeyValuePair<string, int>>();   // icon -> amount
             string chestId = null;
-            if (!_tutorial && _valid)
+            if (!_tutorial && _valid && !Friendly)
             {
                 if (_ranked) items.Add(new KeyValuePair<string, int>("trophy", _rewards.trophies));
                 items.Add(new KeyValuePair<string, int>("gold", _rewards.gold));
@@ -529,7 +575,7 @@ namespace ZooDefense.Game
                 UIKit.Label(cell, Loc.T("chest." + chestId), 26, Palette.Text).rectTransform.Band(false, 64, 10);
                 AddPop(cell, 0.85f + items.Count * 0.25f);
             }
-            if (!_tutorial && _valid && _rewards.bonusGold > 0)
+            if (!_tutorial && !Friendly && _valid && _rewards.bonusGold > 0)
             {
                 var streak = UIKit.Panel(card, "streak", Art.Hex(0xE0582F)).rectTransform
                     .Place(new Vector2(1f, 1f), new Vector2(1f, 0.5f), new Vector2(-16, -4), new Vector2(330, 48));
@@ -537,7 +583,7 @@ namespace ZooDefense.Game
                 UIKit.Outlined(UIKit.Label(streak, text, 24, Palette.Text), 1.5f).rectTransform.Stretch(6, 6, 0, 0);
                 AddPop(streak, 1.3f);
             }
-            if (!_tutorial && _valid && _rewards.chestSlotsFull)
+            if (!_tutorial && !Friendly && _valid && _rewards.chestSlotsFull)
                 UIKit.Label(card, Loc.T("result.chest_full"), 26, Palette.TextDim).rectTransform.Band(false, 40, 120);
 
             // Trophy road: animates from the old to the new trophy count.
@@ -591,7 +637,7 @@ namespace ZooDefense.Game
             ReplayIcon(agFace).Place(new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(18, 2), new Vector2(88, 88));
             UIKit.Outlined(UIKit.Label(agFace, Loc.T(revenge ? "result.revenge" : "result.rematch"), 38, Palette.Text, TextAnchor.LowerLeft), 2.5f).rectTransform.Stretch(122, 10, 10, 50);
             UIKit.Label(agFace, revenge ? Loc.F("result.revenge_bonus", App.MetaConfig.revengeBonusPercent) : (oppSetup != null ? oppSetup.name : ""), 22, new Color(1f, 1f, 1f, 0.9f), TextAnchor.UpperLeft).rectTransform.Stretch(122, 10, 82, 8);
-            again.gameObject.SetActive(!_tutorial);
+            again.gameObject.SetActive(!_tutorial && !Friendly);
             if (!_doubleGold.gameObject.activeSelf) agRt.Place(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0, 300), new Vector2(560, 140));
 
             var cont = UIKit.ChunkyButton(Root, "continue", Loc.T("result.continue"), Art.Hex(0xFFB020), () => AdPolicy.AfterMatch(App, () => App.Show(new LobbyScreen())), 60, "button_battle");

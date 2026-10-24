@@ -1,0 +1,821 @@
+# Zoo Defense strings: key<TAB>text. \n = new line. Missing keys fall back to English.
+lobby.stats	Trofeos {0}     Oro {1}
+lobby.arena	ARENA {0}
+lobby.top_arena	Arena máxima alcanzada
+lobby.next_arena	Siguiente: {0} con {1} trofeos
+lobby.played	Jugadas {0}   Victorias {1}
+lobby.battle	BATALLA
+lobby.deck	MAZO
+lobby.practice	Práctica (sin trofeos)
+lobby.reset	Reiniciar perfil
+lobby.bot	Bot: {0}
+lobby.language_changed	Idioma: Español
+difficulty.0	Fácil
+difficulty.1	Normal
+difficulty.2	Difícil
+mm.finding	Buscando rival
+online.connecting	¡Rival encontrado! Conectando
+online.waiting	Esperando a {0}
+mm.vs	VS
+common.cancel	Cancelar
+result.victory	¡VICTORIA!
+result.defeat	DERROTA
+result.draw	EMPATE
+result.trophies	{0} trofeos  ({1})
+result.practice	Partida de práctica: sin trofeos
+result.gold	+{0} de oro
+result.stats	Oleada alcanzada {0}   Derrotados {1}
+result.arena	Arena: {0}
+result.double_gold	Oro x2 (ver anuncio)
+result.gold_doubled	¡Oro duplicado!
+result.continue	CONTINUAR
+deck.title	MAZO
+deck.counter	Animales {0}/5     Monstruos de envío {1}/4
+deck.sends_title	MONSTRUOS DE ENVÍO (elige 4)
+deck.send_label	{0}\n{1} pts{2}
+deck.once	 (una vez)
+deck.hint	Toca un animal para añadirlo o quitarlo.
+deck.full	El mazo está lleno (5). Quita un animal primero.
+deck.sends_full	Elige exactamente 4 monstruos de envío.
+deck.incomplete	Elige 5 animales y 4 monstruos de envío.
+deck.saved	Mazo guardado
+deck.save	GUARDAR
+deck.back	VOLVER
+deck.info	{0}  -  {1} {2}, {3}
+deck.stat_damage	{0} de daño cada {1} s
+deck.stat_splash	, área {0}
+deck.stat_slow	, ralentiza {0}%
+deck.stat_stun	, aturde
+battle.get_ready	¡Prepárate!
+battle.ready	LISTO
+battle.wave	OLEADA {0}
+battle.sudden_death_wave	MUERTE SÚBITA - OLEADA {0}
+battle.timer	Siguiente oleada {0}
+battle.timer_sudden	MUERTE SÚBITA  {0}
+battle.card_price	Carta {0}
+battle.reroll	NUEVAS\nCARTAS\n\n{0}
+battle.send	ENVIAR
+battle.send_used	usado
+battle.paused	PAUSA
+battle.resume	Continuar
+battle.surrender	Rendirse
+battle.boss	¡Se acerca un jefe!
+battle.incoming	Se acerca: ¡{0}!
+battle.sent	{0} enviado a la siguiente oleada
+battle.opp_sending	¡{0} está enviando {1}!
+battle.crow	¡Un cuervo robó {0} caramelos!
+battle.golem	Un gólem bloqueó una de tus casillas
+battle.raccoon	¡Un mapache se fue con {0} caramelos!
+battle.wave_element	{0} · {1}
+battle.effective	¡Muy eficaz!
+battle.resisted	Resistido
+battle.blocked	¡Bloqueado!
+battle.shield_up	¡Escudo!
+battle.shield_broken	¡Escudo roto!
+battle.lock_warning	¡El gorila apunta a una casilla!
+status.1	Enraizado
+status.2	Silenciado
+status.3	Congelado
+status.4	Armadura rota
+status.5	Marcado
+ability.1	¡Tambores!
+ability.2	¡Furioso!
+ability.3	¡Embestida!
+ability.104	¡Sobrecarga!
+guide.title	ELEMENTOS
+guide.button	Elementos
+guide.arrow_hint	Flecha = vence a
+guide.effective	Tu animal vence al elemento del monstruo: +{0}% de daño
+guide.resisted	El elemento del monstruo vence a tu animal: -{0}% de daño
+guide.neutral	Mismo elemento o sin relación: daño normal
+guide.light	La LUZ está fuera del triángulo: nunca se resiste, +{0}% contra élites y jefes
+guide.read_title	CÓMO LEER LA BATALLA
+guide.ring	El anillo de color bajo un monstruo es su elemento. Los monstruos enviados también muestran su elemento en el botón de envío.
+guide.wave	Cada oleada tiene un elemento principal ({0}% de sus monstruos). El recuadro muestra esta oleada -> la siguiente: invoca el contraataque a tiempo.
+guide.tips	Consejos: mezcla 2 elementos para que ninguna oleada te contrarreste del todo. Guarda un animal de Luz para los jefes. La quemadura, las marcas y la rotura de armadura sirven contra cualquier elemento.
+guide.matchup	Fuerte contra {0} · Débil contra {1}
+guide.matchup_light	Nunca se resiste · +{0}% contra jefes
+guide.always	Siempre es eficaz (+{0}%)
+guide.short	Vence a {0} · Débil: {1}
+guide.short_light	Nunca se resiste
+lobby.modes	Modos
+reject.gems	No tienes suficientes gemas
+modes.title	MODOS DE JUEGO
+modes.solo	SOLO
+modes.versus	DUELO
+modes.coop	COOPERATIVO
+modes.online_note	La incursión y los torneos se juegan con compañeros y rivales bot hasta que se abra el juego en línea.
+mode.versus	Duelo
+mode.daily	DESAFÍO DIARIO
+mode.endless	INFINITO
+mode.campaign	AVENTURA
+mode.mayhem	ARENA CAOS
+mode.raid	INCURSIÓN DE JEFE
+mode.tournament	TORNEO
+mode.play	JUGAR
+mode.open	ABRIR
+mode.again	JUGAR OTRA VEZ
+mode.daily_desc	Hoy todos tienen el mismo mazo y las mismas oleadas, cartas a nivel {0}. ¿Hasta dónde llegarás?
+mode.endless_desc	Las oleadas nunca paran. Una mejora cada 5 oleadas y un jefe cada 5. Récord semanal.
+mode.campaign_desc	50 niveles en 5 regiones, cada uno con un giro. Consigue 3 estrellas.
+mode.practice_desc	1 contra 1 frente a un bot, sin trofeos en juego.
+mode.raid_desc	Tú y un compañero contra un jefe gigante con vida compartida. Ayúdense con caramelos y furia.
+mode.tournament_desc	3 rondas eliminatorias, todas las cartas a nivel {0}. Gloria de fin de semana.
+mode.best_today	Mejor de hoy: oleada {0}
+mode.best_week	Mejor de la semana: oleada {0} · récord {1}
+mode.resets	Nuevo desafío en {0}
+mode.stars	Estrellas: {0} / {1}
+mode.mayhem_wins	Victorias este fin de semana: {0} (3 = cofre de oro)
+mode.opens_in	Abre el viernes, en {0}
+mode.tournament_round	Ronda {0} de {1}
+mode.tournament_idle	Entrada gratis cada semana
+mode.raid_chests	Cofres de oro restantes hoy: {0} / {1}
+mayhem.1	Partida espejo
+mayhem.2	Caos elemental
+mayhem.3	Tormenta de envíos
+mayhem.4	Salto de estrellas
+mayhem_desc.1	Ambos jugadores reciben el mismo mazo aleatorio a nivel 11.
+mayhem_desc.2	Los ataques eficaces hacen el doble, los resistidos la mitad, y todos los monstruos tienen el elemento de la oleada.
+mayhem_desc.3	Los envíos cuestan la mitad y dan el doble de ingresos.
+mayhem_desc.4	Las casillas estrella se mueven cada oleada y dan +50%.
+event.title	ESTA SEMANA
+event.ends	Termina en {0}
+event.element	Semana de {0}
+event.element_desc	La mayoría de los monstruos en clasificatorias y práctica son de {0}. ¡Lleva animales de {1}!
+event.boss	Semana del jefe: {0}
+event.boss_desc	Todas las oleadas de jefe en clasificatorias y práctica son de este jefe.
+event.candy	Festival de caramelos
+event.candy_desc	Todas las partidas clasificatorias y de práctica empiezan con 160 caramelos.
+season.title	Temporada clasificatoria {0}
+season.best	Mejor de esta temporada: {0} trofeos. Al final: recompensas según tu mejor arena; los trofeos por encima de {1} se reducen a la mitad.
+season.ends	Termina en {0}
+season.claim	RECLAMAR
+season.ended	TEMPORADA TERMINADA
+season.ended_text	Tu mejor arena esta temporada: {0}. Los trofeos por encima de {1} se redujeron a la mitad para la nueva temporada.
+season.reward_title	Recompensas de temporada
+bestiary.title	Bestiario
+bestiary.animals	Animales
+bestiary.monsters	Monstruos
+bestiary.progress	Conocidos {0} / {1} · primera vista de cada página: +{2} gemas
+bestiary.claim	Reclamar +{0}
+bestiary.hp	PV {0}
+bestiary.armor	armadura {0}%
+enemy_kind.normal	Monstruo de oleada
+enemy_kind.elite	Élite
+enemy_kind.boss	Jefe
+enemy_kind.sent	Monstruo enviado
+achievements.title	Logros
+ach.done	Completado
+ach.unlocks	Desbloquea: {0}
+ach.emote	gesto «{0}»
+titles.title	Título
+titles.none	Sin título
+titles.owned	{0} títulos desbloqueados
+titles.change	CAMBIAR
+replay.title	Repeticiones
+replay.watch	VER
+replay.watching	REPETICIÓN
+replay.exit	SALIR
+replay.empty	Tus últimas 5 partidas aparecerán aquí.
+replay.length	{0}:{1}
+replay.ago	atrás
+result.new_record	¡NUEVO RÉCORD!
+result.run_over	PARTIDA TERMINADA
+result.wave	OLEADA {0}
+result.no_rewards	Sin recompensas esta vez
+campaign.level	Nivel {0}-{1}
+campaign.region	Región {0} · {1}
+campaign.region_stars	Estrellas: {0} / {1}
+campaign.locked	Supera primero el nivel anterior
+campaign.goal	Sobrevive: oleada {0} / {1}
+campaign.goal_short	Sobrevive {0} oleadas
+campaign.goal_long	Objetivo: sobrevivir {0} oleadas
+campaign.hearts	Corazones: {0}
+campaign.boss	Jefe: {0}, cada {1} oleadas
+campaign.stars_rule	3 estrellas: no pierdas corazones · 2 estrellas: conserva 2/3
+campaign.first_reward	Primera victoria: {0} de oro + {1} gemas
+campaign.best_stars	Mejor: {0} estrellas
+campaign.need_element	Necesitas un animal de {0} para este nivel
+campaign.rule.none	Sin regla especial
+campaign.rule.element_wave	Todas las oleadas son casi todas de {0}
+campaign.rule.only_element	Solo se permiten animales de {0}
+campaign.rule.alternating	Los elementos de las oleadas se alternan: mezcla tu equipo
+campaign.rule.few_hearts	Solo {0} corazones
+campaign.rule.boss_rush	Avalancha de jefes: un jefe cada 3 oleadas
+daily.goal	Oleada {0} · mejor de hoy {1}
+daily.next	Siguiente recompensa: oleada {0}
+daily.rule	Hoy todos los jugadores tienen la misma semilla, mazo y oleadas.
+endless.goal	Oleada {0} · semana {1} · récord {2}
+endless.rule	Gemas en las oleadas 10, 20, 30 y 40 una vez por semana.
+raid.boss	JEFE GIGANTE
+raid.arrives	Llega en la oleada {0}
+raid.arrived	¡LLEGÓ EL JEFE GIGANTE!
+raid.give_candy	Dar +{0} ({1})
+raid.rage	Furia ({0})
+raid.partner	{0} (compañero)
+raid.got_candy	¡Tu compañero te envió caramelos!
+raid.got_rage	¡Tu compañero enfureció a tu equipo!
+tournament.rules	Eliminatoria: gana 3 rondas seguidas. Todas las cartas están a nivel {0}, así que solo cuenta la habilidad. Entrada gratis una vez por semana.
+tournament.quarter	Cuartos de final
+tournament.semi	Semifinal
+tournament.final	Final
+tournament.vs	vs {0}
+tournament.won	GANADO
+tournament.lost	ELIMINADO
+tournament.prize	Premio del campeón: cofre mágico + 50 gemas + progreso de «Ganador de copa»
+tournament.free_entry	Entrada gratis esta semana
+tournament.paid_entry	Entrar otra vez por {0} gemas
+tournament.enter	ENTRAR
+tournament.champion	¡CAMPEÓN!
+tournament.bracket	CUADRO
+deck.preset	Mazo {0}
+emote.6	¡Contrarrestado!
+emote.7	¡Mira esto!
+emote.8	¡Ayuda!
+emote.9	¡Gracias!
+emote.10	¡Increíble!
+emote.11	¿Revancha?
+title.champion	Campeón
+title.hunter	Cazamonstruos
+title.element_master	Maestro elemental
+title.boss_slayer	Matajefes
+title.breeder	Gran criador
+title.trickster	Bromista
+title.explorer	Explorador
+title.daily_star	Estrella diaria
+title.unbreakable	Irrompible
+title.raider	Asaltante
+title.cup_winner	Ganador de copa
+title.zoologist	Zoólogo
+title.season_1	Temporada Pradera
+title.season_2	Temporada Bosque
+title.season_3	Temporada Volcán
+title.season_4	Temporada Hielo
+title.season_5	Temporada Nube
+ach.winner	Ganador
+ach.hunter	Cazador
+ach.counter	Contraataque elemental
+ach.boss	Matajefes
+ach.merger	Criador
+ach.sender	Bromista
+ach.explorer	Explorador
+ach.daily	Estrella diaria
+ach.endless	Irrompible
+ach.raider	Asaltante
+ach.cup	Ganador de copa
+ach.zoologist	Zoólogo
+ach_desc.winner	Gana {0} partidas en cualquier modo
+ach_desc.hunter	Derrota a {0} monstruos
+ach_desc.counter	Acierta {0} golpes eficaces contra el elemento del monstruo
+ach_desc.boss	Derrota a {0} jefes
+ach_desc.merger	Fusiona {0} veces
+ach_desc.sender	Envía {0} monstruos
+ach_desc.explorer	Consigue {0} estrellas de aventura
+ach_desc.daily	Llega a la oleada {0} en un desafío diario
+ach_desc.endless	Llega a la oleada {0} en infinito
+ach_desc.raider	Gana {0} incursiones
+ach_desc.cup	Gana {0} torneos
+ach_desc.zoologist	Conoce {0} animales y monstruos
+enemy_desc.slime	Lento y blando. Llega en grupo.
+enemy_desc.imp	Rápido y frágil.
+enemy_desc.rock_beetle	Lento, mucha vida.
+enemy_desc.armored_knight	30% de armadura y difícil de empujar. La rotura de armadura ayuda.
+enemy_desc.bandit_raccoon	Se va con 10 caramelos si llega a la puerta.
+enemy_desc.crystal_bat	Acelera un 30% cada 5 segundos. Ralentízalo o acaba con él rápido.
+enemy_desc.drum_goblin	Cada 5 s su tambor acelera a 3 monstruos cercanos. Siléncialo.
+enemy_desc.armored_scorpion	40% de armadura, corre más rápido con menos del 30% de vida. Rompe su armadura.
+enemy_desc.clockwork_gorilla	Marca a un animal con un anillo rojo y luego lo bloquea 1,5 s. Más rápido con menos de la mitad de vida. El Carnero Égida bloquea el bloqueo.
+enemy_desc.void_hermit_crab	Levanta un escudo del 8% de su vida. Rómpelo rápido: después recibe +15% de daño.
+enemy_desc.boss_summoner	Invoca diablillos a su alrededor.
+enemy_desc.boss_stunner	De vez en cuando aturde a uno de tus animales.
+enemy_desc.boss_healer	Cura a los monstruos cercanos.
+enemy_desc.send_rat	Enviado por el rival: tres ratas rápidas.
+enemy_desc.send_ghost	Enviado: invisible hasta que un animal de Control lo revele.
+enemy_desc.send_turtle	Enviado: recibe la mitad de daño de los ataques de área.
+enemy_desc.send_crow	Enviado: roba 30 caramelos si logra pasar.
+enemy_desc.send_golem	Enviado: bloquea una de tus casillas al morir.
+enemy_desc.send_king	Enviado: un minijefe que llama ratas.
+battle.unit_info	{0}  Nv {1}  ({2} {3})\nArrástralo sobre un animal igual del mismo nivel para fusionar
+reject.candy	No tienes suficientes caramelos
+reject.points	No tienes suficientes puntos de envío
+reject.board_full	No hay casillas libres - fusiona dos animales iguales
+reject.locked	Esa casilla está bloqueada
+reject.wave_full	La siguiente oleada del rival está llena (máx. 3)
+reject.used	Solo se puede enviar una vez por partida
+reject.max_level	Ya está al nivel máximo
+reject.generic	No se puede hacer
+element.none	-
+element.fire	Fuego
+element.water	Agua
+element.grass	Planta
+element.light	Luz
+role.damage	Daño
+role.area	Área
+role.control	Control
+role.support	Apoyo
+rarity.common	Común
+rarity.rare	Raro
+rarity.epic	Épico
+rarity.legendary	Legendario
+skill.burn	Nivel 4+: quema a los enemigos ({0} de daño/s)
+skill.reveal	Golpea y revela enemigos invisibles
+skill.candyperwave	+{0} caramelos por nivel en cada oleada
+skill.attackspeedaura	+{0}% de velocidad de ataque a 4 vecinos (+{1}% por nivel)
+skill.luckycandy	{0}% de probabilidad de caramelos dobles al derrotar (+{1}% por nivel)
+skill.phoenixblessing	Cada {0} oleadas: +1 nivel a un animal de Fuego, desbloquea casillas
+skill.knockback	Empuja a los enemigos hacia atrás
+skill.pullstun	Atrae al objetivo hacia atrás y lo aturde
+skill.alwayscounter	Siempre recibe la bonificación de elemento
+skill.burnstack	Cada golpe añade una quemadura (máx. 3, {0} de daño por pulso). Nv4: quema más tiempo. Nv7: cada 5.º golpe propaga el fuego
+skill.pierce	Atraviesa {0} monstruos en línea (70% después del primero). Nv4: +1 monstruo. Nv7: empuja al primero
+skill.armorbreak	Rompe {0}% de armadura durante 4 s (Nv4: {1}%). Armadura bajo cero = daño extra. Nv7: cada 4.º golpe explota más amplio
+skill.chillslow	Ralentiza un {0}% durante 2 s (Nv4: {1}%). Nv7: cada 6.º golpe congela 0,5 s
+skill.vulnerable	Los monstruos marcados reciben +{0}% de daño de todo durante 3 s (Nv4: {1}%). Nv7: marca 2 más
+skill.burst	Dispara {0} tiros rápidos (Nv4: +1). Nv7: último tiro +50% contra monstruos ralentizados
+skill.nectarhaste	+{0}% de velocidad de ataque a los 3 atacantes más cercanos (Nv4: {1}%). Nv7: 4 aliados
+skill.rootarea	Enraíza a los monstruos de un área 0,6 s (Nv4: 0,75 s, una vez cada 4 s cada uno). A los jefes los ralentiza
+skill.silence	Cada 4.º golpe silencia al objetivo 1 s: sin habilidades ni aceleraciones. Jefes: la mitad
+skill.aegisguard	Protege a los {0} aliados más cercanos: +{1}% de daño y bloquea 1 aturdimiento / bloqueo de casilla. Nv4: +1 aliado. Nv7: bloquea 2
+arena.1	Pradera Verde
+arena.2	Bosque Profundo
+arena.3	Volcán
+arena.4	Isla de Hielo
+arena.5	Palacio de las Nubes
+shop.free_tag	GRATIS
+shop.best_value	MEJOR PRECIO
+shop.popular	POPULAR
+shop.save_10	AHORRA 10%
+shop.legendary_chance	¡LEGENDARIO!
+pass.tier_short	NIVEL
+pass.unlock_premium	Desbloquear Premium
+lobby.pass_short	Pase {0}/{1}
+lobby.practice_short	Práctica
+lobby.ranked	Clasificatoria · gana trofeos
+result.rewards	Recompensas
+result.play_again	Jugar otra vez
+result.stat_wave	Oleada
+result.stat_kills	Derrotados
+result.stat_merges	Fusiones
+result.stat_sends	Envíos
+result.tip.merge	Consejo: fusiona más seguido - dos animales de nivel 2 vencen a cuatro de nivel 1.
+result.tip.send	Consejo: envía monstruos mientras tu rival lucha contra una oleada de jefe.
+result.tip.upgrade	Consejo: mejora tus animales en la pestaña Mazo y usa las mejoras de elemento en batalla.
+battle.chat	Chat
+battle.zoom	Ver al rival
+battle.zoom_back	Volver a mi zoo
+battle.opp_no_upgrades	Aún sin mejoras
+battle.opp_perks	{0} mejoras
+battle.opp_spell	¡{0} lanzó {1}!
+battle.reflect	Reflejar {0}
+battle.reflected_short	Rebotado
+battle.reflected	¡{0} rebotado!
+battle.opp_reflected	¡El rival te devolvió {0}!
+battle.target_hint	{0}: toca el camino
+battle.element_upgraded	Animales de {0} nivel {1}: +{2}% de daño
+battle.perk_title	Elige una bendición
+battle.perk_auto	Elección automática en {0} s
+battle.perk_chosen	Bendición: {0}
+battle.star	(casilla estrella)
+battle.star_moved	¡Las casillas estrella se movieron! Reubica tus mejores animales
+battle.unit_bonus	Bonificación +{0}%  ·  {1} vecinos del mismo elemento  {2}
+battle.skill_charging	Habilidad: {0} ({1}%)
+battle.skill_need_level	La habilidad se desbloquea en el nivel {0}
+battle.summon	INVOCAR
+mm.rematch	Desafiando otra vez a {0}
+result.rematch	Revancha
+result.revenge	Venganza
+result.revenge_bonus	Victoria: +{0}% de oro
+result.streak	Racha de victorias x{0}  +{1} de oro
+result.revenge_won	¡Venganza! +{0} de oro
+battle.income	INGRESOS
+battle.per_wave	/oleada
+battle.your_leak	¡Tu monstruo pasó! -{0} corazones para el rival
+battle.opp_leak	¡Su monstruo pasó! -{0} corazones
+battle.boss_duel	DUELO DE JEFES - gana quien lo derrote primero
+battle.boss_duel_win	¡Derrotaste al jefe primero! +{0} caramelos
+battle.boss_duel_lose	Ellos derrotaron al jefe primero - ¡viene un Resto de jefe!
+battle.you	Tú
+battle.summon_random	ALEATORIO
+loading.title	Cargando el zoo...
+mm.practice	Partida de práctica
+tip.0	Fusiona dos animales iguales del mismo nivel para crear uno más fuerte.
+tip.1	Las casillas estrella doradas dan +30% de daño - ¡pon ahí a tu mejor animal!
+tip.2	Enviar monstruos cuesta caramelos pero sube tus ingresos cada oleada - los envíos baratos rinden más.
+tip.3	Revienta los globos rosas para conseguir caramelos gratis.
+tip.4	Desde el nivel 3 un animal brilla: tócalo para usar su habilidad.
+tip.5	En batalla, toca una carta de animal para invocarlo o arrástrala a la casilla que quieras.
+result.x2_title	ORO x2
+result.watch_ad	Ver anuncio
+reward.tap_skip	Toca para revelar todo
+reward.name.gold	Oro
+reward.name.gems	Gemas
+reward.name.xp	XP de temporada
+battle.next	SIGUIENTE
+battle.not_summoned	No invocado
+battle.choose	Elegir
+perk.cat.power	Poder
+perk.cat.economy	Economía
+perk.cat.defense	Defensa
+perk.cat.spell	Hechizos
+perk.cat.attack	Ataque
+battle.upgrade	Potenciar {0}
+battle.atk	Ataque
+battle.spd	Velocidad
+battle.bonus	Bonificación
+battle.lv	Nv {0}
+battle.per_sec	{0}/s
+battle.view	Ver
+battle.watching	Viendo a {0} - toca un tablero para volver
+battle.unit_upgraded	{0} poder nivel {1}: +{2}% de daño
+skill.role.damage	¡Disparo potente!
+skill.role.area	¡Gran explosión!
+skill.role.control	¡Onda aturdidora!
+skill.role.support	¡Ánimo!
+spell.freeze	Congelar
+spell.freeze.desc	Congela a todos los enemigos de un área durante 2,5 segundos (jefes: la mitad).
+spell.meteor	Meteoro
+spell.meteor.desc	Mucho daño a todos los enemigos de un área. Aumenta con la oleada.
+spell.gust	Ráfaga
+spell.gust.desc	Empuja a los enemigos de un área hacia atrás en el camino.
+spell.rage	Furia
+spell.rage.desc	Todos tus animales atacan un 60% más rápido durante 6 segundos.
+spell.candy_rain	Lluvia de caramelos
+spell.candy_rain.desc	Las derrotas dan un 60% más de caramelos durante 15 segundos.
+spell.lightning	Rayo
+spell.lightning.desc	Golpea al enemigo más resistente con mucho daño. No hace falta apuntar.
+perk.firepower	Furia de fuego
+perk.firepower.desc	Los animales de Fuego hacen +25% de daño.
+perk.waterpower	Poder de la marea
+perk.waterpower.desc	Los animales de Agua hacen +25% de daño.
+perk.grasspower	Crecimiento salvaje
+perk.grasspower.desc	Los animales de Planta hacen +25% de daño.
+perk.lightpower	Resplandor
+perk.lightpower.desc	Los animales de Luz hacen +25% de daño.
+perk.mergecandy	Bono de fusión
+perk.mergecandy.desc	Cada fusión da +10 caramelos.
+perk.cheapsends	Descuento de monstruos
+perk.cheapsends.desc	Enviar monstruos cuesta un 20% menos.
+perk.cheapcards	Ganga
+perk.cheapcards.desc	Las cartas de animal cuestan un 15% menos.
+perk.interest	Alcancía
+perk.interest.desc	Cada oleada: +10% de tus caramelos (máx. 60).
+perk.extrahearts	Segundo aliento
+perk.extrahearts.desc	+2 corazones ahora mismo.
+perk.spellhaste	Magia rápida
+perk.spellhaste.desc	Recarga de hechizos un 30% más corta.
+perk.luckycrit	Golpe de suerte
+perk.luckycrit.desc	15% de probabilidad de que cualquier golpe haga daño doble.
+perk.sendpoints	Travesura
+perk.sendpoints.desc	Los envíos dan +50% de ingresos.
+emote.0	¡Hola!
+emote.1	¡Bien!
+emote.2	¡Jaja!
+emote.3	Uy...
+emote.4	¡Grrr!
+emote.5	Buena partida
+reject.cooldown	Aún no está listo
+reject.not_ready	La habilidad se está cargando
+reject.no_target	Sin objetivo
+reject.invalid_cell	No se puede colocar ahí
+reject.not_on_board	Invoca primero a este animal - las mejoras solo funcionan en animales de tu zoo
+deck.spells_title	Hechizos del cuidador (toca para cambiar)
+deck.spell_cost	{0} caramelos
+deck.spell_swap	Elige un hechizo para este espacio
+tutorial.spell	¡Hechizos! Toca Meteoro o Congelar junto a INVOCAR y luego toca el camino donde se juntan los enemigos.
+nav.shop	Tienda
+nav.deck	Mazo
+nav.battle	Batalla
+nav.pass	Pase
+nav.settings	Ajustes
+common.ok	OK
+time.dh	{0} d {1} h
+time.hm	{0} h {1} min
+reward.gold	{0} de oro
+reward.gems	{0} gemas
+reward.xp	{0} XP de pase
+reward.shards	{0} fragmentos de {1}
+reward.new	¡NUEVO!
+lobby.missions	Misiones diarias
+lobby.missions_ready	Misiones: ¡{0} listas!
+lobby.pass	Pase de temporada  {0}/{1}
+chest.wood	Cofre de madera
+chest.silver	Cofre de plata
+chest.gold	Cofre de oro
+chest.magic	Cofre mágico
+chest.empty	Espacio vacío
+chest.tap_unlock	Toca para desbloquear
+chest.open	¡ABRIR!
+chest.open_now	Abrir ahora: {0} gemas
+chest.skip_question	¿Abrir este cofre ahora por {0} gemas?
+chest.unlock_started	Desbloqueo iniciado
+chest.how_to_get	Gana batallas clasificatorias para conseguir cofres
+missions.title	Misiones diarias
+missions.reset	Nuevas misiones en {0}
+missions.reward	+{0} de oro  +{1} XP de pase
+missions.claim	Reclamar
+missions.claimed	Hecho
+mission.playmatches	Juega {0} batallas
+mission.winmatches	Gana {0} batallas
+mission.killenemies	Derrota a {0} enemigos
+mission.mergeunits	Fusiona animales {0} veces
+mission.sendmonsters	Envía {0} monstruos
+mission.reachwave	Llega a la oleada {0}
+mission.buycards	Compra {0} animales en batalla
+mission.openchests	Abre {0} cofre
+mission.upgradeunits	Mejora un animal {0} vez
+deck.choose_slot	Toca un espacio del mazo para {0}
+deck.collection	Colección  {0}/{1}
+deck.locked	Bloqueado
+deck.locked_hint	Encuentra fragmentos en cofres o en la tienda para desbloquear
+deck.level_short	Nv.{0}
+deck.card_level	Nivel de carta {0}/{1}
+deck.level_bonus	Bonificación por nivel de carta: +{0}% de daño
+deck.max	MÁX
+deck.shards	Fragmentos {0}/{1}
+deck.upgrade	Mejorar  {0} de oro
+deck.upgraded	¡{0} ahora es nivel {1}!
+deck.need_shards	No tienes suficientes fragmentos
+deck.use	Usar
+deck.in_deck	En el mazo
+deck.send_swap	Elige un monstruo para este espacio
+deck.no_other_sends	Todos los monstruos ya están en tu mazo
+shop.free	Regalos gratis
+shop.claim	Reclamar
+shop.claimed	Vuelve mañana
+shop.watch_ad	Ver anuncio
+shop.daily	Ofertas diarias  (nuevas en {0})
+shop.shards	x{0} fragmentos
+shop.sold	Vendido
+shop.gold_price	{0} de oro
+shop.gems_price	{0} gemas
+shop.gacha	Invocación de animales
+shop.gacha_text	Invoca fragmentos de animales. ¡Cada tirada puede ser Legendaria!
+shop.pity	Legendario garantizado en {0} tiradas
+shop.pull1	x1  {0} gemas
+shop.pull10	x10  {0} gemas
+shop.rates	Probabilidades
+shop.rate_line	{0}: {1}%  ({2} fragmentos)
+shop.pity_rule	Un Legendario está garantizado al menos una vez cada {0} tiradas.
+shop.chests	Cofres
+shop.chest_info	{0}+ fragmentos, {1}+ de oro
+shop.gold	Oro
+shop.gems	Gemas
+shop.confirm_gems	¿Gastar {0} gemas?
+shop.not_enough_gems	No tienes suficientes gemas
+shop.not_enough_gold	No tienes suficiente oro
+shop.purchase_failed	La compra falló
+privacy.title	Tu privacidad
+privacy.text	Zoo Defense es gratis gracias a los anuncios. Si aceptas, nuestros socios publicitarios pueden usar datos de tu dispositivo (como un ID de publicidad) para mostrarte anuncios según tus intereses, y recopilamos estadísticas de juego anónimas para mejorar el juego. Si dices que no, seguirás viendo anuncios, pero no personalizados, y no se recopilan estadísticas.\n\nPuedes cambiarlo cuando quieras en Ajustes › Privacidad.
+privacy.accept	Sí, personalizar mis anuncios
+privacy.decline	No, no usar mis datos
+privacy.policy	Política de privacidad
+settings.privacy	Privacidad
+settings.personal_ads	Anuncios personalizados
+settings.personal_ads_hint	Desactivado = tus datos no se venden ni se comparten
+settings.open	Abrir
+shop.verify_failed	No se pudo verificar la compra
+shop.verify_later	Verificando tu compra… llegará pronto
+shop.deferred	Compra pendiente de aprobación
+shop.restore	Restaurar compras
+shop.restore_done	Compras restauradas
+shop.delivered	Compra entregada
+shop.offers	Ofertas especiales
+shop.value	VALOR x{0}
+shop.limit_once	Oferta única
+shop.limit_weekly	Una vez por semana
+shop.limit_daily	Una vez al día
+shop.back_in	Vuelve en {0}
+shop.monthly	Tarjeta mensual
+shop.monthly_days	{0} DÍAS
+shop.monthly_text	{0} gemas ya + {1} gemas cada día durante {2} días\n({3} gemas en total)
+shop.monthly_left	Activa: quedan {0} días · reclama cada día en Regalos gratis
+shop.monthly_tag	MENSUAL
+shop.first_x2	x2 PRIMERA COMPRA
+shop.bonus	+{0}%
+bundle.bundle_starter	Paquete inicial
+bundle.bundle_weekly	Paquete semanal de cofres
+bundle.bundle_daily_gems	Oferta diaria de plata
+bundle.bundle_champion	Paquete Campeón
+bundle.bundle_legend	Paquete Leyenda
+shop.test_store	Tienda de prueba: las compras son gratis en esta versión
+pass.season	Temporada {0}
+pass.ends	Termina en {0}
+pass.tier	Nivel {0}/{1}
+pass.xp	{0}/{1} XP
+pass.max	MÁX
+pass.free	Gratis
+pass.premium	Premium
+pass.buy_premium	Desbloquear Premium  {0} gemas
+pass.premium_text	¿Desbloquear las recompensas premium de esta temporada por {0} gemas?
+pass.premium_owned	Premium desbloqueado
+pass.claim	Reclamar
+pass.claimed	Reclamado
+pass.locked	Premium
+pass.need_tier	Nivel {0}
+pass.tier_reward	Nivel {0}
+result.pass_xp	+{0} XP de pase
+result.chest	Nuevo cofre: {0}
+result.chest_full	Espacios de cofre llenos - esta vez no hay cofre
+result.invalid	No se pudo verificar la partida - sin recompensas
+result.tutorial_done	¡Tutorial completado!
+tutorial.welcome_title	¡Bienvenido al zoo!
+tutorial.welcome_text	¡Los monstruos vienen por tu zoo! Aprende lo básico en una breve batalla de práctica.
+tutorial.play	Empezar tutorial
+tutorial.skip	Saltar
+tutorial.coach	Entrenador Panda
+tutorial.buy	Toca una carta de animal abajo para invocar justo ese animal, o ARRÁSTRALA a una casilla. ALEATORIO es más barato. ¡Las casillas estrella doradas dan +30% de daño!
+tutorial.buy_more	¡Genial! La insignia ↑ de una carta potencia a ese animal durante esta partida. ¡Revienta los globos rosas para conseguir caramelos gratis!
+tutorial.merge	Arrastra un animal sobre el mismo animal del mismo nivel para fusionarlos. Desde el nivel 3 brilla: ¡tócalo para usar una habilidad!
+tutorial.send	Toca un monstruo de la franja roja para enviarlo: cuesta caramelos, ¡pero suma ingresos cada oleada! Los monstruos enviados llegan en 5 s - toca Reflejar para devolverles los suyos.
+tutorial.finish	¡Eso es todo! Sigue fusionando y enviando hasta que tu rival se quede sin corazones.
+settings.title	Ajustes
+settings.music	Música
+settings.sfx	Efectos de sonido
+settings.off	Desactivado
+settings.language	Idioma
+settings.tutorial	Tutorial
+settings.play	Jugar otra vez
+settings.reset	Reiniciar progreso
+settings.reset_button	Reiniciar
+settings.reset_text	¿Borrar todo el progreso de este dispositivo? No se puede deshacer.
+settings.debug	Herramientas de prueba (solo versiones dev)
+settings.version	Versión {0}  -  {1} batallas jugadas
+settings.sound	Sonido
+settings.game	Juego
+settings.support	Soporte
+settings.online	Batallas en línea
+settings.online_hint	Clasificatoria: busca primero jugadores reales
+settings.player_id	ID de jugador
+settings.copy	Copiar
+settings.copied	Copiado
+settings.no_title	Aún sin título
+settings.battles	{0} batallas
+settings.wins	{0} victorias
+settings.reset_text_linked	¿Borrar el progreso de este teléfono? Tu copia en la nube sigue en tu cuenta vinculada.
+account.title	Cuenta
+account.unavailable	La cuenta en línea no está disponible en esta versión.
+account.guest	INVITADO
+account.guest_text	Tu progreso solo se guarda en este teléfono. Vincula una cuenta para protegerlo y jugar en otros teléfonos.
+account.link	Vincular cuenta
+account.have_account	¿Ya tienes cuenta? Inicia sesión
+account.linked	VINCULADA
+account.linked_text	El progreso se respalda automáticamente.
+account.backup_ago	Última copia: hace {0}
+account.backup_never	Aún sin copia de seguridad
+account.backup	Respaldar ahora
+account.backup_ok	Respaldado
+account.unlink	Desvincular
+account.unlink_text	¿Desvincular esta cuenta? Tu progreso se queda en este teléfono, pero ya no se respaldará.
+account.unlinked	Cuenta desvinculada
+account.delete	Eliminar cuenta
+account.delete_button	Eliminar para siempre
+account.delete_text	¿Eliminar tu cuenta en línea y su copia en la nube, y reiniciar este teléfono? No se puede deshacer.
+account.deleted	Cuenta eliminada
+account.waiting	Esperando inicio de sesión
+account.linked_ok	¡Cuenta vinculada!
+account.exists_title	Cuenta ya en uso
+account.exists_text	Esta cuenta ya tiene progreso de otro teléfono. ¿Cargar ese progreso aquí? El progreso de este teléfono se reemplazará.
+account.load_it	Cargar
+account.signin	Iniciar sesión
+account.signin_text	Inicia sesión en tu cuenta y carga su progreso en este teléfono. El progreso de este teléfono se reemplazará.
+account.restored	¡Progreso cargado!
+account.err_config	El inicio de sesión de la cuenta aún no está configurado
+account.err_offline	Sin conexión. Inténtalo de nuevo.
+account.err_generic	Algo salió mal. Inténtalo de nuevo.
+unit.fire_fox	Zorro de fuego
+unit.firework_rooster	Gallo pirotécnico
+unit.ember_squirrel	Ardilla brasa
+unit.baby_dragon	Bebé dragón
+unit.phoenix_chick	Pollito fénix
+unit.bubble_frog	Rana burbuja
+unit.ice_penguin	Pingüino de hielo
+unit.otter_cannon	Nutria cañón
+unit.ink_octopus	Pulpo de tinta
+unit.wave_dolphin	Delfín de olas
+unit.spike_hedgehog	Erizo espinoso
+unit.carrot_bunny	Conejo zanahoria
+unit.vine_sloth	Perezoso liana
+unit.chubby_panda	Panda gordito
+unit.leaf_gecko	Geco hoja
+unit.sun_sparrow	Gorrión solar
+unit.lucky_cat	Gato de la suerte
+unit.night_owl	Búho nocturno
+unit.meteor_deer	Ciervo meteoro
+unit.rainbow_unicorn	Unicornio arcoíris
+unit.lava_salamander	Salamandra de lava
+unit.ember_boar	Jabalí brasa
+unit.forge_mole	Topo herrero
+unit.snow_seal	Foca de nieve
+unit.coral_axolotl	Ajolote coral
+unit.snap_shrimp	Camarón chasquido
+unit.nectar_bee	Abeja néctar
+unit.sprout_elephant	Elefante brote
+unit.moon_moth	Polilla lunar
+unit.aegis_ram	Carnero Égida
+enemy.slime	Baba
+enemy.imp	Diablillo
+enemy.rock_beetle	Escarabajo roca
+enemy.armored_knight	Caballero acorazado
+enemy.boss_summoner	Rey invocador
+enemy.boss_stunner	Sapo trueno
+enemy.boss_healer	Bruja hongo
+enemy.send_rat	Rata veloz
+enemy.send_ghost	Fantasma sigiloso
+enemy.send_turtle	Tortuga escudo
+enemy.send_crow	Cuervo caramelero
+enemy.send_golem	Gólem de ladrillos
+enemy.send_king	Mini rey monstruo
+enemy.bandit_raccoon	Mapache bandido
+enemy.crystal_bat	Murciélago de cristal
+enemy.drum_goblin	Duende tambor
+enemy.armored_scorpion	Escorpión acorazado
+enemy.clockwork_gorilla	Gorila mecánico
+enemy.void_hermit_crab	Cangrejo ermitaño del vacío
+send.rat_rush	Avalancha de ratas
+send.sneaky_ghost	Fantasma sigiloso
+send.shield_turtle	Tortuga escudo
+send.candy_crow	Cuervo caramelero
+send.brick_golem	Gólem de ladrillos
+send.mini_king	Mini rey monstruo
+send.boss_remnant	Resto de jefe
+lobby.leaderboard	Ranking
+lobby.friends	Amigos
+login.title	Premios diarios
+login.hint	Un regalo al día. ¿Te saltaste un día? No pasa nada, tu regalo te espera.
+login.day	Día {0}
+login.claim	Recoger día {0}
+login.claimed	Recogido
+login.come_back	Vuelve mañana
+lb.title	Clasificación
+lb.trophies	Trofeos
+lb.endless	Infinito
+lb.daily	Diario
+lb.world	Mundo
+lb.around_me	Cerca de mí
+lb.friends	Amigos
+lb.resets	Se reinicia en {0}
+lb.my_best_wave	Tu mejor: oleada {0}
+lb.my_trophies	Tus trofeos: {0}
+lb.wave	Oleada {0}
+lb.game_center	Game Center
+lb.loading	Cargando…
+lb.offline	La clasificación necesita conexión a internet.
+lb.empty	Aún no hay puntuaciones. ¡Sé el primero!
+lb.no_friends	Añade amigos para comparar puntuaciones.
+lb.player	Jugador
+friends.title	Amigos
+friends.offline	Los amigos necesitan conexión a internet.
+friends.my_code	Tu código de amigo
+friends.copy	Copiar
+friends.share	Compartir
+friends.copied	¡Copiado!
+friends.share_text	¡Juega a Zoo Defense conmigo! Usa mi código {0} (los nuevos jugadores reciben gemas): {1}
+friends.add	Añadir amigo
+friends.code_hint	Código de amigo
+friends.add_btn	Añadir
+friends.bad_code	Los códigos tienen 6 letras y números.
+friends.own_code	¡Ese es tu propio código!
+friends.not_found	No hay ningún jugador con este código.
+friends.already	Ya es tu amigo.
+friends.added	¡Amigo añadido!
+friends.full	La lista de amigos está llena ({0}).
+friends.list	Amigos {0}/{1}
+friends.empty	Aún no tienes amigos. ¡Comparte tu código!
+friends.online	En línea
+friends.seen	Visto hace {0}
+friends.trophies	{0} trofeos
+friends.invites_you	¡Te invita a un amistoso!
+friends.invite	Invitar
+friends.accept	Unirse
+friends.remove	Eliminar
+friends.remove_q	¿Eliminar a {0} de tus amigos?
+friends.invite_banner	¡{0} te invita a un amistoso!
+room.title	Partida amistosa
+room.hint	Juega 1 contra 1 con un amigo. Sin trofeos en juego.
+room.create	Crear sala
+room.code_hint	Código de sala
+room.join	Unirse
+room.share_code	Dale este código a tu amigo
+room.joining	Entrando en la sala
+room.waiting	Esperando a tu amigo
+room.offline	Activa el juego en línea en Ajustes y conéctate a internet.
+room.not_found	Sala no encontrada. Revisa el código.
+room.failed	No se pudo conectar. Inténtalo de nuevo.
+invite.title	Invitar amigos
+invite.joined	Amigos que entraron con tu código: {0}\n+{1} gemas por cada uno
+invite.enter	Código de un amigo: +{0} gemas
+invite.redeem	Canjear
+invite.used	Ya usaste un código de invitación.
+invite.failed	No se pudo canjear el código. Inténtalo de nuevo.
+online.reconnecting	Conexión perdida, reconectando
+online.opp_reconnecting	{0} se está reconectando
+result.friendly	Amistoso: sin trofeos
+settings.notifications	Recordatorios
+settings.notifications_hint	Cofre listo, regalo diario. Máx. 2 al día.
+settings.notifications_denied	Las notificaciones de Zoo Defense están desactivadas en los ajustes del teléfono.
+notify.title	Zoo Defense
+notify.chest	¡Tu {0} está listo para abrir!
+notify.login	¡Tu regalo del día {0} te espera!
+notify.monthly	Las gemas de tu tarjeta mensual están listas.
+notify.comeback	¡Los monstruos han vuelto! Tus animales te necesitan.
+notify.missions	¡Hay nuevas misiones!

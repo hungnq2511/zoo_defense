@@ -87,6 +87,8 @@ namespace ZooDefense.Core
         /// <summary>Monster and animal ids met in the match (bestiary).</summary>
         public List<string> enemiesSeen;
         public List<string> unitsUsed;
+        /// <summary>Opponent's hidden rating (online hello, or the bot's rating); 0 = unknown (rating unchanged).</summary>
+        public int opponentMmr;
     }
 
     public struct MatchRewards
@@ -98,6 +100,7 @@ namespace ZooDefense.Core
         public bool chestSlotsFull; // a chest was earned but there was no room
         public int winStreak;       // ranked win streak after this match
         public int bonusGold;       // part of `gold` that came from the streak / revenge bonus
+        public int mmrDelta;        // hidden rating change (not shown to the player)
     }
 
     public enum ChestStatus { Empty, Locked, Unlocking, Ready }

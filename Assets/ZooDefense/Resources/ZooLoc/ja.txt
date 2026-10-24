@@ -1,0 +1,821 @@
+# Zoo Defense strings: key<TAB>text. \n = new line. Missing keys fall back to English.
+lobby.stats	トロフィー {0}     ゴールド {1}
+lobby.arena	アリーナ {0}
+lobby.top_arena	最高アリーナに到達
+lobby.next_arena	次: {0}（トロフィー {1}）
+lobby.played	対戦 {0}   勝利 {1}
+lobby.battle	バトル
+lobby.deck	デッキ
+lobby.practice	練習（トロフィーなし）
+lobby.reset	プロフィールをリセット
+lobby.bot	ボット: {0}
+lobby.language_changed	言語: 日本語
+difficulty.0	かんたん
+difficulty.1	ふつう
+difficulty.2	むずかしい
+mm.finding	対戦相手をさがしています
+online.connecting	相手が見つかりました！接続中
+online.waiting	{0} を待っています
+mm.vs	VS
+common.cancel	キャンセル
+result.victory	勝利！
+result.defeat	敗北
+result.draw	引き分け
+result.trophies	トロフィー {0}  ({1})
+result.practice	練習試合: トロフィーなし
+result.gold	+{0} ゴールド
+result.stats	到達ウェーブ {0}   撃破 {1}
+result.arena	アリーナ: {0}
+result.double_gold	ゴールド2倍（広告を見る）
+result.gold_doubled	ゴールドが2倍に！
+result.continue	つづける
+deck.title	デッキ
+deck.counter	どうぶつ {0}/5     送りモンスター {1}/4
+deck.sends_title	送りモンスター（4体えらぶ）
+deck.send_label	{0}\n{1} pt{2}
+deck.once	 (1回のみ)
+deck.hint	どうぶつをタップして追加・削除します。
+deck.full	デッキがいっぱいです（5体）。先に1体外してください。
+deck.sends_full	送りモンスターはちょうど4体えらんでください。
+deck.incomplete	どうぶつ5体と送りモンスター4体をえらんでください。
+deck.saved	デッキを保存しました
+deck.save	保存
+deck.back	もどる
+deck.info	{0}  -  {1} {2}、{3}
+deck.stat_damage	{1}秒ごとに {0} ダメージ
+deck.stat_splash	、範囲 {0}
+deck.stat_slow	、スロー {0}%
+deck.stat_stun	、スタン
+battle.get_ready	準備して！
+battle.ready	準備OK
+battle.wave	ウェーブ {0}
+battle.sudden_death_wave	サドンデス - ウェーブ {0}
+battle.timer	次のウェーブ {0}
+battle.timer_sudden	サドンデス  {0}
+battle.card_price	カード {0}
+battle.reroll	カード\n入替\n\n{0}
+battle.send	送る
+battle.send_used	使用済み
+battle.paused	一時停止
+battle.resume	再開
+battle.surrender	降参
+battle.boss	ボスがやってくる！
+battle.incoming	接近中: {0}！
+battle.sent	{0} を次のウェーブに送りました
+battle.opp_sending	{0} が {1} を送ってきた！
+battle.crow	カラスにキャンディを {0} 個盗まれた！
+battle.golem	ゴーレムにマスを1つロックされた
+battle.raccoon	アライグマがキャンディを {0} 個持ち去った！
+battle.wave_element	{0} · {1}
+battle.effective	効果抜群！
+battle.resisted	いまひとつ
+battle.blocked	ブロック！
+battle.shield_up	シールド！
+battle.shield_broken	シールド破壊！
+battle.lock_warning	ゴリラがマスを狙っている！
+status.1	拘束
+status.2	沈黙
+status.3	凍結
+status.4	装甲破壊
+status.5	マーク
+ability.1	太鼓！
+ability.2	激怒！
+ability.3	ダッシュ！
+ability.104	オーバードライブ！
+guide.title	属性
+guide.button	属性
+guide.arrow_hint	矢印 = 有利
+guide.effective	どうぶつがモンスターの属性に有利: ダメージ +{0}%
+guide.resisted	モンスターの属性がどうぶつに有利: ダメージ -{0}%
+guide.neutral	同じ属性または相性なし: 通常ダメージ
+guide.light	光は三すくみの外: 半減されず、エリートとボスに +{0}%
+guide.read_title	バトルの見かた
+guide.ring	モンスターの下の色の輪が属性です。送りモンスターの属性は送るボタンにも表示されます。
+guide.wave	各ウェーブにはメイン属性があります（モンスターの {0}%）。ウェーブ欄には「今のウェーブ -> 次のウェーブ」が表示されます。間に合うように有利な相手を召喚しよう。
+guide.tips	ヒント: 2つの属性を混ぜると、どのウェーブにも不利になりません。ボス用に光のどうぶつを1体入れておこう。やけど・マーク・装甲破壊はどの属性にも効きます。
+guide.matchup	{0} に強い · {1} に弱い
+guide.matchup_light	半減されない · ボスに +{0}%
+guide.always	常に有利（+{0}%）
+guide.short	{0} に有利 · {1} に不利
+guide.short_light	半減されない
+lobby.modes	モード
+reject.gems	ジェムが足りません
+modes.title	ゲームモード
+modes.solo	ソロ
+modes.versus	対戦
+modes.coop	協力
+modes.online_note	レイドとトーナメントは、オンライン対応までボットの仲間・相手と遊びます。
+mode.versus	対戦
+mode.daily	デイリーチャレンジ
+mode.endless	エンドレス
+mode.campaign	アドベンチャー
+mode.mayhem	カオスアリーナ
+mode.raid	ボスレイド
+mode.tournament	トーナメント
+mode.play	プレイ
+mode.open	ひらく
+mode.again	もう一度
+mode.daily_desc	今日は全員同じデッキとウェーブ、カードはレベル {0}。どこまで行ける？
+mode.endless_desc	ウェーブは終わらない。5ウェーブごとにパークとボス。週間ベストを目指そう。
+mode.campaign_desc	5つの地域に50ステージ、それぞれに特別ルール。星3つを集めよう。
+mode.practice_desc	ボットと1対1、トロフィーは変動しません。
+mode.raid_desc	仲間と2人で、HPを共有する巨大ボスに挑もう。キャンディや激怒で助け合おう。
+mode.tournament_desc	勝ち抜き3ラウンド、全カードがレベル {0}。週末の栄光をつかめ。
+mode.best_today	今日のベスト: ウェーブ {0}
+mode.best_week	週間ベスト: ウェーブ {0} · 記録 {1}
+mode.resets	次のチャレンジまで {0}
+mode.stars	星: {0} / {1}
+mode.mayhem_wins	今週末の勝利: {0}（3勝 = ゴールド宝箱）
+mode.opens_in	金曜日に開放、あと {0}
+mode.tournament_round	ラウンド {0} / {1}
+mode.tournament_idle	毎週1回無料で参加
+mode.raid_chests	今日のゴールド宝箱の残り: {0} / {1}
+mayhem.1	ミラーマッチ
+mayhem.2	属性カオス
+mayhem.3	送りストーム
+mayhem.4	スターホップ
+mayhem_desc.1	両プレイヤーが同じランダムデッキ（レベル11）で戦います。
+mayhem_desc.2	有利は2倍、不利は半分。すべてのモンスターがウェーブの属性になります。
+mayhem_desc.3	送りのコストが半分、収入は2倍。
+mayhem_desc.4	スターマスがウェーブごとに移動し、+50%。
+event.title	今週のイベント
+event.ends	残り {0}
+event.element	{0}ウィーク
+event.element_desc	ランク戦と練習のモンスターの多くが{0}属性。{1}のどうぶつを連れていこう！
+event.boss	ボスウィーク: {0}
+event.boss_desc	ランク戦と練習のボスウェーブはすべてこのボスです。
+event.candy	キャンディ祭り
+event.candy_desc	ランク戦と練習は、キャンディ160個でスタート。
+season.title	ランクシーズン {0}
+season.best	今シーズンのベスト: トロフィー {0}。終了時に最高アリーナに応じた報酬、{1} を超えたトロフィーは半分になります。
+season.ends	残り {0}
+season.claim	受け取る
+season.ended	シーズン終了
+season.ended_text	今シーズンの最高アリーナ: {0}。新シーズンでは {1} を超えたトロフィーが半分になりました。
+season.reward_title	シーズン報酬
+bestiary.title	図鑑
+bestiary.animals	どうぶつ
+bestiary.monsters	モンスター
+bestiary.progress	出会った数 {0} / {1} · 各ページを初めて見ると +{2} ジェム
+bestiary.claim	+{0} 受け取る
+bestiary.hp	HP {0}
+bestiary.armor	装甲 {0}%
+enemy_kind.normal	ウェーブのモンスター
+enemy_kind.elite	エリート
+enemy_kind.boss	ボス
+enemy_kind.sent	送りモンスター
+achievements.title	実績
+ach.done	達成
+ach.unlocks	解放: {0}
+ach.emote	エモート「{0}」
+titles.title	称号
+titles.none	称号なし
+titles.owned	称号 {0} 個を解放
+titles.change	変更
+replay.title	リプレイ
+replay.watch	見る
+replay.watching	リプレイ
+replay.exit	終了
+replay.empty	直近5試合がここに表示されます。
+replay.length	{0}:{1}
+replay.ago	前
+result.new_record	新記録！
+result.run_over	ラン終了
+result.wave	ウェーブ {0}
+result.no_rewards	今回は報酬なし
+campaign.level	ステージ {0}-{1}
+campaign.region	地域 {0} · {1}
+campaign.region_stars	星: {0} / {1}
+campaign.locked	先に前のステージをクリアしてください
+campaign.goal	生き残れ: ウェーブ {0} / {1}
+campaign.goal_short	{0} ウェーブ生き残る
+campaign.goal_long	目標: {0} ウェーブ生き残る
+campaign.hearts	ハート: {0}
+campaign.boss	ボス: {0}、{1} ウェーブごと
+campaign.stars_rule	星3つ: ハートを失わない · 星2つ: 3分の2以上残す
+campaign.first_reward	初回クリア: {0} ゴールド + {1} ジェム
+campaign.best_stars	ベスト: 星 {0}
+campaign.need_element	このステージには{0}のどうぶつが必要です
+campaign.rule.none	特別ルールなし
+campaign.rule.element_wave	すべてのウェーブがほぼ{0}属性
+campaign.rule.only_element	{0}のどうぶつのみ使用可能
+campaign.rule.alternating	ウェーブの属性が交互に変わる: チームを混ぜよう
+campaign.rule.few_hearts	ハートは {0} つだけ
+campaign.rule.boss_rush	ボスラッシュ: 3ウェーブごとにボス
+daily.goal	ウェーブ {0} · 今日のベスト {1}
+daily.next	次の報酬: ウェーブ {0}
+daily.rule	今日は全プレイヤーが同じシード・デッキ・ウェーブです。
+endless.goal	ウェーブ {0} · 今週 {1} · 記録 {2}
+endless.rule	ウェーブ10、20、30、40でジェム（週1回）。
+raid.boss	巨大ボス
+raid.arrives	ウェーブ {0} で登場
+raid.arrived	巨大ボスが来た！
+raid.give_candy	+{0} あげる ({1})
+raid.rage	激怒 ({0})
+raid.partner	{0}（仲間）
+raid.got_candy	仲間がキャンディを送ってくれた！
+raid.got_rage	仲間がチームを激怒させた！
+tournament.rules	勝ち抜き戦: 3ラウンド連勝しよう。全カードがレベル {0} なので実力勝負。参加は週1回無料。
+tournament.quarter	準々決勝
+tournament.semi	準決勝
+tournament.final	決勝
+tournament.vs	vs {0}
+tournament.won	勝利
+tournament.lost	敗退
+tournament.prize	優勝賞品: マジック宝箱 + 50 ジェム +「優勝者」の進行度
+tournament.free_entry	今週は無料で参加
+tournament.paid_entry	{0} ジェムでもう一度参加
+tournament.enter	参加
+tournament.champion	優勝！
+tournament.bracket	トーナメント表
+deck.preset	デッキ {0}
+emote.6	返り討ち！
+emote.7	見てて！
+emote.8	助けて！
+emote.9	ありがとう！
+emote.10	すごい！
+emote.11	再戦する？
+title.champion	チャンピオン
+title.hunter	モンスターハンター
+title.element_master	属性マスター
+title.boss_slayer	ボススレイヤー
+title.breeder	育成マスター
+title.trickster	トリックスター
+title.explorer	探検家
+title.daily_star	デイリースター
+title.unbreakable	不屈
+title.raider	レイダー
+title.cup_winner	優勝者
+title.zoologist	動物学者
+title.season_1	草原シーズン
+title.season_2	森シーズン
+title.season_3	火山シーズン
+title.season_4	氷シーズン
+title.season_5	雲シーズン
+ach.winner	勝者
+ach.hunter	ハンター
+ach.counter	属性カウンター
+ach.boss	ボススレイヤー
+ach.merger	ブリーダー
+ach.sender	トリックスター
+ach.explorer	探検家
+ach.daily	デイリースター
+ach.endless	不屈
+ach.raider	レイダー
+ach.cup	優勝者
+ach.zoologist	動物学者
+ach_desc.winner	どのモードでも {0} 回勝利する
+ach_desc.hunter	モンスターを {0} 体倒す
+ach_desc.counter	モンスターの属性に有利な攻撃を {0} 回当てる
+ach_desc.boss	ボスを {0} 体倒す
+ach_desc.merger	{0} 回合成する
+ach_desc.sender	モンスターを {0} 体送る
+ach_desc.explorer	アドベンチャーの星を {0} 個集める
+ach_desc.daily	デイリーチャレンジでウェーブ {0} に到達する
+ach_desc.endless	エンドレスでウェーブ {0} に到達する
+ach_desc.raider	レイドで {0} 回勝利する
+ach_desc.cup	トーナメントで {0} 回優勝する
+ach_desc.zoologist	どうぶつとモンスターに {0} 種類出会う
+enemy_desc.slime	おそくてやわらかい。数で押してくる。
+enemy_desc.imp	速いけどもろい。
+enemy_desc.rock_beetle	おそいがHPが多い。
+enemy_desc.armored_knight	装甲30%で押し戻されにくい。装甲破壊が効く。
+enemy_desc.bandit_raccoon	ゲートに着くとキャンディを10個持ち去る。
+enemy_desc.crystal_bat	5秒ごとに30%速くダッシュ。スローするか一気に倒そう。
+enemy_desc.drum_goblin	5秒ごとに太鼓で近くのモンスター3体を加速。沈黙させよう。
+enemy_desc.armored_scorpion	装甲40%、HP30%以下で速くなる。装甲を壊そう。
+enemy_desc.clockwork_gorilla	どうぶつを赤い輪でマークし、1.5秒ロックする。HPが半分以下で速くなる。イージスラムでロックを防げる。
+enemy_desc.void_hermit_crab	HP8%分のシールドを張る。早く壊すと、その後ダメージ+15%。
+enemy_desc.boss_summoner	周りにインプを召喚する。
+enemy_desc.boss_stunner	ときどきどうぶつを1体スタンさせる。
+enemy_desc.boss_healer	周りのモンスターを回復する。
+enemy_desc.send_rat	相手から送られる: 速いネズミ3匹。
+enemy_desc.send_ghost	送りモンスター: コントロール役のどうぶつが見破るまで見えない。
+enemy_desc.send_turtle	送りモンスター: 範囲攻撃のダメージが半分。
+enemy_desc.send_crow	送りモンスター: 通り抜けるとキャンディを30個盗む。
+enemy_desc.send_golem	送りモンスター: 倒されるとマスを1つロックする。
+enemy_desc.send_king	送りモンスター: ネズミを呼ぶミニボス。
+battle.unit_info	{0}  Lv {1}  ({2} {3})\n同じレベルの同じどうぶつに重ねると合成
+reject.candy	キャンディが足りません
+reject.points	送りポイントが足りません
+reject.board_full	空きマスがありません - 同じどうぶつを2体合成しよう
+reject.locked	そのマスはロックされています
+reject.wave_full	相手の次のウェーブがいっぱいです（最大3）
+reject.used	1試合に1回しか送れません
+reject.max_level	すでに最大レベルです
+reject.generic	それはできません
+element.none	-
+element.fire	炎
+element.water	水
+element.grass	草
+element.light	光
+role.damage	アタッカー
+role.area	範囲
+role.control	コントロール
+role.support	サポート
+rarity.common	コモン
+rarity.rare	レア
+rarity.epic	エピック
+rarity.legendary	レジェンド
+skill.burn	レベル4以上: 敵をやけどさせる（毎秒 {0} ダメージ）
+skill.reveal	見えない敵に当てて正体をあばく
+skill.candyperwave	ウェーブごとにレベル1につきキャンディ +{0}
+skill.attackspeedaura	周囲4体の攻撃速度 +{0}%（レベルごとに +{1}%）
+skill.luckycandy	撃破時に {0}% の確率でキャンディ2倍（レベルごとに +{1}%）
+skill.phoenixblessing	{0} ウェーブごと: 炎のどうぶつ1体をレベル+1、マスを解放
+skill.knockback	敵を押し戻す
+skill.pullstun	ターゲットを引き戻してスタンさせる
+skill.alwayscounter	常に属性ボーナスを得る
+skill.burnstack	攻撃ごとにやけどを1スタック（最大3、1回 {0} ダメージ）。Lv4: やけどが長く続く。Lv7: 5回目ごとに炎が広がる
+skill.pierce	一直線に {0} 体を貫通（2体目以降70%）。Lv4: +1体。Lv7: 先頭を押し戻す
+skill.armorbreak	4秒間、装甲を {0}% 破壊（Lv4: {1}%）。装甲がマイナスだと追加ダメージ。Lv7: 4回目ごとに広く爆発
+skill.chillslow	2秒間 {0}% スロー（Lv4: {1}%）。Lv7: 6回目ごとに0.5秒凍結
+skill.vulnerable	マークしたモンスターは3秒間すべてのダメージ +{0}%（Lv4: {1}%）。Lv7: さらに2体マーク
+skill.burst	すばやく {0} 発撃つ（Lv4: +1）。Lv7: 最後の1発はスロー中のモンスターに +50%
+skill.nectarhaste	近くのアタッカー3体の攻撃速度 +{0}%（Lv4: {1}%）。Lv7: 仲間4体
+skill.rootarea	範囲内のモンスターを0.6秒拘束（Lv4: 0.75秒、各4秒に1回）。ボスにはスロー
+skill.silence	4回目ごとにターゲットを1秒沈黙: スキルも加速も使えない。ボスは半分
+skill.aegisguard	近くの仲間 {0} 体を守る: ダメージ +{1}%、スタン・マスロックを1回防ぐ。Lv4: +1体。Lv7: 2回防ぐ
+arena.1	みどりの草原
+arena.2	ふかい森
+arena.3	火山
+arena.4	氷の島
+arena.5	雲の宮殿
+shop.free_tag	無料
+shop.best_value	お得
+shop.popular	人気
+shop.save_10	10%お得
+shop.legendary_chance	レジェンド！
+pass.tier_short	段階
+pass.unlock_premium	プレミアム解放
+lobby.pass_short	パス {0}/{1}
+lobby.practice_short	練習
+lobby.ranked	ランク戦 · トロフィー獲得
+result.rewards	報酬
+result.play_again	もう一度
+result.stat_wave	ウェーブ
+result.stat_kills	撃破
+result.stat_merges	合成
+result.stat_sends	送り
+result.tip.merge	ヒント: こまめに合成しよう - レベル2が2体なら、レベル1が4体より強い。
+result.tip.send	ヒント: 相手がボスウェーブと戦っている間にモンスターを送ろう。
+result.tip.upgrade	ヒント: デッキタブでどうぶつを強化し、バトル中は属性強化を使おう。
+battle.chat	チャット
+battle.zoom	相手を見る
+battle.zoom_back	自分の動物園にもどる
+battle.opp_no_upgrades	まだ強化なし
+battle.opp_perks	パーク {0}
+battle.opp_spell	{0} が {1} を使った！
+battle.reflect	はね返す {0}
+battle.reflected_short	はね返した
+battle.reflected	{0} をはね返した！
+battle.opp_reflected	相手が {0} をはね返してきた！
+battle.target_hint	{0}: 道をタップ
+battle.element_upgraded	{0}のどうぶつ レベル {1}: ダメージ +{2}%
+battle.perk_title	加護をえらぼう
+battle.perk_auto	{0}秒後に自動で選択
+battle.perk_chosen	加護: {0}
+battle.star	（スターマス）
+battle.star_moved	スターマスが移動した！強いどうぶつを置き直そう
+battle.unit_bonus	ボーナス +{0}%  ·  同じ属性のとなり {1} 体  {2}
+battle.skill_charging	スキル: {0} ({1}%)
+battle.skill_need_level	スキルはレベル {0} で解放
+battle.summon	召喚
+mm.rematch	{0} に再挑戦中
+result.rematch	再戦
+result.revenge	リベンジ
+result.revenge_bonus	勝利: ゴールド +{0}%
+result.streak	連勝 x{0}  +{1} ゴールド
+result.revenge_won	リベンジ成功！ +{0} ゴールド
+battle.income	収入
+battle.per_wave	/ウェーブ
+battle.your_leak	あなたのモンスターが突破！相手のハート -{0}
+battle.opp_leak	相手のモンスターが突破！ハート -{0}
+battle.boss_duel	ボス対決 - 先に倒した方の勝ち
+battle.boss_duel_win	先にボスを倒した！キャンディ +{0}
+battle.boss_duel_lose	相手が先にボスを倒した - ボスの残党がやってくる！
+battle.you	あなた
+battle.summon_random	ランダム
+loading.title	動物園を読みこみ中...
+mm.practice	練習試合
+tip.0	同じレベルの同じどうぶつを2体合成すると、もっと強くなる。
+tip.1	金色のスターマスはダメージ +30% - 一番強いどうぶつを置こう！
+tip.2	モンスターを送るとキャンディを使うけど、毎ウェーブの収入が増える - 安い送りほどお得。
+tip.3	ピンクの風船を割るとキャンディがもらえる。
+tip.4	レベル3からどうぶつが光る: タップしてスキルを使おう。
+tip.5	バトル中はどうぶつのカードをタップして召喚、または置きたいマスにドラッグ。
+result.x2_title	ゴールド2倍
+result.watch_ad	広告を見る
+reward.tap_skip	タップですべて表示
+reward.name.gold	ゴールド
+reward.name.gems	ジェム
+reward.name.xp	シーズンXP
+battle.next	次
+battle.not_summoned	未召喚
+battle.choose	えらぶ
+perk.cat.power	パワー
+perk.cat.economy	経済
+perk.cat.defense	防御
+perk.cat.spell	魔法
+perk.cat.attack	攻撃
+battle.upgrade	{0} を強化
+battle.atk	攻撃
+battle.spd	速度
+battle.bonus	ボーナス
+battle.lv	Lv {0}
+battle.per_sec	{0}/秒
+battle.view	見る
+battle.watching	{0} を観戦中 - ボードをタップでもどる
+battle.unit_upgraded	{0} 強化レベル {1}: ダメージ +{2}%
+skill.role.damage	パワーショット！
+skill.role.area	ビッグブラスト！
+skill.role.control	スタンウェーブ！
+skill.role.support	がんばれ！
+spell.freeze	フリーズ
+spell.freeze.desc	範囲内のすべての敵を2.5秒凍らせる（ボスは半分）。
+spell.meteor	メテオ
+spell.meteor.desc	範囲内のすべての敵に大ダメージ。ウェーブが進むほど強くなる。
+spell.gust	突風
+spell.gust.desc	範囲内の敵を道の後ろへ吹き飛ばす。
+spell.rage	激怒
+spell.rage.desc	すべてのどうぶつの攻撃が6秒間60%速くなる。
+spell.candy_rain	キャンディの雨
+spell.candy_rain.desc	15秒間、撃破で得るキャンディが60%増える。
+spell.lightning	いなずま
+spell.lightning.desc	一番タフな敵に大ダメージ。狙う必要なし。
+perk.firepower	炎の怒り
+perk.firepower.desc	炎のどうぶつのダメージ +25%。
+perk.waterpower	潮の力
+perk.waterpower.desc	水のどうぶつのダメージ +25%。
+perk.grasspower	野生の成長
+perk.grasspower.desc	草のどうぶつのダメージ +25%。
+perk.lightpower	光輝
+perk.lightpower.desc	光のどうぶつのダメージ +25%。
+perk.mergecandy	合成ボーナス
+perk.mergecandy.desc	合成するたびにキャンディ +10。
+perk.cheapsends	モンスター割引
+perk.cheapsends.desc	モンスターを送るコストが20%安くなる。
+perk.cheapcards	お買い得
+perk.cheapcards.desc	どうぶつカードが15%安くなる。
+perk.interest	ブタの貯金箱
+perk.interest.desc	ウェーブごとに所持キャンディの +10%（最大60）。
+perk.extrahearts	セカンドウィンド
+perk.extrahearts.desc	今すぐハート +2。
+perk.spellhaste	クイックマジック
+perk.spellhaste.desc	魔法のクールダウンが30%短くなる。
+perk.luckycrit	ラッキーストライク
+perk.luckycrit.desc	すべての攻撃に15%の確率でダメージ2倍。
+perk.sendpoints	いたずら
+perk.sendpoints.desc	送りの収入 +50%。
+emote.0	こんにちは！
+emote.1	ナイス！
+emote.2	ハハハ！
+emote.3	おっと...
+emote.4	ぐぬぬ！
+emote.5	いい試合
+reject.cooldown	まだ準備できていません
+reject.not_ready	スキルをチャージ中
+reject.no_target	ターゲットなし
+reject.invalid_cell	そこには置けません
+reject.not_on_board	先にこのどうぶつを召喚してください - 強化は動物園にいるどうぶつにだけ効きます
+deck.spells_title	飼育員の魔法（タップで変更）
+deck.spell_cost	キャンディ {0}
+deck.spell_swap	このスロットに入れる魔法をえらぶ
+tutorial.spell	魔法！召喚の横のメテオかフリーズをタップして、敵が集まっている道をタップしよう。
+nav.shop	ショップ
+nav.deck	デッキ
+nav.battle	バトル
+nav.pass	パス
+nav.settings	設定
+common.ok	OK
+time.dh	{0}日 {1}時間
+time.hm	{0}時間 {1}分
+reward.gold	{0} ゴールド
+reward.gems	{0} ジェム
+reward.xp	パスXP {0}
+reward.shards	{0} のかけら {1} 個
+reward.new	NEW！
+lobby.missions	デイリーミッション
+lobby.missions_ready	ミッション: {0} 個達成！
+lobby.pass	シーズンパス  {0}/{1}
+chest.wood	木の宝箱
+chest.silver	銀の宝箱
+chest.gold	金の宝箱
+chest.magic	マジック宝箱
+chest.empty	空きスロット
+chest.tap_unlock	タップで解錠
+chest.open	ひらく！
+chest.open_now	今すぐ開ける: {0} ジェム
+chest.skip_question	{0} ジェムでこの宝箱を今すぐ開けますか？
+chest.unlock_started	解錠を開始しました
+chest.how_to_get	ランク戦に勝って宝箱をゲット
+missions.title	デイリーミッション
+missions.reset	新しいミッションまで {0}
+missions.reward	+{0} ゴールド  +{1} パスXP
+missions.claim	受け取る
+missions.claimed	完了
+mission.playmatches	バトルを {0} 回プレイ
+mission.winmatches	バトルで {0} 回勝利
+mission.killenemies	敵を {0} 体倒す
+mission.mergeunits	どうぶつを {0} 回合成
+mission.sendmonsters	モンスターを {0} 体送る
+mission.reachwave	ウェーブ {0} に到達
+mission.buycards	バトル中にどうぶつを {0} 体買う
+mission.openchests	宝箱を {0} 個開ける
+mission.upgradeunits	どうぶつを {0} 回強化
+deck.choose_slot	{0} を入れるデッキの枠をタップ
+deck.collection	コレクション  {0}/{1}
+deck.locked	ロック中
+deck.locked_hint	宝箱やショップでかけらを見つけて解放
+deck.level_short	Lv.{0}
+deck.card_level	カードレベル {0}/{1}
+deck.level_bonus	カードレベルボーナス: ダメージ +{0}%
+deck.max	MAX
+deck.shards	かけら {0}/{1}
+deck.upgrade	強化  {0} ゴールド
+deck.upgraded	{0} がレベル {1} になった！
+deck.need_shards	かけらが足りません
+deck.use	使う
+deck.in_deck	デッキ内
+deck.send_swap	このスロットに入れるモンスターをえらぶ
+deck.no_other_sends	すべてのモンスターがすでにデッキにいます
+shop.free	無料ギフト
+shop.claim	受け取る
+shop.claimed	また明日来てね
+shop.watch_ad	広告を見る
+shop.daily	デイリーセール（{0} 後に更新）
+shop.shards	かけら x{0}
+shop.sold	売り切れ
+shop.gold_price	{0} ゴールド
+shop.gems_price	{0} ジェム
+shop.gacha	どうぶつ召喚
+shop.gacha_text	どうぶつのかけらを召喚。毎回レジェンドのチャンス！
+shop.pity	{0} 回以内にレジェンド確定
+shop.pull1	x1  {0} ジェム
+shop.pull10	x10  {0} ジェム
+shop.rates	排出率
+shop.rate_line	{0}: {1}%（かけら {2} 個）
+shop.pity_rule	{0} 回に最低1回はレジェンドが確定します。
+shop.chests	宝箱
+shop.chest_info	かけら {0}+、ゴールド {1}+
+shop.gold	ゴールド
+shop.gems	ジェム
+shop.confirm_gems	{0} ジェムを使いますか？
+shop.not_enough_gems	ジェムが足りません
+shop.not_enough_gold	ゴールドが足りません
+shop.purchase_failed	購入に失敗しました
+privacy.title	プライバシーについて
+privacy.text	Zoo Defense は広告のおかげで無料です。同意いただくと、広告パートナーが端末のデータ（広告IDなど）を使って興味に合った広告を表示し、私たちはゲーム改善のために匿名のプレイ統計を収集します。同意しない場合も広告は表示されますが、パーソナライズされず、統計も収集されません。\n\nこの設定は「設定 › プライバシー」でいつでも変更できます。
+privacy.accept	OK、パーソナライズする
+privacy.decline	いいえ、データを使わない
+privacy.policy	プライバシーポリシー
+settings.privacy	プライバシー
+settings.personal_ads	パーソナライズ広告
+settings.personal_ads_hint	オフ = データを販売・共有しません
+settings.open	ひらく
+shop.verify_failed	購入を確認できませんでした
+shop.verify_later	購入を確認中… まもなく届きます
+shop.deferred	購入は承認待ちです
+shop.restore	購入を復元
+shop.restore_done	購入を復元しました
+shop.delivered	購入アイテムを受け取りました
+shop.offers	特別オファー
+shop.value	{0}倍お得
+shop.limit_once	1回限りのオファー
+shop.limit_weekly	週1回
+shop.limit_daily	1日1回
+shop.back_in	{0} 後に復活
+shop.monthly	マンスリーカード
+shop.monthly_days	{0}日間
+shop.monthly_text	今すぐ {0} ジェム + 毎日 {1} ジェムを {2} 日間\n（合計 {3} ジェム）
+shop.monthly_left	有効: 残り {0} 日 · 無料ギフトで毎日受け取り
+shop.monthly_tag	マンスリー
+shop.first_x2	初回2倍
+shop.bonus	+{0}%
+bundle.bundle_starter	スターターパック
+bundle.bundle_weekly	ウィークリー宝箱パック
+bundle.bundle_daily_gems	デイリー銀セール
+bundle.bundle_champion	チャンピオンパック
+bundle.bundle_legend	レジェンドパック
+shop.test_store	テストストア: このビルドでは購入は無料です
+pass.season	シーズン {0}
+pass.ends	残り {0}
+pass.tier	段階 {0}/{1}
+pass.xp	{0}/{1} XP
+pass.max	MAX
+pass.free	無料
+pass.premium	プレミアム
+pass.buy_premium	プレミアム解放  {0} ジェム
+pass.premium_text	{0} ジェムで今シーズンのプレミアム報酬を解放しますか？
+pass.premium_owned	プレミアム解放済み
+pass.claim	受け取る
+pass.claimed	受け取り済み
+pass.locked	プレミアム
+pass.need_tier	段階 {0}
+pass.tier_reward	段階 {0}
+result.pass_xp	+{0} パスXP
+result.chest	新しい宝箱: {0}
+result.chest_full	宝箱スロットがいっぱい - 今回は宝箱なし
+result.invalid	試合を確認できませんでした - 報酬なし
+result.tutorial_done	チュートリアル完了！
+tutorial.welcome_title	動物園へようこそ！
+tutorial.welcome_text	モンスターが動物園にやってくる！短い練習バトルで基本を覚えよう。
+tutorial.play	チュートリアルを始める
+tutorial.skip	スキップ
+tutorial.coach	パンダコーチ
+tutorial.buy	下のどうぶつカードをタップするとそのどうぶつを召喚、またはマスにドラッグ。ランダムは安い。金色のスターマスはダメージ +30%！
+tutorial.buy_more	いいね！カードの ↑ マークで、この試合中そのどうぶつを強化できます。ピンクの風船を割るとキャンディがもらえるよ！
+tutorial.merge	どうぶつを同じレベルの同じどうぶつに重ねて合成しよう。レベル3から光るので、タップでスキル！
+tutorial.send	赤い帯のモンスターをタップして送ろう: キャンディを使うけど毎ウェーブ収入が増える！送られたモンスターは5秒後に到着 - はね返すをタップで送り返せる。
+tutorial.finish	これで完了！相手のハートがなくなるまで合成と送りを続けよう。
+settings.title	設定
+settings.music	音楽
+settings.sfx	効果音
+settings.off	オフ
+settings.language	言語
+settings.tutorial	チュートリアル
+settings.play	もう一度プレイ
+settings.reset	進行状況をリセット
+settings.reset_button	リセット
+settings.reset_text	この端末のすべての進行状況を削除しますか？元に戻せません。
+settings.debug	テストツール（開発ビルドのみ）
+settings.version	バージョン {0}  -  バトル {1} 回
+settings.sound	サウンド
+settings.game	ゲーム
+settings.support	サポート
+settings.online	オンライン対戦
+settings.online_hint	ランク戦: まず実際のプレイヤーをさがす
+settings.player_id	プレイヤーID
+settings.copy	コピー
+settings.copied	コピーしました
+settings.no_title	称号なし
+settings.battles	バトル {0} 回
+settings.wins	{0} 勝
+settings.reset_text_linked	このスマホの進行状況を削除しますか？連携アカウントのクラウドバックアップは残ります。
+account.title	アカウント
+account.unavailable	このビルドではオンラインアカウントを使えません。
+account.guest	ゲスト
+account.guest_text	進行状況はこのスマホにのみ保存されています。アカウントを連携すると安全に保存でき、別のスマホでも遊べます。
+account.link	アカウント連携
+account.have_account	アカウントをお持ちですか？ログイン
+account.linked	連携済み
+account.linked_text	進行状況は自動でバックアップされます。
+account.backup_ago	最終バックアップ: {0} 前
+account.backup_never	まだバックアップされていません
+account.backup	今すぐバックアップ
+account.backup_ok	バックアップしました
+account.unlink	連携解除
+account.unlink_text	このアカウントの連携を解除しますか？進行状況はこのスマホに残りますが、バックアップされなくなります。
+account.unlinked	連携を解除しました
+account.delete	アカウント削除
+account.delete_button	完全に削除
+account.delete_text	オンラインアカウントとクラウドバックアップを削除し、このスマホをリセットしますか？元に戻せません。
+account.deleted	アカウントを削除しました
+account.waiting	ログイン待ち
+account.linked_ok	アカウントを連携しました！
+account.exists_title	使用中のアカウント
+account.exists_text	このアカウントには別のスマホの進行状況があります。ここに読みこみますか？このスマホの進行状況は置き換えられます。
+account.load_it	読みこむ
+account.signin	ログイン
+account.signin_text	アカウントにログインして、その進行状況をこのスマホに読みこみます。このスマホの進行状況は置き換えられます。
+account.restored	進行状況を読みこみました！
+account.err_config	アカウントのログインはまだ設定されていません
+account.err_offline	接続がありません。もう一度お試しください。
+account.err_generic	問題が発生しました。もう一度お試しください。
+unit.fire_fox	ファイアフォックス
+unit.firework_rooster	花火ニワトリ
+unit.ember_squirrel	ひだねリス
+unit.baby_dragon	ベビードラゴン
+unit.phoenix_chick	フェニックスのヒナ
+unit.bubble_frog	バブルガエル
+unit.ice_penguin	アイスペンギン
+unit.otter_cannon	カワウソ砲
+unit.ink_octopus	墨ダコ
+unit.wave_dolphin	波乗りイルカ
+unit.spike_hedgehog	トゲハリネズミ
+unit.carrot_bunny	ニンジンうさぎ
+unit.vine_sloth	ツタナマケモノ
+unit.chubby_panda	ぽっちゃりパンダ
+unit.leaf_gecko	はっぱヤモリ
+unit.sun_sparrow	お日さまスズメ
+unit.lucky_cat	まねきねこ
+unit.night_owl	夜フクロウ
+unit.meteor_deer	流星シカ
+unit.rainbow_unicorn	虹ユニコーン
+unit.lava_salamander	溶岩サンショウウオ
+unit.ember_boar	ひだねイノシシ
+unit.forge_mole	鍛冶モグラ
+unit.snow_seal	雪アザラシ
+unit.coral_axolotl	サンゴウーパー
+unit.snap_shrimp	パチンエビ
+unit.nectar_bee	みつばち
+unit.sprout_elephant	新芽ゾウ
+unit.moon_moth	月の蛾
+unit.aegis_ram	イージスラム
+enemy.slime	スライム
+enemy.imp	インプ
+enemy.rock_beetle	岩カブトムシ
+enemy.armored_knight	鎧の騎士
+enemy.boss_summoner	召喚王
+enemy.boss_stunner	かみなりガエル
+enemy.boss_healer	キノコ魔女
+enemy.send_rat	すばやいネズミ
+enemy.send_ghost	こっそりゴースト
+enemy.send_turtle	盾ガメ
+enemy.send_crow	キャンディガラス
+enemy.send_golem	レンガゴーレム
+enemy.send_king	ミニ魔王
+enemy.bandit_raccoon	盗賊アライグマ
+enemy.crystal_bat	クリスタルコウモリ
+enemy.drum_goblin	太鼓ゴブリン
+enemy.armored_scorpion	鎧サソリ
+enemy.clockwork_gorilla	からくりゴリラ
+enemy.void_hermit_crab	虚無ヤドカリ
+send.rat_rush	ネズミラッシュ
+send.sneaky_ghost	こっそりゴースト
+send.shield_turtle	盾ガメ
+send.candy_crow	キャンディガラス
+send.brick_golem	レンガゴーレム
+send.mini_king	ミニ魔王
+send.boss_remnant	ボスの残党
+lobby.leaderboard	ランキング
+lobby.friends	フレンド
+login.title	ログインボーナス
+login.hint	1日1回プレゼント。休んでも大丈夫、次のプレゼントが待っています。
+login.day	{0}日目
+login.claim	{0}日目を受け取る
+login.claimed	受取済み
+login.come_back	また明日来てね
+lb.title	ランキング
+lb.trophies	トロフィー
+lb.endless	エンドレス
+lb.daily	デイリー
+lb.world	世界
+lb.around_me	自分の周り
+lb.friends	フレンド
+lb.resets	リセットまで {0}
+lb.my_best_wave	自己ベスト: ウェーブ {0}
+lb.my_trophies	あなたのトロフィー: {0}
+lb.wave	ウェーブ {0}
+lb.game_center	Game Center
+lb.loading	読み込み中…
+lb.offline	ランキングの表示にはインターネット接続が必要です。
+lb.empty	まだ記録がありません。一番乗りしよう！
+lb.no_friends	フレンドを追加してスコアを比べよう。
+lb.player	プレイヤー
+friends.title	フレンド
+friends.offline	フレンド機能にはインターネット接続が必要です。
+friends.my_code	あなたのフレンドコード
+friends.copy	コピー
+friends.share	シェア
+friends.copied	コピーしました！
+friends.share_text	一緒に Zoo Defense をやろう！コード {0} を入力してね（新規プレイヤーはジェムがもらえる）: {1}
+friends.add	フレンドを追加
+friends.code_hint	フレンドコード
+friends.add_btn	追加
+friends.bad_code	コードは英数字6文字です。
+friends.own_code	それはあなた自身のコードです！
+friends.not_found	このコードのプレイヤーは見つかりません。
+friends.already	すでにフレンドです。
+friends.added	フレンドを追加しました！
+friends.full	フレンドリストがいっぱいです（{0}）。
+friends.list	フレンド {0}/{1}
+friends.empty	まだフレンドがいません。コードをシェアしよう！
+friends.online	オンライン
+friends.seen	{0}前にオンライン
+friends.trophies	トロフィー {0}
+friends.invites_you	フレンド対戦に招待されています！
+friends.invite	招待
+friends.accept	参加
+friends.remove	削除
+friends.remove_q	{0} をフレンドから削除しますか？
+friends.invite_banner	{0} がフレンド対戦に招待しています！
+room.title	フレンド対戦
+room.hint	フレンドと1対1。トロフィーは増減しません。
+room.create	ルームを作る
+room.code_hint	ルームコード
+room.join	参加
+room.share_code	このコードをフレンドに教えてね
+room.joining	ルームに参加中
+room.waiting	フレンドを待っています
+room.offline	設定でオンライン対戦をオンにして、インターネットに接続してください。
+room.not_found	ルームが見つかりません。コードを確認してね。
+room.failed	接続できませんでした。もう一度試してね。
+invite.title	友達を招待
+invite.joined	あなたのコードで始めた友達: {0}\n1人につき +{1} ジェム
+invite.enter	友達のコード: +{0} ジェム
+invite.redeem	受け取る
+invite.used	招待コードはすでに使用済みです。
+invite.failed	コードを使用できませんでした。もう一度試してね。
+online.reconnecting	接続が切れました。再接続中
+online.opp_reconnecting	{0} が再接続中
+result.friendly	フレンド対戦: トロフィーなし
+settings.notifications	お知らせ通知
+settings.notifications_hint	宝箱の完成、毎日のプレゼント。1日最大2回。
+settings.notifications_denied	端末の設定で Zoo Defense の通知がオフになっています。
+notify.title	Zoo Defense
+notify.chest	{0} を開けられます！
+notify.login	{0}日目のプレゼントが待っています！
+notify.monthly	マンスリーカードのジェムを受け取れます。
+notify.comeback	モンスターが戻ってきた！動物たちが待っています。
+notify.missions	新しいミッションが届きました！

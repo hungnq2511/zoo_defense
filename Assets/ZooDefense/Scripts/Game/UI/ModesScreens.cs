@@ -195,7 +195,7 @@ namespace ZooDefense.Game
             Y += 168;
 
             // ---- Live event of the week
-            var ev = LiveOps.Of(GameCalendar.WeekIndex(now));
+            var ev = LiveOps.Current(now);
             var evCard = Card(170, Art.Hex(0xFF7AC8));
             Label(evCard, Loc.T("event.title"), 26, Palette.Primary, TextAnchor.UpperLeft).rectTransform.Stretch(24, 24, 12, 110);
             Label(evCard, EventName(ev), 38, Palette.Text, TextAnchor.UpperLeft).rectTransform.Stretch(24, 260, 46, 50);
@@ -485,6 +485,7 @@ namespace ZooDefense.Game
             App.Profile.matchesPlayed++;
             if (_summary.winner == 0) App.Profile.wins++;
             App.SaveProfile();
+            Leaderboards.SubmitProgress(App);
             Services.Analytics.LogEvent("mode_end", new Dictionary<string, object> { { "mode", _summary.mode.ToString() }, { "wave", _summary.wave }, { "winner", _summary.winner } });
             AudioService.PlayMusic("music_lobby");
             bool won = _summary.winner == 0;

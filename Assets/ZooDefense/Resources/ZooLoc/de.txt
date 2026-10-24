@@ -1,0 +1,821 @@
+# Zoo Defense strings: key<TAB>text. \n = new line. Missing keys fall back to English.
+lobby.stats	Trophäen {0}     Gold {1}
+lobby.arena	ARENA {0}
+lobby.top_arena	Höchste Arena erreicht
+lobby.next_arena	Nächste: {0} bei {1} Trophäen
+lobby.played	Gespielt {0}   Siege {1}
+lobby.battle	KAMPF
+lobby.deck	DECK
+lobby.practice	Training (ohne Trophäen)
+lobby.reset	Profil zurücksetzen
+lobby.bot	Bot: {0}
+lobby.language_changed	Sprache: Deutsch
+difficulty.0	Leicht
+difficulty.1	Normal
+difficulty.2	Schwer
+mm.finding	Suche Gegner
+online.connecting	Gegner gefunden! Verbinde
+online.waiting	Warte auf {0}
+mm.vs	VS
+common.cancel	Abbrechen
+result.victory	SIEG!
+result.defeat	NIEDERLAGE
+result.draw	UNENTSCHIEDEN
+result.trophies	{0} Trophäen  ({1})
+result.practice	Trainingsspiel: keine Trophäen
+result.gold	+{0} Gold
+result.stats	Welle {0} erreicht   Siege über Monster {1}
+result.arena	Arena: {0}
+result.double_gold	x2 Gold (Werbung ansehen)
+result.gold_doubled	Gold verdoppelt!
+result.continue	WEITER
+deck.title	DECK
+deck.counter	Tiere {0}/5     Schick-Monster {1}/4
+deck.sends_title	SCHICK-MONSTER (wähle 4)
+deck.send_label	{0}\n{1} Pkt.{2}
+deck.once	 (einmal)
+deck.hint	Tippe auf ein Tier, um es hinzuzufügen oder zu entfernen.
+deck.full	Das Deck ist voll (5). Entferne zuerst ein Tier.
+deck.sends_full	Wähle genau 4 Schick-Monster.
+deck.incomplete	Wähle 5 Tiere und 4 Schick-Monster.
+deck.saved	Deck gespeichert
+deck.save	SPEICHERN
+deck.back	ZURÜCK
+deck.info	{0}  -  {1} {2}, {3}
+deck.stat_damage	{0} Schaden alle {1} s
+deck.stat_splash	, Fläche {0}
+deck.stat_slow	, verlangsamt {0}%
+deck.stat_stun	, Betäubung
+battle.get_ready	Mach dich bereit!
+battle.ready	BEREIT
+battle.wave	WELLE {0}
+battle.sudden_death_wave	SUDDEN DEATH - WELLE {0}
+battle.timer	Nächste Welle {0}
+battle.timer_sudden	SUDDEN DEATH  {0}
+battle.card_price	Karte {0}
+battle.reroll	NEUE\nKARTEN\n\n{0}
+battle.send	SCHICKEN
+battle.send_used	benutzt
+battle.paused	PAUSE
+battle.resume	Weiter
+battle.surrender	Aufgeben
+battle.boss	Boss im Anmarsch!
+battle.incoming	Im Anmarsch: {0}!
+battle.sent	{0} in die nächste Welle geschickt
+battle.opp_sending	{0} schickt {1}!
+battle.crow	Eine Krähe hat {0} Süßigkeiten geklaut!
+battle.golem	Ein Golem hat eines deiner Felder gesperrt
+battle.raccoon	Ein Waschbär ist mit {0} Süßigkeiten abgehauen!
+battle.wave_element	{0} · {1}
+battle.effective	Sehr effektiv!
+battle.resisted	Widerstanden
+battle.blocked	Geblockt!
+battle.shield_up	Schild!
+battle.shield_broken	Schild zerstört!
+battle.lock_warning	Der Gorilla zielt auf ein Feld!
+status.1	Festgewurzelt
+status.2	Verstummt
+status.3	Eingefroren
+status.4	Rüstungsbruch
+status.5	Markiert
+ability.1	Trommeln!
+ability.2	Wütend!
+ability.3	Sprint!
+ability.104	Overdrive!
+guide.title	ELEMENTE
+guide.button	Elemente
+guide.arrow_hint	Pfeil = schlägt
+guide.effective	Dein Tier schlägt das Element des Monsters: +{0}% Schaden
+guide.resisted	Das Element des Monsters schlägt dein Tier: -{0}% Schaden
+guide.neutral	Gleiches Element oder keine Verbindung: normaler Schaden
+guide.light	LICHT steht außerhalb des Dreiecks: wird nie abgeschwächt, +{0}% gegen Elite-Monster und Bosse
+guide.read_title	DEN KAMPF LESEN
+guide.ring	Der farbige Ring unter einem Monster zeigt sein Element. Geschickte Monster zeigen ihr Element auch auf dem Schick-Knopf.
+guide.wave	Jede Welle hat ein Hauptelement ({0}% ihrer Monster). Das Wellen-Feld zeigt diese Welle -> nächste Welle: beschwöre rechtzeitig den Konter.
+guide.tips	Tipps: Mische 2 Elemente, damit dich keine Welle hart kontert. Behalte ein Licht-Tier für Bosse. Brand, Markierung und Rüstungsbruch wirken gegen jedes Element.
+guide.matchup	Stark gegen {0} · Schwach gegen {1}
+guide.matchup_light	Nie abgeschwächt · +{0}% gegen Bosse
+guide.always	Kontert immer (+{0}%)
+guide.short	Schlägt {0} · Schwach gg. {1}
+guide.short_light	Nie abgeschwächt
+lobby.modes	Modi
+reject.gems	Nicht genug Edelsteine
+modes.title	SPIELMODI
+modes.solo	SOLO
+modes.versus	VERSUS
+modes.coop	KOOP
+modes.online_note	Raid und Turniere werden mit Bot-Partnern und -Gegnern gespielt, bis das Online-Spiel startet.
+mode.versus	Versus
+mode.daily	TAGES-CHALLENGE
+mode.endless	ENDLOS
+mode.campaign	ABENTEUER
+mode.mayhem	CHAOS-ARENA
+mode.raid	BOSS-RAID
+mode.tournament	TURNIER
+mode.play	SPIELEN
+mode.open	ÖFFNEN
+mode.again	NOCHMAL
+mode.daily_desc	Heute für alle das gleiche Deck und die gleichen Wellen, Karten auf Stufe {0}. Wie weit kommst du?
+mode.endless_desc	Die Wellen hören nie auf. Alle 5 Wellen ein Vorteil und ein Boss. Wochenbestwert.
+mode.campaign_desc	50 Level in 5 Regionen, jede mit einer Besonderheit. Hol dir 3 Sterne.
+mode.practice_desc	1 gegen 1 gegen einen Bot, ohne Trophäen.
+mode.raid_desc	Du und ein Partner gegen einen Riesenboss mit gemeinsamen LP. Helft euch mit Süßigkeiten und Wut.
+mode.tournament_desc	3 K.-o.-Runden, alle Karten auf Stufe {0}. Ruhm am Wochenende.
+mode.best_today	Heute bester Wert: Welle {0}
+mode.best_week	Wochenbestwert: Welle {0} · Rekord {1}
+mode.resets	Neue Challenge in {0}
+mode.stars	Sterne: {0} / {1}
+mode.mayhem_wins	Siege an diesem Wochenende: {0} (3 = Goldtruhe)
+mode.opens_in	Öffnet Freitag, in {0}
+mode.tournament_round	Runde {0} von {1}
+mode.tournament_idle	Jede Woche gratis teilnehmen
+mode.raid_chests	Goldtruhen heute übrig: {0} / {1}
+mayhem.1	Spiegelmatch
+mayhem.2	Elementchaos
+mayhem.3	Schicksturm
+mayhem.4	Sternhüpfer
+mayhem_desc.1	Beide Spieler bekommen dasselbe zufällige Deck auf Stufe 11.
+mayhem_desc.2	Konter machen doppelten Schaden, abgeschwächte Treffer halben, jedes Monster hat das Wellenelement.
+mayhem_desc.3	Schicken kostet die Hälfte und bringt doppeltes Einkommen.
+mayhem_desc.4	Sternfelder wandern jede Welle und geben +50%.
+event.title	DIESE WOCHE
+event.ends	Endet in {0}
+event.element	{0}-Woche
+event.element_desc	Die meisten Monster in Ranglisten- und Trainingsspielen sind {0}. Nimm {1}-Tiere mit!
+event.boss	Boss-Woche: {0}
+event.boss_desc	Jede Bosswelle in Ranglisten- und Trainingsspielen ist dieser Boss.
+event.candy	Süßigkeitenfest
+event.candy_desc	Jedes Ranglisten- und Trainingsspiel beginnt mit 160 Süßigkeiten.
+season.title	Ranglisten-Saison {0}
+season.best	Bester Wert dieser Saison: {0} Trophäen. Am Ende: Belohnungen nach bester Arena, Trophäen über {1} werden halbiert.
+season.ends	Endet in {0}
+season.claim	ABHOLEN
+season.ended	SAISON VORBEI
+season.ended_text	Deine beste Arena dieser Saison: {0}. Trophäen über {1} wurden für die neue Saison halbiert.
+season.reward_title	Saisonbelohnungen
+bestiary.title	Tierlexikon
+bestiary.animals	Tiere
+bestiary.monsters	Monster
+bestiary.progress	Entdeckt {0} / {1} · erster Blick auf jede Seite: +{2} Edelsteine
+bestiary.claim	+{0} abholen
+bestiary.hp	LP {0}
+bestiary.armor	Rüstung {0}%
+enemy_kind.normal	Wellenmonster
+enemy_kind.elite	Elite
+enemy_kind.boss	Boss
+enemy_kind.sent	Geschicktes Monster
+achievements.title	Erfolge
+ach.done	Abgeschlossen
+ach.unlocks	Schaltet frei: {0}
+ach.emote	Emote „{0}“
+titles.title	Titel
+titles.none	Kein Titel
+titles.owned	{0} Titel freigeschaltet
+titles.change	ÄNDERN
+replay.title	Wiederholungen
+replay.watch	ANSEHEN
+replay.watching	WIEDERHOLUNG
+replay.exit	BEENDEN
+replay.empty	Deine letzten 5 Spiele erscheinen hier.
+replay.length	{0}:{1}
+replay.ago	her
+result.new_record	NEUER REKORD!
+result.run_over	LAUF VORBEI
+result.wave	WELLE {0}
+result.no_rewards	Diesmal keine Belohnung
+campaign.level	Level {0}-{1}
+campaign.region	Region {0} · {1}
+campaign.region_stars	Sterne: {0} / {1}
+campaign.locked	Schließe zuerst das vorherige Level ab
+campaign.goal	Überleben: Welle {0} / {1}
+campaign.goal_short	{0} Wellen überleben
+campaign.goal_long	Ziel: {0} Wellen überleben
+campaign.hearts	Herzen: {0}
+campaign.boss	Boss: {0}, alle {1} Wellen
+campaign.stars_rule	3 Sterne: kein Herz verlieren · 2 Sterne: 2/3 behalten
+campaign.first_reward	Erster Abschluss: {0} Gold + {1} Edelsteine
+campaign.best_stars	Bestwert: {0} Sterne
+campaign.need_element	Für dieses Level brauchst du ein {0}-Tier
+campaign.rule.none	Keine Sonderregel
+campaign.rule.element_wave	Jede Welle ist größtenteils {0}
+campaign.rule.only_element	Nur {0}-Tiere erlaubt
+campaign.rule.alternating	Die Wellenelemente wechseln sich ab: mische dein Team
+campaign.rule.few_hearts	Nur {0} Herzen
+campaign.rule.boss_rush	Boss-Rausch: ein Boss alle 3 Wellen
+daily.goal	Welle {0} · heute bester Wert {1}
+daily.next	Nächste Belohnung: Welle {0}
+daily.rule	Heute für alle Spieler gleicher Seed, gleiches Deck, gleiche Wellen.
+endless.goal	Welle {0} · Woche {1} · Rekord {2}
+endless.rule	Edelsteine bei Welle 10, 20, 30 und 40 einmal pro Woche.
+raid.boss	RIESENBOSS
+raid.arrives	Kommt bei Welle {0}
+raid.arrived	DER RIESENBOSS IST DA!
+raid.give_candy	+{0} geben ({1})
+raid.rage	Wut ({0})
+raid.partner	{0} (Partner)
+raid.got_candy	Dein Partner hat dir Süßigkeiten geschickt!
+raid.got_rage	Dein Partner hat dein Team in Wut versetzt!
+tournament.rules	K.-o.-System: gewinne 3 Runden in Folge. Jede Karte ist auf Stufe {0}, nur Können zählt. Einmal pro Woche gratis.
+tournament.quarter	Viertelfinale
+tournament.semi	Halbfinale
+tournament.final	Finale
+tournament.vs	gg. {0}
+tournament.won	GEWONNEN
+tournament.lost	RAUS
+tournament.prize	Siegerpreis: Magische Truhe + 50 Edelsteine + Fortschritt für „Pokalsieger“
+tournament.free_entry	Diese Woche gratis
+tournament.paid_entry	Erneut teilnehmen für {0} Edelsteine
+tournament.enter	TEILNEHMEN
+tournament.champion	CHAMPION!
+tournament.bracket	TURNIERBAUM
+deck.preset	Deck {0}
+emote.6	Gekontert!
+emote.7	Pass auf!
+emote.8	Hilfe!
+emote.9	Danke!
+emote.10	Wahnsinn!
+emote.11	Revanche?
+title.champion	Champion
+title.hunter	Monsterjäger
+title.element_master	Elementmeister
+title.boss_slayer	Bosstöter
+title.breeder	Meisterzüchter
+title.trickster	Trickser
+title.explorer	Entdecker
+title.daily_star	Tagesstar
+title.unbreakable	Unzerbrechlich
+title.raider	Raider
+title.cup_winner	Pokalsieger
+title.zoologist	Zoologe
+title.season_1	Saison Wiese
+title.season_2	Saison Wald
+title.season_3	Saison Vulkan
+title.season_4	Saison Eis
+title.season_5	Saison Wolke
+ach.winner	Sieger
+ach.hunter	Jäger
+ach.counter	Elementkonter
+ach.boss	Bosstöter
+ach.merger	Züchter
+ach.sender	Trickser
+ach.explorer	Entdecker
+ach.daily	Tagesstar
+ach.endless	Unzerbrechlich
+ach.raider	Raider
+ach.cup	Pokalsieger
+ach.zoologist	Zoologe
+ach_desc.winner	Gewinne {0} Spiele in einem beliebigen Modus
+ach_desc.hunter	Besiege {0} Monster
+ach_desc.counter	Lande {0} Treffer, die das Element des Monsters kontern
+ach_desc.boss	Besiege {0} Bosse
+ach_desc.merger	Verschmelze {0}-mal
+ach_desc.sender	Schicke {0} Monster
+ach_desc.explorer	Sammle {0} Abenteuer-Sterne
+ach_desc.daily	Erreiche Welle {0} in einer Tages-Challenge
+ach_desc.endless	Erreiche Welle {0} im Endlos-Modus
+ach_desc.raider	Gewinne {0} Raids
+ach_desc.cup	Gewinne {0} Turniere
+ach_desc.zoologist	Entdecke {0} Tiere und Monster
+enemy_desc.slime	Langsam und weich. Kommt in Massen.
+enemy_desc.imp	Schnell und zerbrechlich.
+enemy_desc.rock_beetle	Langsam, viele LP.
+enemy_desc.armored_knight	30% Rüstung und schwer zurückzustoßen. Rüstungsbruch hilft.
+enemy_desc.bandit_raccoon	Haut mit 10 Süßigkeiten ab, wenn es das Tor erreicht.
+enemy_desc.crystal_bat	Sprintet alle 5 Sekunden 30% schneller. Verlangsamen oder schnell besiegen.
+enemy_desc.drum_goblin	Alle 5 s beschleunigt seine Trommel 3 Monster in der Nähe. Bring es zum Schweigen.
+enemy_desc.armored_scorpion	40% Rüstung, läuft unter 30% LP schneller. Brich seine Rüstung.
+enemy_desc.clockwork_gorilla	Markiert ein Tier mit einem roten Ring und sperrt es dann für 1,5 s. Unter halben LP schneller. Aegis-Widder blockt die Sperre.
+enemy_desc.void_hermit_crab	Errichtet einen Schild mit 8% LP. Brich ihn schnell: danach nimmt er +15% Schaden.
+enemy_desc.boss_summoner	Beschwört Kobolde um sich herum.
+enemy_desc.boss_stunner	Betäubt ab und zu eines deiner Tiere.
+enemy_desc.boss_healer	Heilt Monster in der Nähe.
+enemy_desc.send_rat	Vom Gegner geschickt: drei schnelle Ratten.
+enemy_desc.send_ghost	Geschickt: unsichtbar, bis ein Kontroll-Tier es enttarnt.
+enemy_desc.send_turtle	Geschickt: nimmt halben Schaden von Flächenangriffen.
+enemy_desc.send_crow	Geschickt: klaut 30 Süßigkeiten, wenn es durchkommt.
+enemy_desc.send_golem	Geschickt: sperrt beim Tod eines deiner Felder.
+enemy_desc.send_king	Geschickt: ein Mini-Boss, der Ratten ruft.
+battle.unit_info	{0}  St. {1}  ({2} {3})\nAuf ein gleiches Tier derselben Stufe ziehen, um zu verschmelzen
+reject.candy	Nicht genug Süßigkeiten
+reject.points	Nicht genug Schick-Punkte
+reject.board_full	Kein freies Feld - verschmelze zwei gleiche Tiere
+reject.locked	Dieses Feld ist gesperrt
+reject.wave_full	Die nächste Welle des Gegners ist voll (max. 3)
+reject.used	Kann nur einmal pro Spiel geschickt werden
+reject.max_level	Bereits maximale Stufe
+reject.generic	Das geht nicht
+element.none	-
+element.fire	Feuer
+element.water	Wasser
+element.grass	Pflanze
+element.light	Licht
+role.damage	Schaden
+role.area	Fläche
+role.control	Kontrolle
+role.support	Unterstützung
+rarity.common	Gewöhnlich
+rarity.rare	Selten
+rarity.epic	Episch
+rarity.legendary	Legendär
+skill.burn	Ab Stufe 4: verbrennt Gegner ({0} Schaden/s)
+skill.reveal	Trifft und enttarnt unsichtbare Gegner
+skill.candyperwave	+{0} Süßigkeiten pro Stufe in jeder Welle
+skill.attackspeedaura	+{0}% Angriffstempo für 4 Nachbarn (+{1}% pro Stufe)
+skill.luckycandy	{0}% Chance auf doppelte Süßigkeiten beim Besiegen (+{1}% pro Stufe)
+skill.phoenixblessing	Alle {0} Wellen: +1 Stufe für ein Feuer-Tier, schaltet Felder frei
+skill.knockback	Stößt Gegner zurück
+skill.pullstun	Zieht das Ziel zurück und betäubt es
+skill.alwayscounter	Bekommt immer den Elementbonus
+skill.burnstack	Jeder Treffer fügt einen Brand-Stapel hinzu (max. 3, {0} Schaden pro Puls). St4: brennt länger. St7: jeder 5. Treffer verbreitet das Feuer
+skill.pierce	Durchbohrt {0} Monster in einer Linie (70% nach dem ersten). St4: +1 Monster. St7: stößt das erste zurück
+skill.armorbreak	Bricht {0}% Rüstung für 4 s (St4: {1}%). Unter null Rüstung = Extraschaden. St7: jeder 4. Treffer explodiert breiter
+skill.chillslow	Verlangsamt um {0}% für 2 s (St4: {1}%). St7: jeder 6. Treffer friert 0,5 s ein
+skill.vulnerable	Markierte Monster nehmen 3 s lang +{0}% Schaden von allem (St4: {1}%). St7: markiert 2 weitere
+skill.burst	Feuert {0} schnelle Schüsse (St4: +1). St7: letzter Schuss +50% gegen verlangsamte Monster
+skill.nectarhaste	+{0}% Angriffstempo für die 3 nächsten Angreifer (St4: {1}%). St7: 4 Verbündete
+skill.rootarea	Wurzelt Monster in einer Fläche für 0,6 s fest (St4: 0,75 s, je einmal pro 4 s). Bosse werden stattdessen verlangsamt
+skill.silence	Jeder 4. Treffer lässt das Ziel 1 s verstummen: keine Fähigkeiten, keine Beschleunigung. Bosse: halb
+skill.aegisguard	Schützt die {0} nächsten Verbündeten: +{1}% Schaden und blockt 1 Betäubung / Feldsperre. St4: +1 Verbündeter. St7: blockt 2
+arena.1	Grüne Wiese
+arena.2	Tiefer Wald
+arena.3	Vulkan
+arena.4	Eisinsel
+arena.5	Wolkenpalast
+shop.free_tag	GRATIS
+shop.best_value	BESTER WERT
+shop.popular	BELIEBT
+shop.save_10	10% SPAREN
+shop.legendary_chance	LEGENDÄR!
+pass.tier_short	STUFE
+pass.unlock_premium	Premium freischalten
+lobby.pass_short	Pass {0}/{1}
+lobby.practice_short	Training
+lobby.ranked	Rangliste · Trophäen gewinnen
+result.rewards	Belohnungen
+result.play_again	Nochmal
+result.stat_wave	Welle
+result.stat_kills	Besiegt
+result.stat_merges	Verschmolzen
+result.stat_sends	Geschickt
+result.tip.merge	Tipp: Verschmelze öfter - zwei Tiere auf Stufe 2 schlagen vier auf Stufe 1.
+result.tip.send	Tipp: Schicke Monster, während dein Gegner gegen eine Bosswelle kämpft.
+result.tip.upgrade	Tipp: Verbessere deine Tiere im Deck-Tab und nutze im Kampf Element-Upgrades.
+battle.chat	Chat
+battle.zoom	Gegner ansehen
+battle.zoom_back	Zurück zu meinem Zoo
+battle.opp_no_upgrades	Noch keine Upgrades
+battle.opp_perks	{0} Vorteile
+battle.opp_spell	{0} wirkt {1}!
+battle.reflect	Zurückwerfen {0}
+battle.reflected_short	Zurückgeworfen
+battle.reflected	{0} zurückgeworfen!
+battle.opp_reflected	Der Gegner hat {0} zu dir zurückgeworfen!
+battle.target_hint	{0}: tippe auf den Weg
+battle.element_upgraded	{0}-Tiere Stufe {1}: +{2}% Schaden
+battle.perk_title	Wähle einen Segen
+battle.perk_auto	Automatische Wahl in {0} s
+battle.perk_chosen	Segen: {0}
+battle.star	(Sternfeld)
+battle.star_moved	Sternfelder sind gewandert! Stell deine besten Tiere um
+battle.unit_bonus	Bonus +{0}%  ·  {1} Nachbarn mit gleichem Element  {2}
+battle.skill_charging	Fähigkeit: {0} ({1}%)
+battle.skill_need_level	Fähigkeit ab Stufe {0}
+battle.summon	BESCHWÖREN
+mm.rematch	Fordere {0} erneut heraus
+result.rematch	Revanche
+result.revenge	Vergeltung
+result.revenge_bonus	Sieg: +{0}% Gold
+result.streak	Siegesserie x{0}  +{1} Gold
+result.revenge_won	Vergeltung! +{0} Gold
+battle.income	EINKOMMEN
+battle.per_wave	/Welle
+battle.your_leak	Dein Monster ist durch! -{0} Herzen für den Gegner
+battle.opp_leak	Ihr Monster ist durch! -{0} Herzen
+battle.boss_duel	BOSS-DUELL - wer zuerst besiegt, gewinnt
+battle.boss_duel_win	Du hast den Boss zuerst besiegt! +{0} Süßigkeiten
+battle.boss_duel_lose	Sie haben den Boss zuerst besiegt - ein Boss-Überrest kommt!
+battle.you	Du
+battle.summon_random	ZUFALL
+loading.title	Zoo wird geladen...
+mm.practice	Trainingsspiel
+tip.0	Verschmelze zwei gleiche Tiere derselben Stufe zu einem stärkeren.
+tip.1	Goldene Sternfelder geben +30% Schaden - stell dein bestes Tier dorthin!
+tip.2	Monster zu schicken kostet Süßigkeiten, erhöht aber jede Welle dein Einkommen - günstige Monster bringen am meisten.
+tip.3	Lass rosa Ballons platzen für gratis Süßigkeiten.
+tip.4	Ab Stufe 3 leuchtet ein Tier: tippe darauf für seine Fähigkeit.
+tip.5	Tippe im Kampf auf eine Tierkarte zum Beschwören oder zieh sie auf das gewünschte Feld.
+result.x2_title	x2 GOLD
+result.watch_ad	Werbung ansehen
+reward.tap_skip	Tippen, um alles aufzudecken
+reward.name.gold	Gold
+reward.name.gems	Edelsteine
+reward.name.xp	Saison-EP
+battle.next	NÄCHSTES
+battle.not_summoned	Nicht beschworen
+battle.choose	Wählen
+perk.cat.power	Stärke
+perk.cat.economy	Wirtschaft
+perk.cat.defense	Verteidigung
+perk.cat.spell	Zauber
+perk.cat.attack	Angriff
+battle.upgrade	{0} verstärken
+battle.atk	Angriff
+battle.spd	Tempo
+battle.bonus	Bonus
+battle.lv	St. {0}
+battle.per_sec	{0}/s
+battle.view	Ansehen
+battle.watching	Du siehst {0} zu - tippe auf ein Feld, um zurückzukehren
+battle.unit_upgraded	{0} Stärke-Stufe {1}: +{2}% Schaden
+skill.role.damage	Kraftschuss!
+skill.role.area	Großer Knall!
+skill.role.control	Betäubungswelle!
+skill.role.support	Anfeuern!
+spell.freeze	Frost
+spell.freeze.desc	Friert alle Gegner in einem Bereich 2,5 Sekunden lang ein (Bosse halb).
+spell.meteor	Meteor
+spell.meteor.desc	Schwerer Schaden an allen Gegnern in einem Bereich. Wächst mit der Welle.
+spell.gust	Windstoß
+spell.gust.desc	Bläst Gegner in einem Bereich den Weg zurück.
+spell.rage	Wut
+spell.rage.desc	Alle deine Tiere greifen 6 Sekunden lang 60% schneller an.
+spell.candy_rain	Süßigkeitenregen
+spell.candy_rain.desc	Besiegte Gegner geben 15 Sekunden lang 60% mehr Süßigkeiten.
+spell.lightning	Blitz
+spell.lightning.desc	Trifft den zähsten Gegner mit hohem Schaden. Kein Zielen nötig.
+perk.firepower	Feuerwut
+perk.firepower.desc	Feuer-Tiere machen +25% Schaden.
+perk.waterpower	Gezeitenkraft
+perk.waterpower.desc	Wasser-Tiere machen +25% Schaden.
+perk.grasspower	Wildes Wachstum
+perk.grasspower.desc	Pflanzen-Tiere machen +25% Schaden.
+perk.lightpower	Strahlkraft
+perk.lightpower.desc	Licht-Tiere machen +25% Schaden.
+perk.mergecandy	Verschmelz-Bonus
+perk.mergecandy.desc	Jedes Verschmelzen gibt +10 Süßigkeiten.
+perk.cheapsends	Monster-Rabatt
+perk.cheapsends.desc	Monster schicken kostet 20% weniger.
+perk.cheapcards	Schnäppchen
+perk.cheapcards.desc	Tierkarten kosten 15% weniger.
+perk.interest	Sparschwein
+perk.interest.desc	Jede Welle: +10% deiner Süßigkeiten (max. 60).
+perk.extrahearts	Zweiter Atem
+perk.extrahearts.desc	Sofort +2 Herzen.
+perk.spellhaste	Schnellzauber
+perk.spellhaste.desc	Zauber-Abklingzeiten 30% kürzer.
+perk.luckycrit	Glückstreffer
+perk.luckycrit.desc	15% Chance, dass ein Treffer doppelten Schaden macht.
+perk.sendpoints	Unfug
+perk.sendpoints.desc	Geschickte Monster bringen +50% Einkommen.
+emote.0	Hallo!
+emote.1	Super!
+emote.2	Haha!
+emote.3	Hoppla...
+emote.4	Grrr!
+emote.5	Gutes Spiel
+reject.cooldown	Noch nicht bereit
+reject.not_ready	Fähigkeit lädt noch
+reject.no_target	Kein Ziel
+reject.invalid_cell	Kann dort nicht platziert werden
+reject.not_on_board	Beschwöre dieses Tier zuerst - Verstärkungen wirken nur auf Tiere in deinem Zoo
+deck.spells_title	Wärter-Zauber (zum Ändern tippen)
+deck.spell_cost	{0} Süßigkeiten
+deck.spell_swap	Wähle einen Zauber für diesen Platz
+tutorial.spell	Zauber! Tippe neben BESCHWÖREN auf Meteor oder Frost und dann auf den Weg, wo sich die Gegner sammeln.
+nav.shop	Shop
+nav.deck	Deck
+nav.battle	Kampf
+nav.pass	Pass
+nav.settings	Optionen
+common.ok	OK
+time.dh	{0} T. {1} Std.
+time.hm	{0} Std. {1} Min.
+reward.gold	{0} Gold
+reward.gems	{0} Edelsteine
+reward.xp	{0} Pass-EP
+reward.shards	{0} {1}-Splitter
+reward.new	NEU!
+lobby.missions	Tagesmissionen
+lobby.missions_ready	Missionen: {0} bereit!
+lobby.pass	Saisonpass  {0}/{1}
+chest.wood	Holztruhe
+chest.silver	Silbertruhe
+chest.gold	Goldtruhe
+chest.magic	Magische Truhe
+chest.empty	Leerer Platz
+chest.tap_unlock	Zum Öffnen tippen
+chest.open	ÖFFNEN!
+chest.open_now	Jetzt öffnen: {0} Edelsteine
+chest.skip_question	Diese Truhe jetzt für {0} Edelsteine öffnen?
+chest.unlock_started	Öffnen gestartet
+chest.how_to_get	Gewinne Ranglistenkämpfe, um Truhen zu verdienen
+missions.title	Tagesmissionen
+missions.reset	Neue Missionen in {0}
+missions.reward	+{0} Gold  +{1} Pass-EP
+missions.claim	Abholen
+missions.claimed	Erledigt
+mission.playmatches	Spiele {0} Kämpfe
+mission.winmatches	Gewinne {0} Kämpfe
+mission.killenemies	Besiege {0} Gegner
+mission.mergeunits	Verschmelze {0}-mal Tiere
+mission.sendmonsters	Schicke {0} Monster
+mission.reachwave	Erreiche Welle {0}
+mission.buycards	Kaufe {0} Tiere im Kampf
+mission.openchests	Öffne {0} Truhe
+mission.upgradeunits	Verbessere {0}-mal ein Tier
+deck.choose_slot	Tippe auf einen Deckplatz für {0}
+deck.collection	Sammlung  {0}/{1}
+deck.locked	Gesperrt
+deck.locked_hint	Finde Splitter in Truhen oder im Shop zum Freischalten
+deck.level_short	St. {0}
+deck.card_level	Kartenstufe {0}/{1}
+deck.level_bonus	Kartenstufen-Bonus: +{0}% Schaden
+deck.max	MAX
+deck.shards	Splitter {0}/{1}
+deck.upgrade	Verbessern  {0} Gold
+deck.upgraded	{0} ist jetzt Stufe {1}!
+deck.need_shards	Nicht genug Splitter
+deck.use	Nutzen
+deck.in_deck	Im Deck
+deck.send_swap	Wähle ein Monster für diesen Platz
+deck.no_other_sends	Alle Monster sind schon in deinem Deck
+shop.free	Gratis-Geschenke
+shop.claim	Abholen
+shop.claimed	Komm morgen wieder
+shop.watch_ad	Werbung ansehen
+shop.daily	Tagesangebote  (neu in {0})
+shop.shards	x{0} Splitter
+shop.sold	Verkauft
+shop.gold_price	{0} Gold
+shop.gems_price	{0} Edelsteine
+shop.gacha	Tier-Beschwörung
+shop.gacha_text	Beschwöre Tiersplitter. Jeder Zug kann legendär sein!
+shop.pity	Legendär garantiert innerhalb von {0} Zügen
+shop.pull1	x1  {0} Edelsteine
+shop.pull10	x10  {0} Edelsteine
+shop.rates	Wahrscheinlichkeiten
+shop.rate_line	{0}: {1}%  ({2} Splitter)
+shop.pity_rule	Mindestens einmal alle {0} Züge ist ein legendäres Tier garantiert.
+shop.chests	Truhen
+shop.chest_info	{0}+ Splitter, {1}+ Gold
+shop.gold	Gold
+shop.gems	Edelsteine
+shop.confirm_gems	{0} Edelsteine ausgeben?
+shop.not_enough_gems	Nicht genug Edelsteine
+shop.not_enough_gold	Nicht genug Gold
+shop.purchase_failed	Kauf fehlgeschlagen
+privacy.title	Deine Privatsphäre
+privacy.text	Zoo Defense ist dank Werbung kostenlos. Mit deinem OK dürfen unsere Werbepartner Daten deines Geräts (z. B. eine Werbe-ID) nutzen, um passende Werbung zu zeigen, und wir sammeln anonyme Spielstatistiken, um das Spiel zu verbessern. Wenn du ablehnst, siehst du trotzdem Werbung, nur nicht personalisiert, und es werden keine Statistiken gesammelt.\n\nDu kannst das jederzeit unter Einstellungen › Datenschutz ändern.
+privacy.accept	OK, Werbung personalisieren
+privacy.decline	Nein, meine Daten nicht nutzen
+privacy.policy	Datenschutzerklärung
+settings.privacy	Datenschutz
+settings.personal_ads	Personalisierte Werbung
+settings.personal_ads_hint	Aus = deine Daten werden nicht verkauft oder geteilt
+settings.open	Öffnen
+shop.verify_failed	Kauf konnte nicht bestätigt werden
+shop.verify_later	Kauf wird geprüft… er kommt gleich an
+shop.deferred	Kauf wartet auf Genehmigung
+shop.restore	Käufe wiederherstellen
+shop.restore_done	Käufe wiederhergestellt
+shop.delivered	Kauf zugestellt
+shop.offers	Sonderangebote
+shop.value	x{0} WERT
+shop.limit_once	Einmaliges Angebot
+shop.limit_weekly	Einmal pro Woche
+shop.limit_daily	Einmal pro Tag
+shop.back_in	Wieder da in {0}
+shop.monthly	Monatskarte
+shop.monthly_days	{0} TAGE
+shop.monthly_text	{0} Edelsteine sofort + {1} Edelsteine täglich für {2} Tage\n({3} Edelsteine insgesamt)
+shop.monthly_left	Aktiv: noch {0} Tage · täglich bei Gratis-Geschenken abholen
+shop.monthly_tag	MONATLICH
+shop.first_x2	x2 ERSTKAUF
+shop.bonus	+{0}%
+bundle.bundle_starter	Starterpaket
+bundle.bundle_weekly	Wöchentliches Truhenpaket
+bundle.bundle_daily_gems	Tägliches Silberangebot
+bundle.bundle_champion	Champion-Paket
+bundle.bundle_legend	Legenden-Paket
+shop.test_store	Test-Shop: Käufe sind in diesem Build kostenlos
+pass.season	Saison {0}
+pass.ends	Endet in {0}
+pass.tier	Stufe {0}/{1}
+pass.xp	{0}/{1} EP
+pass.max	MAX
+pass.free	Gratis
+pass.premium	Premium
+pass.buy_premium	Premium freischalten  {0} Edelsteine
+pass.premium_text	Premium-Belohnungen dieser Saison für {0} Edelsteine freischalten?
+pass.premium_owned	Premium freigeschaltet
+pass.claim	Abholen
+pass.claimed	Abgeholt
+pass.locked	Premium
+pass.need_tier	Stufe {0}
+pass.tier_reward	Stufe {0}
+result.pass_xp	+{0} Pass-EP
+result.chest	Neue Truhe: {0}
+result.chest_full	Truhenplätze voll - diesmal keine Truhe
+result.invalid	Spiel konnte nicht bestätigt werden - keine Belohnungen
+result.tutorial_done	Tutorial abgeschlossen!
+tutorial.welcome_title	Willkommen im Zoo!
+tutorial.welcome_text	Monster greifen deinen Zoo an! Lerne die Grundlagen in einem kurzen Trainingskampf.
+tutorial.play	Tutorial starten
+tutorial.skip	Überspringen
+tutorial.coach	Trainer Panda
+tutorial.buy	Tippe unten auf eine Tierkarte, um genau dieses Tier zu beschwören, oder ZIEH sie auf ein Feld. ZUFALL ist günstiger. Goldene Sternfelder geben +30% Schaden!
+tutorial.buy_more	Super! Das ↑-Abzeichen auf einer Karte verstärkt dieses Tier für dieses Spiel. Lass rosa Ballons platzen für gratis Süßigkeiten!
+tutorial.merge	Zieh ein Tier auf ein gleiches Tier derselben Stufe, um sie zu verschmelzen. Ab Stufe 3 leuchtet es: tippe für eine Fähigkeit!
+tutorial.send	Tippe auf ein Monster im roten Streifen, um es zu schicken: kostet Süßigkeiten, bringt aber jede Welle Einkommen! Geschickte Monster kommen in 5 s an - tippe auf Zurückwerfen, um ihre zurückzuschicken.
+tutorial.finish	Das war's! Verschmelze und schicke weiter, bis dein Gegner keine Herzen mehr hat.
+settings.title	Optionen
+settings.music	Musik
+settings.sfx	Soundeffekte
+settings.off	Aus
+settings.language	Sprache
+settings.tutorial	Tutorial
+settings.play	Nochmal spielen
+settings.reset	Fortschritt zurücksetzen
+settings.reset_button	Zurücksetzen
+settings.reset_text	Den gesamten Fortschritt auf diesem Gerät löschen? Das kann nicht rückgängig gemacht werden.
+settings.debug	Testwerkzeuge (nur Dev-Builds)
+settings.version	Version {0}  -  {1} Kämpfe gespielt
+settings.sound	Ton
+settings.game	Spiel
+settings.support	Hilfe
+settings.online	Online-Kämpfe
+settings.online_hint	Rangliste: zuerst echte Spieler suchen
+settings.player_id	Spieler-ID
+settings.copy	Kopieren
+settings.copied	Kopiert
+settings.no_title	Noch kein Titel
+settings.battles	{0} Kämpfe
+settings.wins	{0} Siege
+settings.reset_text_linked	Fortschritt auf diesem Handy löschen? Dein Cloud-Backup bleibt auf deinem verknüpften Konto.
+account.title	Konto
+account.unavailable	Online-Konto ist in diesem Build nicht verfügbar.
+account.guest	GAST
+account.guest_text	Dein Fortschritt ist nur auf diesem Handy gespeichert. Verknüpfe ein Konto, um ihn zu sichern und auf anderen Handys zu spielen.
+account.link	Konto verknüpfen
+account.have_account	Schon ein Konto? Anmelden
+account.linked	VERKNÜPFT
+account.linked_text	Der Fortschritt wird automatisch gesichert.
+account.backup_ago	Letzte Sicherung: vor {0}
+account.backup_never	Noch nicht gesichert
+account.backup	Jetzt sichern
+account.backup_ok	Gesichert
+account.unlink	Trennen
+account.unlink_text	Dieses Konto trennen? Dein Fortschritt bleibt auf diesem Handy, wird aber nicht mehr gesichert.
+account.unlinked	Konto getrennt
+account.delete	Konto löschen
+account.delete_button	Endgültig löschen
+account.delete_text	Dein Online-Konto und sein Cloud-Backup löschen und dieses Handy zurücksetzen? Das kann nicht rückgängig gemacht werden.
+account.deleted	Konto gelöscht
+account.waiting	Warte auf Anmeldung
+account.linked_ok	Konto verknüpft!
+account.exists_title	Konto bereits verwendet
+account.exists_text	Dieses Konto hat schon Fortschritt von einem anderen Handy. Diesen Fortschritt hier laden? Der Fortschritt auf diesem Handy wird ersetzt.
+account.load_it	Laden
+account.signin	Anmelden
+account.signin_text	Melde dich bei deinem Konto an und lade dessen Fortschritt auf dieses Handy. Der Fortschritt auf diesem Handy wird ersetzt.
+account.restored	Fortschritt geladen!
+account.err_config	Die Kontoanmeldung ist noch nicht eingerichtet
+account.err_offline	Keine Verbindung. Versuch es noch einmal.
+account.err_generic	Etwas ist schiefgelaufen. Versuch es noch einmal.
+unit.fire_fox	Feuerfuchs
+unit.firework_rooster	Feuerwerkshahn
+unit.ember_squirrel	Gluthörnchen
+unit.baby_dragon	Babydrache
+unit.phoenix_chick	Phönixküken
+unit.bubble_frog	Blubberfrosch
+unit.ice_penguin	Eispinguin
+unit.otter_cannon	Otterkanone
+unit.ink_octopus	Tintenkrake
+unit.wave_dolphin	Wellendelfin
+unit.spike_hedgehog	Stacheligel
+unit.carrot_bunny	Karottenhase
+unit.vine_sloth	Rankenfaultier
+unit.chubby_panda	Pummelpanda
+unit.leaf_gecko	Blattgecko
+unit.sun_sparrow	Sonnenspatz
+unit.lucky_cat	Glückskatze
+unit.night_owl	Nachteule
+unit.meteor_deer	Meteorhirsch
+unit.rainbow_unicorn	Regenbogeneinhorn
+unit.lava_salamander	Lavasalamander
+unit.ember_boar	Glutkeiler
+unit.forge_mole	Schmiedemaulwurf
+unit.snow_seal	Schneerobbe
+unit.coral_axolotl	Korallen-Axolotl
+unit.snap_shrimp	Knallgarnele
+unit.nectar_bee	Nektarbiene
+unit.sprout_elephant	Sprossenelefant
+unit.moon_moth	Mondmotte
+unit.aegis_ram	Aegis-Widder
+enemy.slime	Schleim
+enemy.imp	Kobold
+enemy.rock_beetle	Steinkäfer
+enemy.armored_knight	Rüstungsritter
+enemy.boss_summoner	Beschwörerkönig
+enemy.boss_stunner	Donnerkröte
+enemy.boss_healer	Pilzhexe
+enemy.send_rat	Flinke Ratte
+enemy.send_ghost	Schleichgeist
+enemy.send_turtle	Schildkröte
+enemy.send_crow	Naschkrähe
+enemy.send_golem	Ziegelgolem
+enemy.send_king	Mini-Monsterkönig
+enemy.bandit_raccoon	Banditenwaschbär
+enemy.crystal_bat	Kristallfledermaus
+enemy.drum_goblin	Trommelgoblin
+enemy.armored_scorpion	Panzerskorpion
+enemy.clockwork_gorilla	Uhrwerk-Gorilla
+enemy.void_hermit_crab	Leere-Einsiedlerkrebs
+send.rat_rush	Rattenrausch
+send.sneaky_ghost	Schleichgeist
+send.shield_turtle	Schildkröte
+send.candy_crow	Naschkrähe
+send.brick_golem	Ziegelgolem
+send.mini_king	Mini-Monsterkönig
+send.boss_remnant	Boss-Überrest
+lobby.leaderboard	Ranglisten
+lobby.friends	Freunde
+login.title	Tägliche Belohnung
+login.hint	Jeden Tag ein Geschenk. Einen Tag verpasst? Kein Problem, es wartet auf dich.
+login.day	Tag {0}
+login.claim	Tag {0} abholen
+login.claimed	Erhalten
+login.come_back	Komm morgen wieder
+lb.title	Ranglisten
+lb.trophies	Trophäen
+lb.endless	Endlos
+lb.daily	Täglich
+lb.world	Welt
+lb.around_me	Um mich
+lb.friends	Freunde
+lb.resets	Neustart in {0}
+lb.my_best_wave	Dein Bestwert: Welle {0}
+lb.my_trophies	Deine Trophäen: {0}
+lb.wave	Welle {0}
+lb.game_center	Game Center
+lb.loading	Wird geladen…
+lb.offline	Für die Ranglisten brauchst du Internet.
+lb.empty	Noch keine Punkte. Sei der Erste!
+lb.no_friends	Füge Freunde hinzu, um Punkte zu vergleichen.
+lb.player	Spieler
+friends.title	Freunde
+friends.offline	Für Freunde brauchst du Internet.
+friends.my_code	Dein Freundescode
+friends.copy	Kopieren
+friends.share	Teilen
+friends.copied	Kopiert!
+friends.share_text	Spiel Zoo Defense mit mir! Gib meinen Code {0} ein (neue Spieler bekommen Edelsteine): {1}
+friends.add	Freund hinzufügen
+friends.code_hint	Freundescode
+friends.add_btn	Hinzufügen
+friends.bad_code	Codes haben 6 Buchstaben und Ziffern.
+friends.own_code	Das ist dein eigener Code!
+friends.not_found	Kein Spieler mit diesem Code.
+friends.already	Schon dein Freund.
+friends.added	Freund hinzugefügt!
+friends.full	Freundesliste ist voll ({0}).
+friends.list	Freunde {0}/{1}
+friends.empty	Noch keine Freunde. Teile deinen Code!
+friends.online	Online
+friends.seen	Vor {0} online
+friends.trophies	{0} Trophäen
+friends.invites_you	Lädt dich zu einem Freundschaftsspiel ein!
+friends.invite	Einladen
+friends.accept	Beitreten
+friends.remove	Entfernen
+friends.remove_q	{0} aus deinen Freunden entfernen?
+friends.invite_banner	{0} lädt dich zu einem Freundschaftsspiel ein!
+room.title	Freundschaftsspiel
+room.hint	Spiel 1 gegen 1 mit Freunden. Keine Trophäen.
+room.create	Raum erstellen
+room.code_hint	Raumcode
+room.join	Beitreten
+room.share_code	Gib diesen Code deinem Freund
+room.joining	Raum beitreten
+room.waiting	Warte auf deinen Freund
+room.offline	Schalte Online-Spiel in den Einstellungen ein und verbinde dich mit dem Internet.
+room.not_found	Raum nicht gefunden. Prüfe den Code.
+room.failed	Verbindung fehlgeschlagen. Versuch es nochmal.
+invite.title	Freunde einladen
+invite.joined	Freunde mit deinem Code: {0}\n+{1} Edelsteine für jeden
+invite.enter	Code eines Freundes: +{0} Edelsteine
+invite.redeem	Einlösen
+invite.used	Du hast schon einen Einladungscode benutzt.
+invite.failed	Code konnte nicht eingelöst werden. Versuch es nochmal.
+online.reconnecting	Verbindung verloren, verbinde neu
+online.opp_reconnecting	{0} verbindet sich neu
+result.friendly	Freundschaftsspiel: keine Trophäen
+settings.notifications	Erinnerungen
+settings.notifications_hint	Truhe fertig, Tagesgeschenk. Max. 2 pro Tag.
+settings.notifications_denied	Mitteilungen für Zoo Defense sind in den Telefoneinstellungen aus.
+notify.title	Zoo Defense
+notify.chest	Deine {0} ist bereit!
+notify.login	Dein Geschenk für Tag {0} wartet!
+notify.monthly	Deine Monatskarten-Edelsteine sind bereit.
+notify.comeback	Die Monster sind zurück! Deine Tiere brauchen dich.
+notify.missions	Neue Missionen sind da!

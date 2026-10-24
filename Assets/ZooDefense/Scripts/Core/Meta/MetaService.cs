@@ -70,6 +70,7 @@ namespace ZooDefense.Core
             if (State.dealBought == null) State.dealBought = new List<bool>();
             if (State.rng == 0) State.rng = new DetRandom(State.trophies + 12345).State;
             NormalizeModes();
+            NormalizeRetention();
         }
 
         // ------------------------------------------------------------------ helpers
@@ -317,6 +318,8 @@ namespace ZooDefense.Core
 
             State.trophies += r.trophies;
             State.seasonBestTrophies = Math.Max(State.seasonBestTrophies, State.trophies);
+            // Hidden rating: ranked matches only (friendly rooms and practice never change it).
+            if (m.ranked && m.opponentMmr > 0) r.mmrDelta = ApplyRating(m.winner, m.opponentMmr);
             CountStats(m);
             State.gold += r.gold;
             State.passXp += r.passXp;

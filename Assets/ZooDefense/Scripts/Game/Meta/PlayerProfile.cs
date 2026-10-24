@@ -34,6 +34,10 @@ namespace ZooDefense.Game
         /// <summary>Test-only clock offset (seconds) set from the debug section of Settings.</summary>
         public long debugTimeOffset;
         public PlayerState meta = new PlayerState();
+        /// <summary>Local reminders (chest ready, daily rewards) while away. Settings toggle.</summary>
+        public bool notifications = true;
+        /// <summary>Friends' player ids (added with their code). Backed up with the profile.</summary>
+        public List<string> friends = new List<string>();
 
         // Version 1 fields, migrated into meta on load.
         public int trophies;
@@ -105,6 +109,8 @@ namespace ZooDefense.Game
             for (int i = 0; i < p.decks.Count; i++)
                 if (!ValidDeck(p.decks[i].units, 5, id => content.UnitIndex(id) >= 0 && service.IsUnlocked(id))) p.decks[i].units = (string[])p.deck.Clone();
             p.activeDeck = Mathf.Clamp(p.activeDeck, 0, 2);
+            if (p.friends == null) p.friends = new List<string>();
+            p.friends.RemoveAll(string.IsNullOrEmpty);
             p.botDifficulty = Mathf.Clamp(p.botDifficulty, 0, 2);
             p.musicVolume = Mathf.Clamp01(p.musicVolume);
             p.sfxVolume = Mathf.Clamp01(p.sfxVolume);

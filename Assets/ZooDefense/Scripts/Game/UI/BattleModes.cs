@@ -26,6 +26,10 @@ namespace ZooDefense.Game
         public MatchRecord replay;
         /// <summary>Set for a real online 1v1 (see Online / LockstepSync).</summary>
         public OnlineMatchInfo online;
+        /// <summary>Friendly room with a friend: no trophies, no rating.</summary>
+        public bool friendly;
+        /// <summary>Opponent's hidden rating (ranked only, 0 = unknown).</summary>
+        public int opponentMmr;
 
         public MatchMode Mode { get { return replay != null && replay.setup != null && replay.setup.rules != null ? replay.setup.rules.mode : (rules != null ? rules.mode : MatchMode.Versus); } }
     }

@@ -23,6 +23,13 @@ namespace ZooDefense.Tests
         /// <summary>Runs two "devices" with a lossless link of the given latency, a bot driving each side.</summary>
         static void RunPair(int seed, int latency, int disconnectAtStep, out Match a, out Match b, out LockstepSync sa, out LockstepSync sb)
         {
+            RunPair(seed, latency, disconnectAtStep, -1, false, out a, out b, out sa, out sb);
+        }
+
+        /// <param name="reconnectAtStep">The dropped link comes back at this step (-1 = never).</param>
+        /// <param name="guestOnly">Only the guest's connection drops (the usual case: one phone loses its network).</param>
+        static void RunPair(int seed, int latency, int disconnectAtStep, int reconnectAtStep, bool guestOnly, out Match a, out Match b, out LockstepSync sa, out LockstepSync sb)
+        {
             var content = DefaultContent.CreateDatabase();
             a = new Match(content, Setup(seed));
             b = new Match(content, Setup(seed));
@@ -37,7 +44,8 @@ namespace ZooDefense.Tests
             for (int step = 0; step < 200000 && !(a.IsOver && b.IsOver); step++)
             {
                 la.Clock = lb.Clock = step;
-                if (step == disconnectAtStep) { la.Connected = false; lb.Connected = false; }
+                if (step == disconnectAtStep) { if (!guestOnly) la.Connected = false; lb.Connected = false; }
+                if (step == reconnectAtStep) { la.Connected = true; lb.Connected = true; }
                 double now = step * 0.05;
                 sa.Pump(now, 5.0);
                 sb.Pump(now, 5.0);
@@ -111,14 +119,42 @@ namespace ZooDefense.Tests
         }
 
         [Test]
-        public void LostConnection_TheOtherSideWinsByForfeit()
+        public void LostConnection_ThePlayerWhoDroppedLoses()
         {
+            // The guest's phone loses its network for good: after the reconnection window both sides agree the guest lost.
             Match a, b; LockstepSync sa, sb;
-            RunPair(78, 2, 400, out a, out b, out sa, out sb);
+            RunPair(78, 2, 400, -1, true, out a, out b, out sa, out sb);
             Assert.IsTrue(sa.Abandoned && sb.Abandoned);
             Assert.IsTrue(a.IsOver && b.IsOver);
             Assert.AreEqual(0, a.Winner, "host: the guest forfeits");
-            Assert.AreEqual(1, b.Winner, "guest: the host forfeits");
+            Assert.AreEqual(0, b.Winner, "guest: it was our connection that dropped, we lose");
+            Assert.IsTrue(sb.LostByDisconnect);
+            Assert.IsFalse(sa.LostByDisconnect);
+        }
+
+        [Test]
+        public void ShortDrop_ReconnectsAndBothDevicesStayIdentical()
+        {
+            // 3 seconds without network in the middle of the match (window is 5 s in this test): frames lost during the
+            // drop are sent again after Resume, nobody forfeits and both devices end with the same match.
+            Match a, b; LockstepSync sa, sb;
+            RunPair(91, 2, 400, 460, true, out a, out b, out sa, out sb);
+            Assert.IsTrue(a.IsOver && b.IsOver);
+            Assert.IsFalse(sa.Abandoned || sb.Abandoned, "no forfeit");
+            Assert.IsFalse(sa.Desynced || sb.Desynced, "no desync");
+            Assert.AreEqual(a.Winner, b.Winner);
+            Assert.AreEqual(a.StateHash(), b.StateHash());
+            Assert.IsTrue(sb.Reconnects >= 1, "guest reconnected");
+        }
+
+        [Test]
+        public void BothDrop_AndComeBack_StayIdentical()
+        {
+            Match a, b; LockstepSync sa, sb;
+            RunPair(92, 3, 300, 330, false, out a, out b, out sa, out sb);
+            Assert.IsTrue(a.IsOver && b.IsOver);
+            Assert.IsFalse(sa.Abandoned || sb.Abandoned, "no forfeit");
+            Assert.AreEqual(a.StateHash(), b.StateHash());
         }
     }
 }

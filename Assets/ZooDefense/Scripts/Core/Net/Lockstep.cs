@@ -11,8 +11,17 @@ namespace ZooDefense.Core
         bool TryReceive(out byte[] data);
     }
 
+    /// <summary>
+    /// Optional for a link: whether this device itself still has a network. Decides who lost a dropped match
+    /// (the player who went offline), since a broken pipe looks the same from both ends.
+    /// </summary>
+    public interface ILinkHealth
+    {
+        bool SelfOnline { get; }
+    }
+
     /// <summary>Online message kinds. Every packet starts with one of these bytes.</summary>
-    public enum NetMsg : byte { Hello = 1, Start = 2, Frame = 3, Hash = 4, Bye = 5 }
+    public enum NetMsg : byte { Hello = 1, Start = 2, Frame = 3, Hash = 4, Bye = 5, Resume = 6 }
 
     /// <summary>
     /// Deterministic lockstep for one match: only player commands travel over the network, never game state.
@@ -20,24 +29,32 @@ namespace ZooDefense.Core
     /// tick can only be simulated once the other side's frame for it has arrived. Both sides therefore run the
     /// exact same command list, tick by tick, and stay identical. A state hash is exchanged every second to
     /// detect a desync early.
+    ///
+    /// Reconnection: frames sent recently are kept. Whenever the link (re)connects, each side sends Resume with the
+    /// first tick it still needs, and the other side sends those frames again. A dropped player has `timeout`
+    /// seconds to come back; the match waits meanwhile (both sides stop at the same tick).
     /// </summary>
     public sealed class LockstepSync
     {
-        public const int ProtocolVersion = 1;
+        public const int ProtocolVersion = 2;
+        /// <summary>Frames kept for a resend after a reconnection (ticks behind the current one).</summary>
+        public const int KeepFrames = 400;
         /// <summary>Input delay in ticks (4 = 0.2 s at 20 Hz): hides network latency below that.</summary>
         public readonly int InputDelay;
         public const int HashEveryTicks = 20;
 
         readonly Match _m;
         readonly int _local;
-        readonly IPacketLink _link;
+        IPacketLink _link;
         readonly List<Command> _pendingLocal = new List<Command>();
         readonly Dictionary<int, List<Command>> _localFrames = new Dictionary<int, List<Command>>();
         readonly Dictionary<int, List<Command>> _remoteFrames = new Dictionary<int, List<Command>>();
         readonly Dictionary<int, uint> _myHashes = new Dictionary<int, uint>();
         readonly Dictionary<int, uint> _theirHashes = new Dictionary<int, uint>();
+        readonly SortedDictionary<int, byte[]> _sentFrames = new SortedDictionary<int, byte[]>();
         int _sentUpTo = -1;
         double _lastReceive;
+        bool _linkUp;
 
         public bool Desynced { get; private set; }
         public int DesyncTick { get; private set; }
@@ -47,6 +64,22 @@ namespace ZooDefense.Core
         /// <summary>Seconds since the last packet from the opponent (for the "waiting for opponent" overlay).</summary>
         public double SilentFor { get; private set; }
         public int RemoteFrameTick { get; private set; }
+        /// <summary>Our own connection is down (we are the one reconnecting).</summary>
+        public bool LinkDown { get { return !_link.Connected; } }
+        /// <summary>Our own side is the one without a network (link down and, when the link can tell, no internet here).</summary>
+        public bool WeAreOffline
+        {
+            get
+            {
+                if (_link.Connected) return false;
+                var h = _link as ILinkHealth;
+                return h == null || !h.SelfOnline;
+            }
+        }
+        /// <summary>The match was decided by a drop: true = we were the one who could not come back (we lost).</summary>
+        public bool LostByDisconnect { get; private set; }
+        /// <summary>Number of times the link came back during the match (analytics).</summary>
+        public int Reconnects { get; private set; }
 
         public LockstepSync(Match match, int localPlayer, IPacketLink link, int inputDelay = 4)
         {
@@ -62,10 +95,26 @@ namespace ZooDefense.Core
             _pendingLocal.Add(c);
         }
 
+        /// <summary>Swaps the connection (a new link after a reconnection). Missing frames are re-requested.</summary>
+        public void SetLink(IPacketLink link)
+        {
+            if (link == null || link == _link) return;
+            _link = link;
+            _linkUp = false;
+        }
+
         /// <summary>Reads everything that arrived. `now` = seconds (any clock); `timeout` = seconds of silence before a forfeit.</summary>
-        public void Pump(double now, double timeout = 15.0)
+        public void Pump(double now, double timeout = 20.0)
         {
             if (_lastReceive == 0) _lastReceive = now;
+            bool up = _link.Connected;
+            if (up && !_linkUp && !Abandoned)
+            {
+                // (Re)connected: ask for everything from the first tick we still need.
+                if (_lastReceive != now && _sentUpTo >= 0) Reconnects++;
+                SendResume(false);
+            }
+            _linkUp = up;
             byte[] data;
             while (_link.TryReceive(out data))
             {
@@ -85,6 +134,8 @@ namespace ZooDefense.Core
                             int a = ReadInt(data, ref pos), b = ReadInt(data, ref pos);
                             list.Add(new Command(tick, 1 - _local, type, a, b));
                         }
+                        // A frame sent again after a reconnection may already have been played: ignore it.
+                        if (tick < _m.Tick) break;
                         _remoteFrames[tick] = list;
                         if (tick > RemoteFrameTick) RemoteFrameTick = tick;
                         break;
@@ -101,13 +152,24 @@ namespace ZooDefense.Core
                     case NetMsg.Bye:
                         RemoteLeft = true;
                         break;
+                    case NetMsg.Resume:
+                    {
+                        // The other side came back: send again every frame from the tick it asks for.
+                        int pos = 1;
+                        int from = ReadInt(data, ref pos);
+                        bool reply = data.Length > pos && data[pos] == 1;
+                        foreach (var kv in _sentFrames) if (kv.Key >= from) _link.Send(kv.Value);
+                        // The other side may have missed our frames too (only it saw the drop): ask for ours as well.
+                        if (!reply) SendResume(true);
+                        break;
+                    }
                 }
             }
             SilentFor = now - _lastReceive;
-            // A player who left (or whose connection closed) has already sent every frame up to their last tick, so
-            // keep playing those first: the match may end normally on its own. Forfeit only when frames run out.
-            bool gone = (RemoteLeft || !_link.Connected) && !HasRemoteFrame;
-            if (!Abandoned && !_m.IsOver && (gone || SilentFor > timeout)) Abandon();
+            // A player who left has already sent every frame up to their last tick, so keep playing those first: the
+            // match may end normally on its own. A dropped connection gets `timeout` seconds to come back.
+            bool gone = RemoteLeft && !HasRemoteFrame;
+            if (!Abandoned && !_m.IsOver && (gone || (SilentFor > timeout && !HasRemoteFrame))) Abandon(!gone && WeAreOffline);
         }
 
         /// <summary>True when the opponent's frame for the next tick is here.</summary>
@@ -169,17 +231,45 @@ namespace ZooDefense.Core
             }
         }
 
-        void Abandon()
+        void Abandon(bool weDropped)
         {
             Abandoned = true;
-            // The opponent forfeits. Injected locally (the opponent is gone, nothing to keep in sync with).
-            _m.Submit(new Command(_m.Tick, 1 - _local, CommandType.Surrender));
+            // Injected locally (nothing to keep in sync with any more). Whoever could not reach the other loses:
+            // our own connection is down -> we forfeit; the opponent went silent while we were online -> they do.
+            LostByDisconnect = weDropped;
+            _m.Submit(new Command(_m.Tick, weDropped ? _local : 1 - _local, CommandType.Surrender));
+        }
+
+        void SendResume(bool reply)
+        {
+            var p = new byte[6];
+            int pos = 0;
+            p[pos++] = (byte)NetMsg.Resume;
+            WriteInt(p, ref pos, Math.Max(_m.Tick, RemoteFrameTick + 1));
+            p[pos] = (byte)(reply ? 1 : 0);
+            _link.Send(p);
         }
 
         /// <summary>Tell the opponent we are leaving (after the match or on quit).</summary>
         public void SendBye() { if (_link.Connected) _link.Send(new[] { (byte)NetMsg.Bye }); }
 
         void SendFrame(int tick, List<Command> cmds)
+        {
+            var p = PackFrame(tick, cmds);
+            _sentFrames[tick] = p;
+            // Forget frames the other side can no longer need (it is never more than InputDelay ticks behind).
+            while (_sentFrames.Count > 0)
+            {
+                int oldest = FirstKey(_sentFrames);
+                if (oldest >= tick - KeepFrames) break;
+                _sentFrames.Remove(oldest);
+            }
+            _link.Send(p);
+        }
+
+        static int FirstKey(SortedDictionary<int, byte[]> d) { foreach (var kv in d) return kv.Key; return int.MaxValue; }
+
+        static byte[] PackFrame(int tick, List<Command> cmds)
         {
             int n = Math.Min(255, cmds.Count);
             var p = new byte[1 + 4 + 1 + n * 9];
@@ -193,7 +283,7 @@ namespace ZooDefense.Core
                 WriteInt(p, ref pos, cmds[i].a);
                 WriteInt(p, ref pos, cmds[i].b);
             }
-            _link.Send(p);
+            return p;
         }
 
         public static void WriteInt(byte[] p, ref int pos, int v)
@@ -225,7 +315,8 @@ namespace ZooDefense.Core
             a._peer = b; b._peer = a;
         }
 
-        public void Send(byte[] data) { if (Connected) _peer._inbox.Enqueue(new KeyValuePair<int, byte[]>(_peer.Clock + LatencySteps, data)); }
+        /// <summary>Lost unless both ends are connected (like a real drop: nothing gets through either way).</summary>
+        public void Send(byte[] data) { if (Connected && _peer.Connected) _peer._inbox.Enqueue(new KeyValuePair<int, byte[]>(_peer.Clock + LatencySteps, data)); }
 
         public bool TryReceive(out byte[] data)
         {

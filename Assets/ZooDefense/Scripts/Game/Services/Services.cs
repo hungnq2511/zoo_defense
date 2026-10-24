@@ -157,9 +157,10 @@ namespace ZooDefense.Game
     /// <summary>When a full-screen ad may appear: never for payers or new players, at most every few minutes.</summary>
     public static class AdPolicy
     {
-        public const int FirstAfterMatches = 3;
-        public const int EveryMatches = 2;
-        public const float MinSeconds = 240f;
+        // Set from Remote Config (Tuning): ad_first_after, ad_every, ad_min_seconds.
+        public static int FirstAfterMatches = 3;
+        public static int EveryMatches = 2;
+        public static float MinSeconds = 240f;
         static int _matchesAtLast = -1;
         static float _lastShown = -9999f;
 

@@ -1,0 +1,821 @@
+# Zoo Defense strings: key<TAB>text. \n = new line. Missing keys fall back to English.
+lobby.stats	트로피 {0}     골드 {1}
+lobby.arena	아레나 {0}
+lobby.top_arena	최고 아레나 도달
+lobby.next_arena	다음: {0} (트로피 {1})
+lobby.played	플레이 {0}   승리 {1}
+lobby.battle	전투
+lobby.deck	덱
+lobby.practice	연습 (트로피 없음)
+lobby.reset	프로필 초기화
+lobby.bot	봇: {0}
+lobby.language_changed	언어: 한국어
+difficulty.0	쉬움
+difficulty.1	보통
+difficulty.2	어려움
+mm.finding	상대를 찾는 중
+online.connecting	상대를 찾았습니다! 연결 중
+online.waiting	{0} 기다리는 중
+mm.vs	VS
+common.cancel	취소
+result.victory	승리!
+result.defeat	패배
+result.draw	무승부
+result.trophies	트로피 {0}  ({1})
+result.practice	연습 경기: 트로피 없음
+result.gold	+{0} 골드
+result.stats	도달 웨이브 {0}   처치 {1}
+result.arena	아레나: {0}
+result.double_gold	골드 2배 (광고 보기)
+result.gold_doubled	골드 2배 획득!
+result.continue	계속
+deck.title	덱
+deck.counter	동물 {0}/5     보내기 몬스터 {1}/4
+deck.sends_title	보내기 몬스터 (4개 선택)
+deck.send_label	{0}\n{1}점{2}
+deck.once	 (1회)
+deck.hint	동물을 탭해서 넣거나 뺍니다.
+deck.full	덱이 가득 찼습니다 (5). 먼저 동물을 하나 빼세요.
+deck.sends_full	보내기 몬스터를 정확히 4개 고르세요.
+deck.incomplete	동물 5마리와 보내기 몬스터 4개를 고르세요.
+deck.saved	덱 저장 완료
+deck.save	저장
+deck.back	뒤로
+deck.info	{0}  -  {1} {2}, {3}
+deck.stat_damage	{1}초마다 피해 {0}
+deck.stat_splash	, 범위 {0}
+deck.stat_slow	, 감속 {0}%
+deck.stat_stun	, 기절
+battle.get_ready	준비하세요!
+battle.ready	준비
+battle.wave	웨이브 {0}
+battle.sudden_death_wave	서든데스 - 웨이브 {0}
+battle.timer	다음 웨이브 {0}
+battle.timer_sudden	서든데스  {0}
+battle.card_price	카드 {0}
+battle.reroll	카드\n교체\n\n{0}
+battle.send	보내기
+battle.send_used	사용함
+battle.paused	일시정지
+battle.resume	계속하기
+battle.surrender	항복
+battle.boss	보스가 온다!
+battle.incoming	접근 중: {0}!
+battle.sent	{0}을(를) 다음 웨이브로 보냈습니다
+battle.opp_sending	{0} 님이 {1}을(를) 보내는 중!
+battle.crow	까마귀가 사탕 {0}개를 훔쳤다!
+battle.golem	골렘이 칸 하나를 잠갔습니다
+battle.raccoon	너구리가 사탕 {0}개를 가지고 도망쳤다!
+battle.wave_element	{0} · {1}
+battle.effective	효과 굉장!
+battle.resisted	저항됨
+battle.blocked	막힘!
+battle.shield_up	보호막!
+battle.shield_broken	보호막 파괴!
+battle.lock_warning	고릴라가 칸을 노린다!
+status.1	속박
+status.2	침묵
+status.3	빙결
+status.4	방어 파괴
+status.5	표식
+ability.1	북소리!
+ability.2	격노!
+ability.3	돌진!
+ability.104	오버드라이브!
+guide.title	속성
+guide.button	속성
+guide.arrow_hint	화살표 = 우세
+guide.effective	동물이 몬스터 속성에 우세: 피해 +{0}%
+guide.resisted	몬스터 속성이 동물에 우세: 피해 -{0}%
+guide.neutral	같은 속성이거나 관계 없음: 일반 피해
+guide.light	빛은 삼각형 밖: 저항받지 않으며 엘리트와 보스에게 +{0}%
+guide.read_title	전투 읽는 법
+guide.ring	몬스터 아래의 색깔 고리가 속성입니다. 보낸 몬스터의 속성은 보내기 버튼에도 표시됩니다.
+guide.wave	모든 웨이브에는 주 속성이 있습니다(몬스터의 {0}%). 웨이브 상자에 이번 웨이브 -> 다음 웨이브가 표시됩니다. 제때 상성 동물을 소환하세요.
+guide.tips	팁: 속성 2개를 섞으면 어떤 웨이브에도 크게 밀리지 않습니다. 보스용으로 빛 동물을 하나 두세요. 화상, 표식, 방어 파괴는 모든 속성에 통합니다.
+guide.matchup	{0}에 강함 · {1}에 약함
+guide.matchup_light	저항받지 않음 · 보스에게 +{0}%
+guide.always	항상 우세 (+{0}%)
+guide.short	{0}에 우세 · {1}에 약함
+guide.short_light	저항받지 않음
+lobby.modes	모드
+reject.gems	보석이 부족합니다
+modes.title	게임 모드
+modes.solo	솔로
+modes.versus	대전
+modes.coop	협동
+modes.online_note	레이드와 토너먼트는 온라인 플레이가 열릴 때까지 봇 동료와 상대로 진행됩니다.
+mode.versus	대전
+mode.daily	일일 도전
+mode.endless	무한
+mode.campaign	모험
+mode.mayhem	혼돈 아레나
+mode.raid	보스 레이드
+mode.tournament	토너먼트
+mode.play	플레이
+mode.open	열기
+mode.again	다시 하기
+mode.daily_desc	오늘은 모두 같은 덱과 웨이브, 카드 레벨 {0}. 어디까지 갈 수 있을까요?
+mode.endless_desc	웨이브가 끝나지 않습니다. 5웨이브마다 특전과 보스. 주간 최고 기록에 도전!
+mode.campaign_desc	5개 지역 50개 레벨, 지역마다 특별 규칙. 별 3개를 모으세요.
+mode.practice_desc	봇과 1대1, 트로피 변동 없음.
+mode.raid_desc	동료와 함께 체력을 공유하는 거대 보스에 맞서세요. 사탕과 격노로 서로 도우세요.
+mode.tournament_desc	토너먼트 3라운드, 모든 카드 레벨 {0}. 주말의 영광을 차지하세요.
+mode.best_today	오늘 최고: 웨이브 {0}
+mode.best_week	주간 최고: 웨이브 {0} · 기록 {1}
+mode.resets	새 도전까지 {0}
+mode.stars	별: {0} / {1}
+mode.mayhem_wins	이번 주말 승리: {0} (3승 = 황금 상자)
+mode.opens_in	금요일 오픈, {0} 남음
+mode.tournament_round	라운드 {0} / {1}
+mode.tournament_idle	매주 무료 참가
+mode.raid_chests	오늘 남은 황금 상자: {0} / {1}
+mayhem.1	미러 매치
+mayhem.2	속성 혼돈
+mayhem.3	보내기 폭풍
+mayhem.4	스타 홉
+mayhem_desc.1	두 플레이어 모두 같은 무작위 덱(레벨 11)을 받습니다.
+mayhem_desc.2	우세는 2배, 저항은 절반, 모든 몬스터가 웨이브 속성을 가집니다.
+mayhem_desc.3	보내기 비용 절반, 수입 2배.
+mayhem_desc.4	스타 칸이 웨이브마다 이동하며 +50%.
+event.title	이번 주 이벤트
+event.ends	{0} 남음
+event.element	{0} 주간
+event.element_desc	랭크전과 연습의 몬스터 대부분이 {0} 속성입니다. {1} 동물을 데려가세요!
+event.boss	보스 주간: {0}
+event.boss_desc	랭크전과 연습의 모든 보스 웨이브가 이 보스입니다.
+event.candy	사탕 축제
+event.candy_desc	모든 랭크전과 연습 경기가 사탕 160개로 시작합니다.
+season.title	랭크 시즌 {0}
+season.best	이번 시즌 최고: 트로피 {0}. 종료 시 최고 아레나에 따라 보상, {1}을 넘는 트로피는 절반이 됩니다.
+season.ends	{0} 남음
+season.claim	받기
+season.ended	시즌 종료
+season.ended_text	이번 시즌 최고 아레나: {0}. 새 시즌을 위해 {1}을 넘는 트로피가 절반이 되었습니다.
+season.reward_title	시즌 보상
+bestiary.title	도감
+bestiary.animals	동물
+bestiary.monsters	몬스터
+bestiary.progress	만난 수 {0} / {1} · 각 페이지 처음 볼 때 보석 +{2}
+bestiary.claim	+{0} 받기
+bestiary.hp	체력 {0}
+bestiary.armor	방어 {0}%
+enemy_kind.normal	웨이브 몬스터
+enemy_kind.elite	엘리트
+enemy_kind.boss	보스
+enemy_kind.sent	보낸 몬스터
+achievements.title	업적
+ach.done	완료
+ach.unlocks	해금: {0}
+ach.emote	이모트 "{0}"
+titles.title	칭호
+titles.none	칭호 없음
+titles.owned	칭호 {0}개 해금
+titles.change	변경
+replay.title	리플레이
+replay.watch	보기
+replay.watching	리플레이
+replay.exit	나가기
+replay.empty	최근 5경기가 여기에 표시됩니다.
+replay.length	{0}:{1}
+replay.ago	전
+result.new_record	신기록!
+result.run_over	도전 종료
+result.wave	웨이브 {0}
+result.no_rewards	이번에는 보상이 없습니다
+campaign.level	레벨 {0}-{1}
+campaign.region	지역 {0} · {1}
+campaign.region_stars	별: {0} / {1}
+campaign.locked	이전 레벨을 먼저 클리어하세요
+campaign.goal	생존: 웨이브 {0} / {1}
+campaign.goal_short	{0}웨이브 생존
+campaign.goal_long	목표: {0}웨이브 생존
+campaign.hearts	하트: {0}
+campaign.boss	보스: {0}, {1}웨이브마다
+campaign.stars_rule	별 3개: 하트를 잃지 않기 · 별 2개: 3분의 2 지키기
+campaign.first_reward	첫 클리어: 골드 {0} + 보석 {1}
+campaign.best_stars	최고: 별 {0}개
+campaign.need_element	이 레벨에는 {0} 동물이 필요합니다
+campaign.rule.none	특별 규칙 없음
+campaign.rule.element_wave	모든 웨이브가 대부분 {0} 속성
+campaign.rule.only_element	{0} 동물만 사용 가능
+campaign.rule.alternating	웨이브 속성이 번갈아 바뀝니다: 팀을 섞으세요
+campaign.rule.few_hearts	하트 {0}개뿐
+campaign.rule.boss_rush	보스 러시: 3웨이브마다 보스
+daily.goal	웨이브 {0} · 오늘 최고 {1}
+daily.next	다음 보상: 웨이브 {0}
+daily.rule	오늘은 모든 플레이어가 같은 시드, 덱, 웨이브입니다.
+endless.goal	웨이브 {0} · 이번 주 {1} · 기록 {2}
+endless.rule	웨이브 10, 20, 30, 40에서 보석 (주 1회).
+raid.boss	거대 보스
+raid.arrives	웨이브 {0}에 등장
+raid.arrived	거대 보스가 나타났다!
+raid.give_candy	+{0} 주기 ({1})
+raid.rage	격노 ({0})
+raid.partner	{0} (동료)
+raid.got_candy	동료가 사탕을 보냈습니다!
+raid.got_rage	동료가 팀을 격노시켰습니다!
+tournament.rules	토너먼트: 3라운드 연속으로 이기세요. 모든 카드가 레벨 {0}이라 실력만이 중요합니다. 주 1회 무료 참가.
+tournament.quarter	8강
+tournament.semi	준결승
+tournament.final	결승
+tournament.vs	vs {0}
+tournament.won	승리
+tournament.lost	탈락
+tournament.prize	우승 상품: 마법 상자 + 보석 50 + "컵 우승자" 진행도
+tournament.free_entry	이번 주 무료 참가
+tournament.paid_entry	보석 {0}개로 다시 참가
+tournament.enter	참가
+tournament.champion	우승!
+tournament.bracket	대진표
+deck.preset	덱 {0}
+emote.6	받아쳤다!
+emote.7	잘 봐!
+emote.8	도와줘!
+emote.9	고마워!
+emote.10	대단해!
+emote.11	한 판 더?
+title.champion	챔피언
+title.hunter	몬스터 헌터
+title.element_master	속성 마스터
+title.boss_slayer	보스 슬레이어
+title.breeder	사육 마스터
+title.trickster	장난꾸러기
+title.explorer	탐험가
+title.daily_star	일일 스타
+title.unbreakable	불굴
+title.raider	레이더
+title.cup_winner	컵 우승자
+title.zoologist	동물학자
+title.season_1	초원 시즌
+title.season_2	숲 시즌
+title.season_3	화산 시즌
+title.season_4	얼음 시즌
+title.season_5	구름 시즌
+ach.winner	승리자
+ach.hunter	사냥꾼
+ach.counter	속성 카운터
+ach.boss	보스 슬레이어
+ach.merger	사육사
+ach.sender	장난꾸러기
+ach.explorer	탐험가
+ach.daily	일일 스타
+ach.endless	불굴
+ach.raider	레이더
+ach.cup	컵 우승자
+ach.zoologist	동물학자
+ach_desc.winner	아무 모드에서 {0}번 승리
+ach_desc.hunter	몬스터 {0}마리 처치
+ach_desc.counter	몬스터 속성에 우세한 공격 {0}번 적중
+ach_desc.boss	보스 {0}마리 처치
+ach_desc.merger	{0}번 합성
+ach_desc.sender	몬스터 {0}마리 보내기
+ach_desc.explorer	모험 별 {0}개 모으기
+ach_desc.daily	일일 도전에서 웨이브 {0} 도달
+ach_desc.endless	무한 모드에서 웨이브 {0} 도달
+ach_desc.raider	레이드 {0}번 승리
+ach_desc.cup	토너먼트 {0}번 우승
+ach_desc.zoologist	동물과 몬스터 {0}종 만나기
+enemy_desc.slime	느리고 말랑말랑. 떼로 몰려온다.
+enemy_desc.imp	빠르지만 약하다.
+enemy_desc.rock_beetle	느리지만 체력이 많다.
+enemy_desc.armored_knight	방어 30%, 잘 밀려나지 않는다. 방어 파괴가 효과적.
+enemy_desc.bandit_raccoon	문에 도착하면 사탕 10개를 가지고 도망친다.
+enemy_desc.crystal_bat	5초마다 30% 빠르게 돌진. 감속시키거나 한 번에 처치하세요.
+enemy_desc.drum_goblin	5초마다 북을 쳐서 근처 몬스터 3마리를 가속. 침묵시키세요.
+enemy_desc.armored_scorpion	방어 40%, 체력 30% 이하에서 빨라진다. 방어를 부수세요.
+enemy_desc.clockwork_gorilla	빨간 고리로 동물을 표시한 뒤 1.5초 동안 잠근다. 체력 절반 이하에서 빨라진다. 이지스 램이 잠금을 막는다.
+enemy_desc.void_hermit_crab	체력 8%의 보호막을 친다. 빨리 부수면 이후 피해 +15%.
+enemy_desc.boss_summoner	주변에 임프를 소환한다.
+enemy_desc.boss_stunner	가끔 동물 하나를 기절시킨다.
+enemy_desc.boss_healer	주변 몬스터를 치유한다.
+enemy_desc.send_rat	상대가 보냄: 빠른 쥐 3마리.
+enemy_desc.send_ghost	보낸 몬스터: 제어 동물이 드러내기 전까지 보이지 않는다.
+enemy_desc.send_turtle	보낸 몬스터: 범위 공격 피해를 절반만 받는다.
+enemy_desc.send_crow	보낸 몬스터: 통과하면 사탕 30개를 훔친다.
+enemy_desc.send_golem	보낸 몬스터: 죽으면 칸 하나를 잠근다.
+enemy_desc.send_king	보낸 몬스터: 쥐를 부르는 미니 보스.
+battle.unit_info	{0}  Lv {1}  ({2} {3})\n같은 레벨의 같은 동물 위로 끌어서 합성
+reject.candy	사탕이 부족합니다
+reject.points	보내기 포인트가 부족합니다
+reject.board_full	빈 칸이 없습니다 - 같은 동물 둘을 합성하세요
+reject.locked	잠긴 칸입니다
+reject.wave_full	상대의 다음 웨이브가 가득 찼습니다 (최대 3)
+reject.used	경기당 한 번만 보낼 수 있습니다
+reject.max_level	이미 최대 레벨입니다
+reject.generic	할 수 없습니다
+element.none	-
+element.fire	불
+element.water	물
+element.grass	풀
+element.light	빛
+role.damage	딜러
+role.area	범위
+role.control	제어
+role.support	지원
+rarity.common	일반
+rarity.rare	레어
+rarity.epic	에픽
+rarity.legendary	전설
+skill.burn	레벨 4 이상: 적에게 화상 (초당 피해 {0})
+skill.reveal	투명한 적을 공격해 드러낸다
+skill.candyperwave	웨이브마다 레벨당 사탕 +{0}
+skill.attackspeedaura	주변 4마리 공격 속도 +{0}% (레벨당 +{1}%)
+skill.luckycandy	처치 시 {0}% 확률로 사탕 2배 (레벨당 +{1}%)
+skill.phoenixblessing	{0}웨이브마다: 불 동물 하나 레벨 +1, 칸 해금
+skill.knockback	적을 뒤로 밀어낸다
+skill.pullstun	대상을 끌어당겨 기절시킨다
+skill.alwayscounter	항상 속성 보너스를 받는다
+skill.burnstack	공격마다 화상 1중첩 (최대 3, 1회 피해 {0}). Lv4: 화상 지속 증가. Lv7: 5번째 공격마다 불이 번진다
+skill.pierce	일직선 몬스터 {0}마리 관통 (첫 대상 이후 70%). Lv4: +1마리. Lv7: 첫 대상을 밀어낸다
+skill.armorbreak	4초간 방어 {0}% 파괴 (Lv4: {1}%). 방어가 0 미만이면 추가 피해. Lv7: 4번째 공격마다 넓게 폭발
+skill.chillslow	2초간 {0}% 감속 (Lv4: {1}%). Lv7: 6번째 공격마다 0.5초 빙결
+skill.vulnerable	표식된 몬스터는 3초간 모든 피해 +{0}% (Lv4: {1}%). Lv7: 2마리 추가 표식
+skill.burst	빠른 사격 {0}발 (Lv4: +1). Lv7: 마지막 발은 감속된 몬스터에게 +50%
+skill.nectarhaste	가장 가까운 공격 동물 3마리 공격 속도 +{0}% (Lv4: {1}%). Lv7: 아군 4마리
+skill.rootarea	범위 내 몬스터를 0.6초 속박 (Lv4: 0.75초, 각 4초에 1번). 보스는 대신 감속
+skill.silence	4번째 공격마다 대상을 1초 침묵: 스킬도 가속도 불가. 보스는 절반
+skill.aegisguard	가장 가까운 아군 {0}마리 보호: 피해 +{1}%, 기절/칸 잠금 1회 방어. Lv4: +1마리. Lv7: 2회 방어
+arena.1	푸른 초원
+arena.2	깊은 숲
+arena.3	화산
+arena.4	얼음 섬
+arena.5	구름 궁전
+shop.free_tag	무료
+shop.best_value	최고 가치
+shop.popular	인기
+shop.save_10	10% 할인
+shop.legendary_chance	전설!
+pass.tier_short	단계
+pass.unlock_premium	프리미엄 해금
+lobby.pass_short	패스 {0}/{1}
+lobby.practice_short	연습
+lobby.ranked	랭크전 · 트로피 획득
+result.rewards	보상
+result.play_again	다시 하기
+result.stat_wave	웨이브
+result.stat_kills	처치
+result.stat_merges	합성
+result.stat_sends	보내기
+result.tip.merge	팁: 자주 합성하세요 - 레벨 2 두 마리가 레벨 1 네 마리보다 강합니다.
+result.tip.send	팁: 상대가 보스 웨이브와 싸우는 동안 몬스터를 보내세요.
+result.tip.upgrade	팁: 덱 탭에서 동물을 강화하고, 전투에서는 속성 강화를 사용하세요.
+battle.chat	채팅
+battle.zoom	상대 보기
+battle.zoom_back	내 동물원으로
+battle.opp_no_upgrades	아직 강화 없음
+battle.opp_perks	특전 {0}개
+battle.opp_spell	{0} 님이 {1} 사용!
+battle.reflect	반사 {0}
+battle.reflected_short	반사됨
+battle.reflected	{0}을(를) 반사했다!
+battle.opp_reflected	상대가 {0}을(를) 반사했다!
+battle.target_hint	{0}: 길을 탭하세요
+battle.element_upgraded	{0} 동물 레벨 {1}: 피해 +{2}%
+battle.perk_title	축복을 고르세요
+battle.perk_auto	{0}초 후 자동 선택
+battle.perk_chosen	축복: {0}
+battle.star	(스타 칸)
+battle.star_moved	스타 칸이 이동했다! 강한 동물을 다시 배치하세요
+battle.unit_bonus	보너스 +{0}%  ·  같은 속성 이웃 {1}마리  {2}
+battle.skill_charging	스킬: {0} ({1}%)
+battle.skill_need_level	스킬은 레벨 {0}에 해금
+battle.summon	소환
+mm.rematch	{0} 님에게 다시 도전 중
+result.rematch	재대결
+result.revenge	복수
+result.revenge_bonus	승리 시: 골드 +{0}%
+result.streak	연승 x{0}  +{1} 골드
+result.revenge_won	복수 성공! +{0} 골드
+battle.income	수입
+battle.per_wave	/웨이브
+battle.your_leak	내 몬스터가 통과! 상대 하트 -{0}
+battle.opp_leak	상대 몬스터가 통과! 하트 -{0}
+battle.boss_duel	보스 대결 - 먼저 처치하면 승리
+battle.boss_duel_win	보스를 먼저 처치했다! 사탕 +{0}
+battle.boss_duel_lose	상대가 먼저 보스를 처치 - 보스 잔해가 온다!
+battle.you	나
+battle.summon_random	무작위
+loading.title	동물원 불러오는 중...
+mm.practice	연습 경기
+tip.0	같은 레벨의 같은 동물 둘을 합성하면 더 강해집니다.
+tip.1	황금 스타 칸은 피해 +30% - 최고의 동물을 두세요!
+tip.2	몬스터를 보내면 사탕이 들지만 매 웨이브 수입이 늘어납니다 - 싼 보내기가 가장 이득.
+tip.3	분홍 풍선을 터뜨려 무료 사탕을 받으세요.
+tip.4	레벨 3부터 동물이 빛납니다: 탭해서 스킬을 쓰세요.
+tip.5	전투 중에는 동물 카드를 탭해 소환하거나 원하는 칸으로 끌어다 놓으세요.
+result.x2_title	골드 2배
+result.watch_ad	광고 보기
+reward.tap_skip	탭해서 모두 보기
+reward.name.gold	골드
+reward.name.gems	보석
+reward.name.xp	시즌 XP
+battle.next	다음
+battle.not_summoned	소환 안 됨
+battle.choose	선택
+perk.cat.power	파워
+perk.cat.economy	경제
+perk.cat.defense	방어
+perk.cat.spell	마법
+perk.cat.attack	공격
+battle.upgrade	{0} 강화
+battle.atk	공격
+battle.spd	속도
+battle.bonus	보너스
+battle.lv	Lv {0}
+battle.per_sec	{0}/초
+battle.view	보기
+battle.watching	{0} 관전 중 - 보드를 탭하면 돌아갑니다
+battle.unit_upgraded	{0} 강화 레벨 {1}: 피해 +{2}%
+skill.role.damage	파워 샷!
+skill.role.area	빅 블래스트!
+skill.role.control	스턴 웨이브!
+skill.role.support	힘내!
+spell.freeze	빙결
+spell.freeze.desc	범위 안의 모든 적을 2.5초간 얼립니다 (보스는 절반).
+spell.meteor	메테오
+spell.meteor.desc	범위 안의 모든 적에게 큰 피해. 웨이브가 진행될수록 강해집니다.
+spell.gust	돌풍
+spell.gust.desc	범위 안의 적을 길 뒤쪽으로 날려 보냅니다.
+spell.rage	격노
+spell.rage.desc	모든 동물이 6초간 60% 빠르게 공격합니다.
+spell.candy_rain	사탕 비
+spell.candy_rain.desc	15초간 처치 시 사탕이 60% 더 나옵니다.
+spell.lightning	번개
+spell.lightning.desc	가장 강한 적에게 큰 피해. 조준 필요 없음.
+perk.firepower	불의 분노
+perk.firepower.desc	불 동물 피해 +25%.
+perk.waterpower	파도의 힘
+perk.waterpower.desc	물 동물 피해 +25%.
+perk.grasspower	야생의 성장
+perk.grasspower.desc	풀 동물 피해 +25%.
+perk.lightpower	광휘
+perk.lightpower.desc	빛 동물 피해 +25%.
+perk.mergecandy	합성 보너스
+perk.mergecandy.desc	합성할 때마다 사탕 +10.
+perk.cheapsends	몬스터 할인
+perk.cheapsends.desc	몬스터 보내기 비용 20% 감소.
+perk.cheapcards	알뜰 상점
+perk.cheapcards.desc	동물 카드 비용 15% 감소.
+perk.interest	돼지 저금통
+perk.interest.desc	웨이브마다 보유 사탕의 +10% (최대 60).
+perk.extrahearts	재기
+perk.extrahearts.desc	지금 바로 하트 +2.
+perk.spellhaste	빠른 마법
+perk.spellhaste.desc	마법 재사용 대기시간 30% 감소.
+perk.luckycrit	행운의 일격
+perk.luckycrit.desc	모든 공격에 15% 확률로 피해 2배.
+perk.sendpoints	장난
+perk.sendpoints.desc	보내기 수입 +50%.
+emote.0	안녕!
+emote.1	좋아!
+emote.2	하하!
+emote.3	이런...
+emote.4	크르릉!
+emote.5	좋은 게임
+reject.cooldown	아직 준비되지 않았습니다
+reject.not_ready	스킬 충전 중
+reject.no_target	대상 없음
+reject.invalid_cell	여기에는 놓을 수 없습니다
+reject.not_on_board	먼저 이 동물을 소환하세요 - 강화는 동물원에 있는 동물에게만 적용됩니다
+deck.spells_title	사육사 마법 (탭해서 변경)
+deck.spell_cost	사탕 {0}
+deck.spell_swap	이 칸에 넣을 마법을 고르세요
+tutorial.spell	마법! 소환 옆의 메테오나 빙결을 탭한 다음, 적이 몰려 있는 길을 탭하세요.
+nav.shop	상점
+nav.deck	덱
+nav.battle	전투
+nav.pass	패스
+nav.settings	설정
+common.ok	확인
+time.dh	{0}일 {1}시간
+time.hm	{0}시간 {1}분
+reward.gold	골드 {0}
+reward.gems	보석 {0}
+reward.xp	패스 XP {0}
+reward.shards	{0} 조각 {1}개
+reward.new	NEW!
+lobby.missions	일일 미션
+lobby.missions_ready	미션: {0}개 완료!
+lobby.pass	시즌 패스  {0}/{1}
+chest.wood	나무 상자
+chest.silver	은 상자
+chest.gold	황금 상자
+chest.magic	마법 상자
+chest.empty	빈 칸
+chest.tap_unlock	탭해서 잠금 해제
+chest.open	열기!
+chest.open_now	지금 열기: 보석 {0}
+chest.skip_question	보석 {0}개로 이 상자를 지금 열까요?
+chest.unlock_started	잠금 해제 시작
+chest.how_to_get	랭크전에서 이겨 상자를 얻으세요
+missions.title	일일 미션
+missions.reset	새 미션까지 {0}
+missions.reward	+{0} 골드  +{1} 패스 XP
+missions.claim	받기
+missions.claimed	완료
+mission.playmatches	전투 {0}번 플레이
+mission.winmatches	전투 {0}번 승리
+mission.killenemies	적 {0}마리 처치
+mission.mergeunits	동물 {0}번 합성
+mission.sendmonsters	몬스터 {0}마리 보내기
+mission.reachwave	웨이브 {0} 도달
+mission.buycards	전투 중 동물 {0}마리 구매
+mission.openchests	상자 {0}개 열기
+mission.upgradeunits	동물 {0}번 강화
+deck.choose_slot	{0}을(를) 넣을 덱 칸을 탭하세요
+deck.collection	컬렉션  {0}/{1}
+deck.locked	잠김
+deck.locked_hint	상자나 상점에서 조각을 모아 해금하세요
+deck.level_short	Lv.{0}
+deck.card_level	카드 레벨 {0}/{1}
+deck.level_bonus	카드 레벨 보너스: 피해 +{0}%
+deck.max	MAX
+deck.shards	조각 {0}/{1}
+deck.upgrade	강화  {0} 골드
+deck.upgraded	{0}이(가) 레벨 {1}이 되었습니다!
+deck.need_shards	조각이 부족합니다
+deck.use	사용
+deck.in_deck	덱에 있음
+deck.send_swap	이 칸에 넣을 몬스터를 고르세요
+deck.no_other_sends	모든 몬스터가 이미 덱에 있습니다
+shop.free	무료 선물
+shop.claim	받기
+shop.claimed	내일 다시 오세요
+shop.watch_ad	광고 보기
+shop.daily	오늘의 특가 ({0} 후 갱신)
+shop.shards	조각 x{0}
+shop.sold	판매 완료
+shop.gold_price	{0} 골드
+shop.gems_price	보석 {0}
+shop.gacha	동물 소환
+shop.gacha_text	동물 조각을 소환하세요. 매번 전설이 나올 수 있어요!
+shop.pity	{0}회 안에 전설 확정
+shop.pull1	x1  보석 {0}
+shop.pull10	x10  보석 {0}
+shop.rates	확률 정보
+shop.rate_line	{0}: {1}%  (조각 {2}개)
+shop.pity_rule	{0}회마다 최소 한 번은 전설이 확정됩니다.
+shop.chests	상자
+shop.chest_info	조각 {0}+, 골드 {1}+
+shop.gold	골드
+shop.gems	보석
+shop.confirm_gems	보석 {0}개를 사용할까요?
+shop.not_enough_gems	보석이 부족합니다
+shop.not_enough_gold	골드가 부족합니다
+shop.purchase_failed	구매 실패
+privacy.title	개인정보 보호
+privacy.text	Zoo Defense는 광고 덕분에 무료예요. 동의하시면 광고 파트너가 기기 데이터(광고 ID 등)를 사용해 관심사에 맞는 광고를 보여 주고, 저희는 게임 개선을 위해 익명 플레이 통계를 수집해요. 동의하지 않아도 광고는 나오지만 맞춤형이 아니며, 통계도 수집하지 않아요.\n\n설정 › 개인정보에서 언제든지 바꿀 수 있어요.
+privacy.accept	좋아요, 맞춤 광고 보기
+privacy.decline	아니요, 데이터 사용 안 함
+privacy.policy	개인정보 처리방침
+settings.privacy	개인정보 보호
+settings.personal_ads	맞춤형 광고
+settings.personal_ads_hint	끄기 = 데이터를 판매하거나 공유하지 않음
+settings.open	열기
+shop.verify_failed	구매를 확인할 수 없습니다
+shop.verify_later	구매 확인 중… 곧 지급됩니다
+shop.deferred	구매 승인 대기 중
+shop.restore	구매 복원
+shop.restore_done	구매 복원 완료
+shop.delivered	구매 지급 완료
+shop.offers	특별 상품
+shop.value	{0}배 가치
+shop.limit_once	1회 한정
+shop.limit_weekly	주 1회
+shop.limit_daily	하루 1회
+shop.back_in	{0} 후 다시 등장
+shop.monthly	월간 카드
+shop.monthly_days	{0}일
+shop.monthly_text	지금 보석 {0} + 매일 보석 {1}, {2}일 동안\n(총 보석 {3})
+shop.monthly_left	활성: {0}일 남음 · 무료 선물에서 매일 받기
+shop.monthly_tag	월간
+shop.first_x2	첫 구매 2배
+shop.bonus	+{0}%
+bundle.bundle_starter	스타터 팩
+bundle.bundle_weekly	주간 상자 팩
+bundle.bundle_daily_gems	일일 은 특가
+bundle.bundle_champion	챔피언 팩
+bundle.bundle_legend	전설 팩
+shop.test_store	테스트 상점: 이 빌드에서는 구매가 무료입니다
+pass.season	시즌 {0}
+pass.ends	{0} 남음
+pass.tier	단계 {0}/{1}
+pass.xp	{0}/{1} XP
+pass.max	MAX
+pass.free	무료
+pass.premium	프리미엄
+pass.buy_premium	프리미엄 해금  보석 {0}
+pass.premium_text	보석 {0}개로 이번 시즌 프리미엄 보상을 해금할까요?
+pass.premium_owned	프리미엄 해금됨
+pass.claim	받기
+pass.claimed	받음
+pass.locked	프리미엄
+pass.need_tier	단계 {0}
+pass.tier_reward	단계 {0}
+result.pass_xp	+{0} 패스 XP
+result.chest	새 상자: {0}
+result.chest_full	상자 칸이 가득 참 - 이번에는 상자 없음
+result.invalid	경기를 확인할 수 없음 - 보상 없음
+result.tutorial_done	튜토리얼 완료!
+tutorial.welcome_title	동물원에 오신 걸 환영해요!
+tutorial.welcome_text	몬스터가 동물원으로 오고 있어요! 짧은 연습 전투로 기본을 배워 봐요.
+tutorial.play	튜토리얼 시작
+tutorial.skip	건너뛰기
+tutorial.coach	판다 코치
+tutorial.buy	아래 동물 카드를 탭하면 그 동물을 소환하고, 칸으로 끌어다 놓을 수도 있어요. 무작위는 더 저렴해요. 황금 스타 칸은 피해 +30%!
+tutorial.buy_more	좋아요! 카드의 ↑ 표시로 이번 경기 동안 그 동물을 강화할 수 있어요. 분홍 풍선을 터뜨리면 무료 사탕!
+tutorial.merge	동물을 같은 레벨의 같은 동물 위로 끌어서 합성하세요. 레벨 3부터 빛나요: 탭하면 스킬!
+tutorial.send	빨간 띠의 몬스터를 탭해서 보내세요: 사탕이 들지만 매 웨이브 수입이 늘어요! 보낸 몬스터는 5초 후 도착 - 반사를 탭하면 상대 것을 되돌려 보내요.
+tutorial.finish	끝! 상대 하트가 다 떨어질 때까지 계속 합성하고 보내세요.
+settings.title	설정
+settings.music	음악
+settings.sfx	효과음
+settings.off	끔
+settings.language	언어
+settings.tutorial	튜토리얼
+settings.play	다시 하기
+settings.reset	진행 초기화
+settings.reset_button	초기화
+settings.reset_text	이 기기의 모든 진행을 삭제할까요? 되돌릴 수 없습니다.
+settings.debug	테스트 도구 (개발 빌드 전용)
+settings.version	버전 {0}  -  전투 {1}회
+settings.sound	사운드
+settings.game	게임
+settings.support	지원
+settings.online	온라인 대전
+settings.online_hint	랭크전: 실제 플레이어를 먼저 찾기
+settings.player_id	플레이어 ID
+settings.copy	복사
+settings.copied	복사됨
+settings.no_title	아직 칭호 없음
+settings.battles	전투 {0}회
+settings.wins	{0}승
+settings.reset_text_linked	이 폰의 진행을 삭제할까요? 연동 계정의 클라우드 백업은 남아 있습니다.
+account.title	계정
+account.unavailable	이 빌드에서는 온라인 계정을 사용할 수 없습니다.
+account.guest	게스트
+account.guest_text	진행 상황이 이 폰에만 저장됩니다. 계정을 연동하면 안전하게 보관하고 다른 폰에서도 플레이할 수 있어요.
+account.link	계정 연동
+account.have_account	계정이 있으신가요? 로그인
+account.linked	연동됨
+account.linked_text	진행 상황이 자동으로 백업됩니다.
+account.backup_ago	마지막 백업: {0} 전
+account.backup_never	아직 백업 안 됨
+account.backup	지금 백업
+account.backup_ok	백업 완료
+account.unlink	연동 해제
+account.unlink_text	이 계정의 연동을 해제할까요? 진행 상황은 이 폰에 남지만 더 이상 백업되지 않습니다.
+account.unlinked	계정 연동 해제됨
+account.delete	계정 삭제
+account.delete_button	영구 삭제
+account.delete_text	온라인 계정과 클라우드 백업을 삭제하고 이 폰을 초기화할까요? 되돌릴 수 없습니다.
+account.deleted	계정 삭제됨
+account.waiting	로그인 대기 중
+account.linked_ok	계정 연동 완료!
+account.exists_title	이미 사용 중인 계정
+account.exists_text	이 계정에는 다른 폰의 진행 상황이 있습니다. 여기로 불러올까요? 이 폰의 진행 상황은 대체됩니다.
+account.load_it	불러오기
+account.signin	로그인
+account.signin_text	계정에 로그인해서 그 진행 상황을 이 폰으로 불러옵니다. 이 폰의 진행 상황은 대체됩니다.
+account.restored	진행 상황을 불러왔습니다!
+account.err_config	계정 로그인이 아직 설정되지 않았습니다
+account.err_offline	연결이 없습니다. 다시 시도하세요.
+account.err_generic	문제가 발생했습니다. 다시 시도하세요.
+unit.fire_fox	불꽃 여우
+unit.firework_rooster	불꽃놀이 수탉
+unit.ember_squirrel	불씨 다람쥐
+unit.baby_dragon	아기 드래곤
+unit.phoenix_chick	불사조 병아리
+unit.bubble_frog	방울 개구리
+unit.ice_penguin	얼음 펭귄
+unit.otter_cannon	수달 대포
+unit.ink_octopus	먹물 문어
+unit.wave_dolphin	파도 돌고래
+unit.spike_hedgehog	가시 고슴도치
+unit.carrot_bunny	당근 토끼
+unit.vine_sloth	덩굴 나무늘보
+unit.chubby_panda	통통 판다
+unit.leaf_gecko	나뭇잎 도마뱀
+unit.sun_sparrow	햇살 참새
+unit.lucky_cat	행운 고양이
+unit.night_owl	밤 부엉이
+unit.meteor_deer	유성 사슴
+unit.rainbow_unicorn	무지개 유니콘
+unit.lava_salamander	용암 도롱뇽
+unit.ember_boar	불씨 멧돼지
+unit.forge_mole	대장장이 두더지
+unit.snow_seal	눈 물범
+unit.coral_axolotl	산호 우파루파
+unit.snap_shrimp	딱총 새우
+unit.nectar_bee	꿀벌
+unit.sprout_elephant	새싹 코끼리
+unit.moon_moth	달 나방
+unit.aegis_ram	이지스 램
+enemy.slime	슬라임
+enemy.imp	임프
+enemy.rock_beetle	바위 딱정벌레
+enemy.armored_knight	갑옷 기사
+enemy.boss_summoner	소환왕
+enemy.boss_stunner	천둥 두꺼비
+enemy.boss_healer	버섯 마녀
+enemy.send_rat	날쌘 쥐
+enemy.send_ghost	몰래 유령
+enemy.send_turtle	방패 거북
+enemy.send_crow	사탕 까마귀
+enemy.send_golem	벽돌 골렘
+enemy.send_king	미니 마왕
+enemy.bandit_raccoon	도적 너구리
+enemy.crystal_bat	수정 박쥐
+enemy.drum_goblin	북 고블린
+enemy.armored_scorpion	갑옷 전갈
+enemy.clockwork_gorilla	태엽 고릴라
+enemy.void_hermit_crab	공허 소라게
+send.rat_rush	쥐 떼 돌진
+send.sneaky_ghost	몰래 유령
+send.shield_turtle	방패 거북
+send.candy_crow	사탕 까마귀
+send.brick_golem	벽돌 골렘
+send.mini_king	미니 마왕
+send.boss_remnant	보스 잔해
+lobby.leaderboard	랭킹
+lobby.friends	친구
+login.title	출석 보상
+login.hint	하루에 하나씩 선물! 하루 빠져도 괜찮아요, 다음 선물이 기다려요.
+login.day	{0}일차
+login.claim	{0}일차 받기
+login.claimed	받음
+login.come_back	내일 또 와요
+lb.title	랭킹
+lb.trophies	트로피
+lb.endless	무한
+lb.daily	일일
+lb.world	전 세계
+lb.around_me	내 주변
+lb.friends	친구
+lb.resets	{0} 후 초기화
+lb.my_best_wave	최고 기록: {0}웨이브
+lb.my_trophies	내 트로피: {0}
+lb.wave	{0}웨이브
+lb.game_center	Game Center
+lb.loading	불러오는 중…
+lb.offline	랭킹을 보려면 인터넷 연결이 필요해요.
+lb.empty	아직 기록이 없어요. 첫 번째가 되어 보세요!
+lb.no_friends	친구를 추가하고 점수를 비교해 보세요.
+lb.player	플레이어
+friends.title	친구
+friends.offline	친구 기능은 인터넷 연결이 필요해요.
+friends.my_code	내 친구 코드
+friends.copy	복사
+friends.share	공유
+friends.copied	복사했어요!
+friends.share_text	나랑 Zoo Defense 하자! 내 코드 {0} 입력하면 신규 플레이어는 보석을 받아요: {1}
+friends.add	친구 추가
+friends.code_hint	친구 코드
+friends.add_btn	추가
+friends.bad_code	코드는 영문과 숫자 6자리예요.
+friends.own_code	내 코드예요!
+friends.not_found	이 코드의 플레이어가 없어요.
+friends.already	이미 친구예요.
+friends.added	친구를 추가했어요!
+friends.full	친구 목록이 가득 찼어요 ({0}).
+friends.list	친구 {0}/{1}
+friends.empty	아직 친구가 없어요. 코드를 공유해 보세요!
+friends.online	온라인
+friends.seen	{0} 전 접속
+friends.trophies	트로피 {0}
+friends.invites_you	친선전에 초대했어요!
+friends.invite	초대
+friends.accept	참가
+friends.remove	삭제
+friends.remove_q	{0}님을 친구에서 삭제할까요?
+friends.invite_banner	{0}님이 친선전에 초대했어요!
+room.title	친선전
+room.hint	친구와 1:1 대결. 트로피 변동 없음.
+room.create	방 만들기
+room.code_hint	방 코드
+room.join	참가
+room.share_code	이 코드를 친구에게 알려 주세요
+room.joining	방에 참가 중
+room.waiting	친구를 기다리는 중
+room.offline	설정에서 온라인 대전을 켜고 인터넷에 연결하세요.
+room.not_found	방을 찾을 수 없어요. 코드를 확인하세요.
+room.failed	연결하지 못했어요. 다시 시도하세요.
+invite.title	친구 초대
+invite.joined	내 코드로 시작한 친구: {0}\n1명당 보석 +{1}
+invite.enter	친구 코드: 보석 +{0}
+invite.redeem	받기
+invite.used	이미 초대 코드를 사용했어요.
+invite.failed	코드를 사용할 수 없어요. 다시 시도하세요.
+online.reconnecting	연결이 끊겼어요. 다시 연결 중
+online.opp_reconnecting	{0}님이 다시 연결 중
+result.friendly	친선전: 트로피 없음
+settings.notifications	알림
+settings.notifications_hint	상자 완료, 매일 선물. 하루 최대 2회.
+settings.notifications_denied	휴대폰 설정에서 Zoo Defense 알림이 꺼져 있어요.
+notify.title	Zoo Defense
+notify.chest	{0}을(를) 열 수 있어요!
+notify.login	{0}일차 선물이 기다려요!
+notify.monthly	월정액 보석을 받을 수 있어요.
+notify.comeback	몬스터가 돌아왔어요! 동물들이 당신을 기다려요.
+notify.missions	새 미션이 도착했어요!

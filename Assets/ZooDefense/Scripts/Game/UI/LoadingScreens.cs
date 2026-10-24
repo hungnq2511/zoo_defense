@@ -121,6 +121,9 @@ namespace ZooDefense.Game
         readonly bool _revenge;
         // Online: looking for a real player of the same arena first; a bot if nobody is found in time.
         bool _online, _handedOff;
+        /// <summary>Ranked: look for a real player this long (seconds) before playing a bot (Remote Config "bot_wait_seconds").</summary>
+        float OnlineWait { get { return Tuning.Current.botWaitSeconds; } }
+        float _onlineTime, _retryAt = -1f;
         OnlineMatchInfo _onlineMatch;
         string _oppTitle;
 
@@ -161,7 +164,7 @@ namespace ZooDefense.Game
             if (_ranked && _fixedOpponent == null && Online.Pvp != null && App.Profile.onlinePvp)
             {
                 _online = true;
-                Online.Pvp.StartSearch(Online.MyHello(App), arena.index);
+                Online.Pvp.StartSearch(Online.MyHello(App), OnlineWait);
             }
 
             var cancel = UIKit.ChunkyButton(Root, "cancel", Loc.T("common.cancel"), Palette.Red, () => App.Show(new LobbyScreen()), 42);
@@ -323,12 +326,26 @@ namespace ZooDefense.Game
                 {
                     var pvp = Online.Pvp;
                     pvp.Update(dt);
+                    _onlineTime += dt;
                     if (pvp.State == OnlineState.Ready && pvp.Match != null) FoundOnline(pvp.Match);
-                    else if (pvp.State == OnlineState.Failed || pvp.State == OnlineState.Idle)
+                    else if (_onlineTime >= OnlineWait && pvp.State != OnlineState.Handshake)
                     {
-                        // Nobody of this arena is online right now: play a bot instead.
+                        // Nobody of this arena showed up in time: play a bot instead.
+                        Debug.Log("[Online] no opponent after " + OnlineWait + " s: bot match");
+                        pvp.Leave();
                         _online = false;
                         _searchTime = _t + 0.4f;
+                    }
+                    else if (pvp.State == OnlineState.Failed || pvp.State == OnlineState.Idle)
+                    {
+                        // A failed attempt (network hiccup, service error) does not end the search early:
+                        // try again after a short pause until the full wait is over.
+                        if (_retryAt < 0f) _retryAt = _onlineTime + 1f;
+                        else if (_onlineTime >= _retryAt && _onlineTime < OnlineWait - 1.5f)
+                        {
+                            _retryAt = -1f;
+                            pvp.StartSearch(Online.MyHello(App), OnlineWait - _onlineTime);
+                        }
                     }
                     else if (pvp.State == OnlineState.Handshake) _status.text = Loc.T("online.connecting");
                     return;
@@ -360,7 +377,14 @@ namespace ZooDefense.Game
                 if (_onlineMatch != null)
                 {
                     _handedOff = true;
-                    App.Show(new BattleScreen(new BattleConfig { seed = _onlineMatch.setup.seed, opponentName = _opponent, ranked = true, online = _onlineMatch }));
+                    App.Show(new BattleScreen(new BattleConfig { seed = _onlineMatch.setup.seed, opponentName = _opponent, ranked = !_onlineMatch.friendly, friendly = _onlineMatch.friendly, opponentMmr = _onlineMatch.opponentMmr, online = _onlineMatch }));
+                }
+                else if (_ranked)
+                {
+                    // Ranked bot: strength and card levels follow the hidden rating, so new players meet beatable bots.
+                    int mmr = App.Meta.State.mmr;
+                    App.Show(new BattleScreen(_seed, _opponent, MatchmakingRules.BotDifficulty(mmr), true, false, _oppDeck, _revenge)
+                        .WithRating(MatchmakingRules.BotMmr(mmr, _seed), MatchmakingRules.BotLevelOffset(mmr)));
                 }
                 else App.Show(new BattleScreen(_seed, _opponent, App.Profile.botDifficulty, _ranked, false, _oppDeck, _revenge));
             }

@@ -28,13 +28,47 @@ namespace ZooDefense.Tests
         }
 
         [Test]
+        public void EveryLanguage_HasEveryEnglishKey()
+        {
+            foreach (var lang in Loc.Supported)
+            {
+                var missing = Loc.MissingKeys(lang);
+                Assert.AreEqual(0, missing.Count, lang + " missing: " + string.Join(", ", missing.ToArray()));
+            }
+        }
+
+        [Test]
+        public void EveryLanguage_HasACodeThatRoundTrips()
+        {
+            foreach (var lang in Loc.Supported)
+            {
+                Language back;
+                Assert.IsTrue(Loc.TryParse(Loc.Code(lang), out back), lang.ToString());
+                Assert.AreEqual(lang, back);
+            }
+            Language pt;
+            Assert.IsTrue(Loc.TryParse("pt-BR", out pt));
+            Assert.AreEqual(Language.Portuguese, pt);
+        }
+
+        [Test]
+        public void TableFile_ParsesTabsAndEscapes()
+        {
+            var t = Loc.Parse("# comment\nmode.play\tJOUER\r\nbattle.reroll\tNEW\\nCARDS\nach.emote\temote \\\"{0}\\\"\n");
+            Assert.AreEqual("JOUER", t["mode.play"]);
+            Assert.AreEqual("NEW\nCARDS", t["battle.reroll"]);
+            Assert.AreEqual("emote \"{0}\"", t["ach.emote"]);
+            Assert.AreEqual(3, t.Count);
+        }
+
+        [Test]
         public void Translations_KeepTheSamePlaceholders()
         {
             foreach (var lang in Loc.Supported)
             {
                 Loc.Init("en");
                 var en = LocTables.English();
-                var other = lang == Language.Vietnamese ? LocTables.Vietnamese() : LocTables.English();
+                var other = Loc.Table(lang);
                 foreach (var kv in en)
                 {
                     string translated;

@@ -49,6 +49,10 @@ namespace ZooDefense.Game
 
             Content = ContentLoader.Load();
             MetaConfig = DefaultMeta.Create();
+            // Remote Config overrides fetched last session (balance, economy) apply now, before anything uses them.
+            var content = Content;
+            Tuning.ApplyStartupOverrides(MetaConfig, ref content);
+            Content = content;
             Profile = ProfileStore.Load(Content, MetaConfig);
             Meta = new MetaService(MetaConfig, Content, Profile.meta);
             Meta.Refresh(Now);
@@ -61,7 +65,11 @@ namespace ZooDefense.Game
 
         void Start()
         {
+            ErrorReporter.Install();
             Services.Analytics.LogEvent("app_start");
+            Tuning.Refresh();
+            GameCenter.SignIn();
+            Reminders.OnForeground();
             // Sign in in the background (guest or linked account) so online play and backups are ready.
             if (Accounts.Service != null) Accounts.Service.Refresh(null);
             // A purchase finished outside the shop (app was closed while paying): show what arrived.
@@ -80,6 +88,7 @@ namespace ZooDefense.Game
             Modal.CloseAll();
             UIKit.Clear(ScreenLayer);
             _screen = next;
+            ErrorReporter.Step(next.GetType().Name);
             _screenRoot = UIKit.Rect(next.GetType().Name, ScreenLayer).Stretch();
             _screen.Open(this, _screenRoot);
             RefreshBleed();
@@ -130,6 +139,29 @@ namespace ZooDefense.Game
         {
             // Going to the background: back up now (the app may be closed from there).
             if (paused && Accounts.Service != null && Accounts.Service.IsLinked && !Accounts.Service.Busy) Accounts.Service.BackupNow(null);
+            // Reminders for while we are away; cancelled again when the player comes back.
+            if (paused) Reminders.OnBackground(this);
+            else
+            {
+                Reminders.OnForeground();
+                Tuning.Refresh();
+                _presence = 0f;
+            }
+        }
+
+        void OnApplicationQuit() { Reminders.OnBackground(this); }
+
+        float _presence;
+
+        /// <summary>Friends see us online: public profile refreshed every minute while the game is open.</summary>
+        void UpdatePresence(float dt)
+        {
+            _presence -= dt;
+            if (_presence > 0f) return;
+            _presence = 60f;
+            if (!SocialHub.Available || Profile == null) return;
+            if (_screen is RoomScreen) return;   // the room screen publishes its own (room invite)
+            SocialHub.Service.Publish(SocialHub.Me(this));
         }
 
         public void ResetProfile()
@@ -149,6 +181,7 @@ namespace ZooDefense.Game
             if (_screen != null) _screen.Tick(Time.deltaTime);
             WatchBleed();
             if (Accounts.Service != null) Accounts.Service.Update(Time.unscaledDeltaTime);
+            UpdatePresence(Time.unscaledDeltaTime);
             if (_toastTime > 0f)
             {
                 _toastTime -= Time.unscaledDeltaTime;
@@ -205,7 +238,8 @@ namespace ZooDefense.Game
             OverlayLayer = UIKit.Rect("Overlay", _safeArea).Stretch();
 
             _toastBg = UIKit.Panel(OverlayLayer, "Toast", new Color(0f, 0f, 0f, 0.75f));
-            _toastBg.rectTransform.Place(new Vector2(0.5f, 0.62f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(860f, 110f));
+            // Same spot as the battle wave banner (BattleScreen: top -(BoardTop + 4), 130 high): centred 417 units below the top.
+            _toastBg.rectTransform.Place(new Vector2(0.5f, 1f), new Vector2(0.5f, 0.5f), new Vector2(0f, -417f), new Vector2(860f, 100f));
             _toastText = UIKit.Label(_toastBg.transform, "", 40, Color.white);
             _toastText.rectTransform.Stretch(20, 20, 0, 0);
             _toastBg.gameObject.SetActive(false);

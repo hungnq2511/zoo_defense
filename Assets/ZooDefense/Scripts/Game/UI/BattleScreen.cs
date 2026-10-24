@@ -87,7 +87,20 @@ namespace ZooDefense.Game
         public BattleScreen(BattleConfig cfg) : this(cfg.seed, cfg.opponentName, cfg.difficulty, cfg.ranked, false, cfg.botDeck, cfg.revenge)
         {
             _cfg = cfg;
+            _opponentMmr = cfg.opponentMmr;
         }
+
+        int _opponentMmr, _botLevelOffset;
+
+        /// <summary>Ranked bot match: the bot's rating (for the hidden rating) and its card level offset.</summary>
+        public BattleScreen WithRating(int opponentMmr, int botLevelOffset)
+        {
+            _opponentMmr = opponentMmr;
+            _botLevelOffset = botLevelOffset;
+            return this;
+        }
+
+        bool IsFriendly { get { return _cfg != null && _cfg.friendly; } }
 
         public BattleScreen(int seed, string opponentName, int difficulty, bool ranked, bool tutorial = false, string[] botDeck = null, bool revenge = false)
         {
@@ -115,6 +128,8 @@ namespace ZooDefense.Game
             var levels = _tutorial ? null : (_cfg != null && _cfg.playerLevels != null ? _cfg.playerLevels : App.Meta.DeckLevels(deck));
             var botDeck = _tutorial ? (string[])TutorialDeck.Clone() : (_botDeckOverride != null ? (string[])_botDeckOverride.Clone() : BotBrain.RandomDeck(content, _seed ^ 0x5bd1e995));
             var botLevels = _tutorial ? null : (_cfg != null && _cfg.botLevels != null ? _cfg.botLevels : MetaRules.BotCardLevels(levels, botDeck.Length, _seed ^ 0x2c1b3c6d));
+            if (botLevels != null && _botLevelOffset != 0 && (_cfg == null || _cfg.botLevels == null))
+                for (int i = 0; i < botLevels.Length; i++) botLevels[i] = Mathf.Clamp(botLevels[i] + _botLevelOffset, 1, 15);
             var setup = IsOnline ? _cfg.online.setup : _cfg != null && _cfg.replay != null ? _cfg.replay.setup : new MatchSetup
             {
                 seed = _seed,
@@ -137,12 +152,12 @@ namespace ZooDefense.Game
             {
                 // Live-ops week (element week, boss week, candy festival) applies to ranked and practice for both players.
                 var rules = new MatchRules { mode = MatchMode.Versus };
-                LiveOps.ApplyTo(LiveOps.Of(GameCalendar.WeekIndex(App.Now)), rules);
+                LiveOps.ApplyTo(LiveOps.Current(App.Now), rules);
                 setup.rules = rules;
             }
             _match = new Match(content, setup);
             IMatchTransport transport;
-            if (IsOnline) transport = _online = new OnlineLockstepTransport(_cfg.online.link);
+            if (IsOnline) transport = _online = new OnlineLockstepTransport(_cfg.online.link) { Timeout = Tuning.Current.reconnectSeconds };
             else if (_cfg != null && _cfg.replay != null) transport = new ReplayTransport(_cfg.replay);
             else if (_match.IsSolo) transport = new SoloTransport();
             else transport = new LocalBotTransport(new BotBrain(1, _difficulty, _seed + 17));
@@ -177,7 +192,8 @@ namespace ZooDefense.Game
             BuildPausePanel();
             BuildModeHud();
 
-            Services.Analytics.LogEvent("match_start", new Dictionary<string, object> { { "ranked", _ranked }, { "difficulty", _difficulty }, { "tutorial", _tutorial } });
+            Track.MatchStart(_match.Mode, _ranked, IsOnline, IsFriendly);
+            ErrorReporter.Step("match " + _match.Mode + (IsOnline ? " online" : ""));
             AudioService.PlayMusic("music_battle");
             if (_tutorial) _tutor = new TutorialDirector(this);
             else ShowBanner(ModeIntro(), Palette.Text, 1.8f);
@@ -512,8 +528,9 @@ namespace ZooDefense.Game
         void BuildBanner()
         {
             _bannerBg = UIKit.Panel(Root, "banner", new Color(0.85f, 0.2f, 0.35f, 0.9f));
-            _bannerBg.rectTransform.Place(new Vector2(0.5f, 0.6f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(900, 150));
-            _banner = UIKit.Label(_bannerBg.transform, "", 60, Palette.Text);
+            // Just under the opponent strip, so it never hides the middle of the board.
+            _bannerBg.rectTransform.Place(new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0, -(BoardTop + 4f)), new Vector2(900, 130));
+            _banner = UIKit.Label(_bannerBg.transform, "", 52, Palette.Text);
             _banner.rectTransform.Stretch(20, 20, 0, 0);
             _bannerBg.raycastTarget = false;
             _bannerBg.gameObject.SetActive(false);
@@ -692,11 +709,13 @@ namespace ZooDefense.Game
                         level = _cfg != null ? _cfg.campaignLevel : -1,
                         online = IsOnline,
                         localPlayer = _runner.LocalPlayer,
+                        opponentMmr = _ranked ? _opponentMmr : 0,
                         enemiesSeen = new List<string>(_seenEnemies),
                         unitsUsed = new List<string>(_me.Deck.Length),
                     };
                     foreach (var d in _me.Deck) summary.unitsUsed.Add(App.Content.Units[d].id);
-                    if (_match.Mode == MatchMode.Versus) App.Show(new ResultScreen(record, _ranked, summary, _tutorial));
+                    Track.MatchEnd(_match.Mode, _ranked, IsOnline, IsFriendly, summary.winner, _match.Wave, Mathf.RoundToInt(_t));
+                    if (_match.Mode == MatchMode.Versus) App.Show(new ResultScreen(record, _ranked, summary, _tutorial) { Friendly = IsFriendly });
                     else App.Show(new ModeResultScreen(_cfg, record, summary));
                 }
             }
