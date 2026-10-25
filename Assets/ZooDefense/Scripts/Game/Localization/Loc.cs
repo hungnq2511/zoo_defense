@@ -202,7 +202,8 @@ namespace ZooDefense.Game
         public static string ArenaName(Arena a) { return T("arena." + a.index); }
         public static string ElementName(Element e) { return T("element." + e.ToString().ToLowerInvariant()); }
         public static string RoleName(Role r) { return T("role." + r.ToString().ToLowerInvariant()); }
-        public static string RarityName(Rarity r) { return T("rarity." + r.ToString().ToLowerInvariant()); }
+        /// <summary>"Rank SSS" (tiers C, B, A, S, SS, SSS).</summary>
+        public static string RarityName(Rarity r) { return F("rank.name", Art.RarityLetter(r)); }
 
         public static string SkillText(UnitDef d)
         {
@@ -226,6 +227,9 @@ namespace ZooDefense.Game
                 case RejectReason.NoTarget: return T("reject.no_target");
                 case RejectReason.InvalidCell: return T("reject.invalid_cell");
                 case RejectReason.NotOnBoard: return T("reject.not_on_board");
+                case RejectReason.SendsLocked: return T("reject.sends_locked");
+                case RejectReason.AlreadyHexed: return T("reject.already_hexed");
+                case RejectReason.HexLocked: return T("reject.hex_locked");
                 default: return T("reject.generic");
             }
         }

@@ -31,7 +31,7 @@ result.gold_doubled	Or doublé !
 result.continue	CONTINUER
 deck.title	DECK
 deck.counter	Animaux {0}/5     Monstres à envoyer {1}/4
-deck.sends_title	MONSTRES À ENVOYER (choisis-en 4)
+deck.sends_title	MONSTRES À ENVOYER
 deck.send_label	{0}\n{1} pts{2}
 deck.once	 (une fois)
 deck.hint	Touche un animal pour l'ajouter ou le retirer.
@@ -78,9 +78,15 @@ status.2	Réduit au silence
 status.3	Gelé
 status.4	Armure brisée
 status.5	Marqué
+status.6	Raz-de-marée
+status.7	Charmé
 ability.1	Tambours !
 ability.2	Enragé !
 ability.3	Ruée !
+ability.4	Terrier !
+ability.5	Soin !
+ability.6	Brume !
+ability.7	Disparition !
 ability.104	Surcharge !
 guide.title	ÉLÉMENTS
 guide.button	Éléments
@@ -336,6 +342,21 @@ skill.nectarhaste	+{0}% de vitesse d'attaque pour les 3 attaquants les plus proc
 skill.rootarea	Enracine les monstres d'une zone pendant 0,6 s (Niv4 : 0,75 s, une fois toutes les 4 s chacun). Les boss sont ralentis à la place
 skill.silence	Un coup sur 4 réduit la cible au silence 1 s : ni compétences ni accélérations. Boss : moitié
 skill.aegisguard	Protège les {0} alliés les plus proches : +{1}% de dégâts et bloque 1 étourdissement / verrou de case. Niv4 : +1 allié. Niv7 : en bloque 2
+skill.starfall	Toutes les 6 attaques, 2 étoiles filantes (Niv4 : 3) tombent sur les plus gros groupes, {0} % de dégâts chacune. Niv7 : toutes les 4 attaques
+skill.tidallance	+{1} % de dégâts aux monstres à plus de la moitié de leurs PV. Toutes les 5 attaques, un raz-de-marée frappe tout le chemin derrière la cible ({0} %). Niv4 : vague plus longue. Niv7 : toutes les 4
+skill.solarflare	Les coups brûlent et se cumulent ({0} par impulsion), le feu saute sur 1 voisin (Niv7 : 2). +{1} % de dégâts aux monstres en feu. Niv4 : brûle plus longtemps
+skill.worldtree	+{0} bonbons par niveau à chaque vague. Toutes les 4 vagues : +1 niveau à un allié au hasard (Niv7 : toutes les 3). Niv4 : protège 2 alliés (+{1} % de dégâts, bloque 1 étourdissement / verrou)
+skill.starcharm	Ralentit de {1} %. Tous les 4 coups, charme la cible : elle recule pendant 0,7 s (boss : ralentis). Niv4 : charme 1 de plus. Niv7 : tous les 3 coups
+skill.chainlightning	La foudre rebondit sur {0} monstres de plus (Niv4 : +1) à {1} % de dégâts. Niv7 : les monstres touchés sont brièvement étourdis
+skill.glacierhowl	Ralentit de {1} %. Toutes les 5 attaques, un hurlement gèle les monstres autour de la cible 0,6 s (Niv4 : 0,8 s ; boss : ralentis). Niv7 : toutes les 4
+skill.magmacharge	Toutes les 4 attaques, une charge : explosion bien plus large, +{0} % de dégâts, repousse les monstres (sauf boss). Niv4 : poussée plus forte. Niv7 : l'explosion brûle
+skill.bloomdisplay	Toutes les 4 s : +{0} % de vitesse d'attaque (Niv4 : +5 %) et +{1} % de dégâts aux 4 attaquants les plus proches. Niv7 : 6 alliés
+skill.crystalroll	Brise {0} % d'armure (Niv4 : +10 %). +{1} % de dégâts aux monstres blindés, élites et boss. Niv7 : un roulé sur 3 est 50 % plus large
+skill.lanternglow	Révèle les monstres invisibles autour de la cible. Ralentit de {0} % et marque +{1} % de dégâts subis (Niv4 : +5 %). Niv7 : tous les 5 coups, étourdit
+skill.tigerpounce	+{0} % de dégâts aux monstres envoyés. Toutes les 4 attaques, un bond à double dégâts (Niv4 : touche aussi un voisin). Niv7 : toutes les 3
+skill.bamboocombo	+{0} % de dégâts par coup d'affilée sur le même monstre (max 5, Niv4 : 6, Niv7 : 8). Niv7 : tous les 6 coups, frappe deux fois
+skill.cometshower	Chaque attaque lance aussi {0} comète (Niv4 : +1, Niv7 : +1) sur un autre monstre, {1} % de dégâts de zone
+skill.bubbletrap	Ralentit de {0} %. Tous les 4 coups, enferme la cible dans une bulle : étourdie 0,8 s (Niv4 : 1 s ; boss : ralentis) et subit +15 % de dégâts
 arena.1	Prairie verte
 arena.2	Forêt profonde
 arena.3	Volcan
@@ -345,7 +366,7 @@ shop.free_tag	GRATUIT
 shop.best_value	MEILLEUR PRIX
 shop.popular	POPULAIRE
 shop.save_10	-10%
-shop.legendary_chance	LÉGENDAIRE !
+shop.legendary_chance	CHANCE SSS !
 pass.tier_short	PALIER
 pass.unlock_premium	Débloquer Premium
 lobby.pass_short	Passe {0}/{1}
@@ -478,7 +499,30 @@ reject.not_ready	Compétence en charge
 reject.no_target	Aucune cible
 reject.invalid_cell	Impossible de placer ici
 reject.not_on_board	Invoque d'abord cet animal - les renforcements ne marchent que sur les animaux de ton zoo
-deck.spells_title	Sorts du gardien (touche pour changer)
+deck.spells_title	SORTS DU GARDIEN
+deck.swap_hint	Touche une carte pour l'échanger · {0} sur {1} utilisés
+send.rat_rush.desc	Très rapide et pas cher. Bon pour monter son revenu tôt.
+send.sneaky_ghost.desc	Invisible : seuls les animaux qui voient l'invisible peuvent le toucher tant qu'il n'est pas révélé.
+send.shield_turtle.desc	Très solide et subit 50 % de dégâts de zone en moins.
+send.candy_crow.desc	Vole 30 bonbons s'il atteint la porte.
+send.brick_golem.desc	Solide. À sa mort, il verrouille une de leurs cases un moment.
+send.mini_king.desc	Un mini-boss qui appelle des petits rats. Une fois par match.
+send.twin_slime.desc	À sa mort, il se divise en 2 petits slimes.
+send.digger_mole.desc	S'enterre toutes les quelques secondes : les animaux ne peuvent alors pas le toucher.
+send.healer_shroom.desc	Soigne les monstres autour de lui toutes les 2 secondes.
+send.fog_wisp.desc	Invisible, et cache encore et encore les monstres autour de lui.
+send.bomb_beetle.desc	À sa mort, il explose et étourdit 2 de leurs animaux pendant 1 s.
+send.pixie_swarm.desc	Six minuscules lutins très rapides. Mauvaise nouvelle pour les decks mono-cible.
+deck.swap_badge	CHANGER
+deck.send_info	{0} monstres · {1} bonbons · +{2} revenu/vague
+spell.poison_fog	Brume Toxique
+spell.poison_fog.desc	Un nuage toxique : les monstres de la zone subissent des dégâts pendant 3 secondes et sont ralentis de 25 %.
+spell.star_mark	Marque Étoilée
+spell.star_mark.desc	Marque tous les monstres de la zone : +30 % de dégâts subis pendant 4 secondes. Révèle aussi les invisibles.
+spell.shield_dome	Dôme Bouclier
+spell.shield_dome.desc	Protège tous tes animaux 6 secondes : +15 % de dégâts et bloque 1 étourdissement / verrou. Sans viser.
+spell.lucky_star	Étoile Porte-bonheur
+spell.lucky_star.desc	+1 niveau à ton animal de plus bas niveau. Sans viser.
 deck.spell_cost	{0} bonbons
 deck.spell_swap	Choisis un sort pour cet emplacement
 tutorial.spell	Des sorts ! Touche Météore ou Gel à côté d'INVOQUER, puis touche le chemin là où les ennemis se regroupent.
@@ -549,13 +593,13 @@ shop.sold	Vendu
 shop.gold_price	{0} or
 shop.gems_price	{0} gemmes
 shop.gacha	Invocation d'animaux
-shop.gacha_text	Invoque des fragments d'animaux. Chaque tirage peut être Légendaire !
-shop.pity	Légendaire garanti en {0} tirages
+shop.gacha_text	Invoque des fragments. Chaque tirage peut être SSS !
+shop.pity	Rang S ou mieux sous {0} tirages
 shop.pull1	x1  {0} gemmes
 shop.pull10	x10  {0} gemmes
 shop.rates	Taux d'obtention
 shop.rate_line	{0} : {1}%  ({2} fragments)
-shop.pity_rule	Un Légendaire est garanti au moins une fois tous les {0} tirages.
+shop.pity_rule	Un rang S (ou mieux) garanti au moins une fois tous les {0} tirages.
 shop.chests	Coffres
 shop.chest_info	{0}+ fragments, {1}+ or
 shop.gold	Or
@@ -712,7 +756,50 @@ unit.nectar_bee	Abeille nectar
 unit.sprout_elephant	Éléphant pousse
 unit.moon_moth	Papillon lune
 unit.aegis_ram	Bélier Égide
+unit.celestial_qilin	Qilin Céleste
+unit.abyss_leviathan	Léviathan des Abysses
+unit.solar_lion	Lion Solaire
+unit.worldtree_tortoise	Tortue Arbre-Monde
+unit.ninetail_star_fox	Renard Étoilé à Neuf Queues
+unit.thunder_griffin	Griffon du Tonnerre
+unit.glacier_wolf	Loup des Glaciers
+unit.magma_rhino	Rhinocéros de Magma
+unit.bloom_peacock	Paon en Fleur
+unit.crystal_pangolin	Pangolin de Cristal
+unit.lantern_jellyfish	Méduse Lanterne
+unit.flame_tiger_cub	Bébé Tigre de Flammes
+unit.bamboo_red_panda	Panda Roux Bambou
+unit.comet_hamster	Hamster Comète
+unit.puddle_duckling	Caneton des Flaques
+unit.sprout_anteater	Fourmilier Pousse
+unit.leaf_okapi	Okapi Feuille
+unit.moss_kiwi	Kiwi Mousse
+unit.bloom_snail	Escargot Fleuri
+unit.drop_platypus	Ornithorynque Goutte
+unit.brook_moose	Élan du Ruisseau
+unit.frost_bear	Ourson Polaire Givré
+unit.river_otter	Loutre de Rivière
+unit.moon_lemur	Lémur Lunaire
+unit.star_eagle	Aigle Étoilé
+unit.sun_alpaca	Alpaga Solaire
+unit.prism_hummingbird	Colibri Prisme
+unit.ember_devil	Diable Braise
+unit.blaze_bison	Bison Flamboyant
+unit.torch_toucan	Toucan Torche
+unit.chili_chameleon	Caméléon Piment
 enemy.slime	Gluant
+enemy.spore_puff	Vesse Sporée
+enemy.dash_lizard	Lézard Sprinteur
+enemy.pebble_golem	Golem de Galets
+enemy.shadow_blob	Tache d'Ombre
+enemy.balloon_bat	Chauve-souris Ballon
+enemy.shield_beetle	Scarabée Bouclier
+enemy.send_splitter	Slime Jumeau
+enemy.send_mole	Taupe Creuseuse
+enemy.send_mushroom	Champignon Guérisseur
+enemy.send_wisp	Feu Follet Brumeux
+enemy.send_bomb	Scarabée Bombe
+enemy.send_pixies	Lutin
 enemy.imp	Diablotin
 enemy.rock_beetle	Scarabée rocheux
 enemy.armored_knight	Chevalier en armure
@@ -732,6 +819,12 @@ enemy.armored_scorpion	Scorpion cuirassé
 enemy.clockwork_gorilla	Gorille mécanique
 enemy.void_hermit_crab	Bernard-l'ermite du néant
 send.rat_rush	Ruée de rats
+send.twin_slime	Slime Jumeau
+send.digger_mole	Taupe Creuseuse
+send.healer_shroom	Champignon Guérisseur
+send.fog_wisp	Feu Follet Brumeux
+send.bomb_beetle	Scarabée Bombe
+send.pixie_swarm	Essaim de Lutins
 send.sneaky_ghost	Fantôme furtif
 send.shield_turtle	Tortue bouclier
 send.candy_crow	Corbeau à bonbons
@@ -819,3 +912,90 @@ notify.login	Ton cadeau du jour {0} t'attend !
 notify.monthly	Les gemmes de ta carte mensuelle sont prêtes.
 notify.comeback	Les monstres sont de retour ! Tes animaux ont besoin de toi.
 notify.missions	De nouvelles missions sont là !
+stats.button	Stats
+stats.title	Stats du match
+stats.you	{0} (toi)
+stats.total	Dégâts {0}
+stats.line	Envois : {0} cœurs · Fusions {1} · Sorts {2}
+stats.spells	Sorts du gardien
+stats.none	Aucun dégât
+stats.mvp	MVP
+reject.sends_locked	Envois disponibles après la première vague
+battle.send_unlock	Vague {0}
+talent.1	Chasseur de boss
+talent_desc.1	+90 % de dégâts aux élites et boss.
+talent.2	Intercepteur
+talent_desc.2	+50 % de dégâts aux monstres envoyés par l'adversaire.
+talent.3	Critique
+talent_desc.3	Une attaque sur 3 inflige le double.
+talent.4	Maître du contre
+talent_desc.4	Les coups qui contrent l'élément infligent +75 %.
+talent.5	Grande explosion
+talent_desc.5	Rayon de zone +30 %.
+talent.6	Cœur de cible
+talent_desc.6	+35 % de dégâts à la cible principale.
+talent.7	Fumée glacée
+talent_desc.7	Chaque coup ralentit de 12 % pendant 1 s.
+talent.8	Briser
+talent_desc.8	Chaque coup brise 12 % d'armure pendant 2 s.
+talent.9	Persistance
+talent_desc.9	Ralentissements et étourdissements durent 60 % de plus.
+talent.10	Dard
+talent_desc.10	+25 % de dégâts.
+talent.11	Fléau des boss
+talent_desc.11	Étourdissements complets sur les boss, +20 % de dégâts aux boss.
+talent.12	Marque
+talent_desc.12	Les monstres touchés subissent +7 % de dégâts pendant 2 s.
+talent.13	Généreux
+talent_desc.13	+3 bonbons par niveau à chaque vague.
+talent.14	Inébranlable
+talent_desc.14	Les boss ne peuvent ni l'étourdir ni bloquer sa case.
+talent.15	Encouragement
+talent_desc.15	Les animaux adjacents infligent +10 % de dégâts.
+talent.16	Charge rapide
+talent_desc.16	Sa compétence active charge 30 % plus vite.
+talent.title	{0} : talents
+talent.intro	Choisis une branche par palier pour cet animal {0}. Modifiable gratuitement hors match.
+talent.tier	Palier {0}
+talent.tier_locked	Palier {0} · carte niveau {1}
+talent.need_level	Carte niveau {0} requise
+talent.selected	Actif
+talent.pick	Touchez pour choisir
+talent.locked	Verrouillé
+talent.button	Talents {0}/{1}
+talent.button_locked	Talents · au niveau {0}
+battle.hex	Malédiction
+battle.hex_pending	Posée
+battle.hex_title	Maudire la prochaine vague de {0} · {1} bonbons
+battle.hex_hint	Tous les monstres normaux de leur prochaine vague prennent l'élément choisi. Ils sont prévenus.
+battle.hex_their_damage	Leurs dégâts : {0} %
+battle.hexed	{0} t'a maudit : prochaine vague toute {1} !
+battle.hex_cast	Maudit : leur prochaine vague est {0}
+battle.hex_wave	Vague maudite : monstres {0}
+battle.sold	+{0} bonbons
+battle.target	Cible :\n{0}
+battle.sell	Vendre
+battle.sell_confirm	Sûr ?
+battle.talents	Talents : {0}
+target.0	Premier
+target.1	Groupe
+target.2	Plus fort
+target.3	Envoyés
+reject.already_hexed	Leur prochaine vague est déjà maudite
+reject.hex_locked	Malédiction à partir de la vague 3
+mayhem.5	Éclair
+mayhem.6	Ruée de boss
+mayhem.7	Mono-élément
+mayhem.8	Guerre des malédictions
+mayhem_desc.5	Monstres 40 % plus rapides, vagues plus courtes, +50 % de bonbons au départ.
+mayhem_desc.6	Un boss toutes les 2 vagues, prix du duel doublé, mort subite plus tôt.
+mayhem_desc.7	Cette semaine tous les monstres sont {0} (+50 % en contre). Adapte ton deck !
+mayhem_desc.8	Malédiction d'élément dès la vague 2 à moitié prix.
+rank.name	Rang {0}
+shop.pity_high	SS sous {0} tirages · SSS sous {1} tirages
+shop.pity_rule_ss	Un SS garanti au moins une fois tous les {0} tirages.
+shop.pity_rule_sss	Un SSS garanti au moins une fois tous les {0} tirages.
+battle.aura	Aura de rang {0} : toute l'équipe +{1} % de dégâts
+battle.aura_full	Aura de rang {0} : toute l'équipe +{1} % de dégâts, +{2} % de vitesse
+battle.evolve	Évoluer
+battle.evolved	Évolution au niveau {0} !

@@ -17,7 +17,7 @@ namespace ZooDefense.Core
         public readonly PlayerState State;
 
         readonly Dictionary<string, CardState> _cards = new Dictionary<string, CardState>();
-        readonly List<int>[] _unitsByRarity = { new List<int>(), new List<int>(), new List<int>(), new List<int>() };
+        readonly List<int>[] _unitsByRarity = { new List<int>(), new List<int>(), new List<int>(), new List<int>(), new List<int>(), new List<int>() };   // C..SSS
 
         public MetaService(MetaConfig config, ContentDatabase content, PlayerState state)
         {
@@ -118,6 +118,40 @@ namespace ZooDefense.Core
             return levels;
         }
 
+        /// <summary>Talent picks for a deck (parallel to it), limited to the tiers each card has unlocked.</summary>
+        public int[] DeckTalents(string[] deck)
+        {
+            var talents = new int[deck.Length];
+            for (int i = 0; i < deck.Length; i++)
+            {
+                var c = Card(deck[i]);
+                talents[i] = c == null ? 0 : Talents.Validate(Content.Balance, c.talent, c.level);
+            }
+            return talents;
+        }
+
+        /// <summary>Talent option (0 none, 1, 2) picked for a card at a tier (0 or 1).</summary>
+        public int TalentChoice(string unitId, int tier)
+        {
+            var c = Card(unitId);
+            if (c == null) return 0;
+            return tier == 0 ? Talents.Tier1(c.talent) : Talents.Tier2(c.talent);
+        }
+
+        public bool TalentUnlocked(string unitId, int tier) { return Level(unitId) >= Talents.UnlockLevel(Content.Balance, tier); }
+
+        /// <summary>Picks a talent branch (free, can be changed any time outside a match). False if the tier is locked.</summary>
+        public bool ChooseTalent(string unitId, int tier, int option)
+        {
+            var c = Card(unitId);
+            if (c == null || tier < 0 || tier >= Talents.Tiers || option < 0 || option > Talents.Options) return false;
+            if (!TalentUnlocked(unitId, tier)) return false;
+            int t1 = Talents.Tier1(c.talent), t2 = Talents.Tier2(c.talent);
+            if (tier == 0) t1 = option; else t2 = option;
+            c.talent = Talents.Pack(t1, t2);
+            return true;
+        }
+
         public bool UpgradeCost(string unitId, out int shards, out int gold)
         {
             shards = gold = 0;
@@ -199,7 +233,9 @@ namespace ZooDefense.Core
             list.Add(new Reward(RewardType.Gold, gold));
 
             int shards = def.shards * mult / 100;
-            if (rng.Chance(def.legendaryChance)) { list.Add(Shards(ref rng, Rarity.Legendary, 1)); }
+            if (rng.Chance(def.legendaryChance)) { list.Add(Shards(ref rng, Rarity.S, 1)); }
+            if (def.ssPermille > 0 && rng.Next(1000) < def.ssPermille) list.Add(Shards(ref rng, Rarity.SS, 1));
+            if (def.sssPermille > 0 && rng.Next(1000) < def.sssPermille) list.Add(Shards(ref rng, Rarity.SSS, 1));
             if (rng.Chance(def.epicChance)) { int e = Math.Max(1, shards / 16); list.Add(Shards(ref rng, Rarity.Epic, e)); shards -= e; }
             int rare = shards * 30 / 100;
             int rareStacks = rare >= 6 ? 2 : 1;
@@ -213,7 +249,9 @@ namespace ZooDefense.Core
 
         Reward Shards(ref DetRandom rng, Rarity rarity, int amount)
         {
-            var pool = _unitsByRarity[(int)rarity];
+            int r = Math.Min((int)rarity, _unitsByRarity.Length - 1);
+            while (r > 0 && _unitsByRarity[r].Count == 0) r--;   // a tier with no animals falls back to the one below
+            var pool = _unitsByRarity[r];
             var unit = Content.Units[pool[rng.Next(pool.Count)]];
             return new Reward(RewardType.Shards, Math.Max(1, amount), unit.id);
         }
@@ -453,8 +491,8 @@ namespace ZooDefense.Core
         public void DealPrice(int index, out int shards, out int gold)
         {
             var rarity = (int)Content.Unit(State.dealUnits[index]).rarity;
-            shards = Config.dealShards[rarity];
-            gold = Config.dealGold[rarity];
+            shards = MetaConfig.At(Config.dealShards, rarity, 0);
+            gold = MetaConfig.At(Config.dealGold, rarity, 0);
         }
 
         public List<Reward> BuyDeal(int index)
@@ -518,6 +556,33 @@ namespace ZooDefense.Core
 
         // ------------------------------------------------------------------ gacha
 
+        /// <summary>
+        /// One gacha roll: SSS pity, then SS pity, then S pity, else the per-mille table.
+        /// Every counter resets when that tier (or better) comes out.
+        /// </summary>
+        Rarity RollGacha(ref DetRandom rng)
+        {
+            State.gachaPity++; State.gachaPitySS++; State.gachaPitySSS++;
+            Rarity rarity;
+            if (State.gachaPitySSS >= Config.gachaPitySSS) rarity = Rarity.SSS;
+            else if (State.gachaPitySS >= Config.gachaPitySS) rarity = Rarity.SS;
+            else if (State.gachaPity >= Config.gachaPity) rarity = Rarity.S;
+            else
+            {
+                int roll = rng.Next(1000), acc = 0;
+                rarity = Rarity.C;
+                for (int r = 0; r <= (int)Rarity.SSS; r++)
+                {
+                    acc += MetaConfig.At(Config.gachaRarityPermille, r, 0);
+                    if (roll < acc) { rarity = (Rarity)r; break; }
+                }
+            }
+            if (rarity >= Rarity.S) State.gachaPity = 0;
+            if (rarity >= Rarity.SS) State.gachaPitySS = 0;
+            if (rarity == Rarity.SSS) State.gachaPitySSS = 0;
+            return rarity;
+        }
+
         public List<Reward> Pull(int count)
         {
             int price = count >= 10 ? Config.gachaPrice10 : Config.gachaPrice * count;
@@ -527,17 +592,10 @@ namespace ZooDefense.Core
             var rolls = new List<Reward>();
             for (int i = 0; i < count; i++)
             {
-                Rarity rarity;
-                State.gachaPity++;
-                if (State.gachaPity >= Config.gachaPity) rarity = Rarity.Legendary;
-                else
-                {
-                    int roll = rng.Next(100), acc = 0;
-                    rarity = Rarity.Common;
-                    for (int r = 0; r < 4; r++) { acc += Config.gachaRarityWeights[r]; if (roll < acc) { rarity = (Rarity)r; break; } }
-                }
-                if (rarity == Rarity.Legendary) State.gachaPity = 0;
-                rolls.Add(Shards(ref rng, rarity, Config.gachaShards[(int)rarity]));
+                rolls.Add(Shards(ref rng, RollGacha(ref rng), 0));
+                var last = rolls[rolls.Count - 1];
+                last.amount = Math.Max(1, MetaConfig.At(Config.gachaShards, (int)Content.Unit(last.id).rarity, 1));
+                rolls[rolls.Count - 1] = last;
             }
             Save(ref rng);
             var log = new List<Reward>();

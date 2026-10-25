@@ -56,7 +56,7 @@ Dashboard › **Remote Config** → environment *production* → thêm key:
 
 | Key | Kiểu | Mặc định | Ý nghĩa |
 |---|---|---|---|
-| `bot_wait_seconds` | float | 10 | Tìm người thật bao lâu trước khi đấu bot (3–60) |
+| `bot_wait_seconds` | float | 6 | Tìm người thật bao lâu trước khi đấu bot (3–6; game không cho dài hơn 6 giây) |
 | `reconnect_seconds` | float | 20 | Thời gian chờ kết nối lại trong trận online (5–60) |
 | `ad_first_after` | int | 3 | Quảng cáo xen kẽ đầu tiên sau N trận |
 | `ad_every` | int | 2 | Rồi cứ mỗi N trận |

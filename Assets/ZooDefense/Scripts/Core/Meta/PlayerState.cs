@@ -9,6 +9,8 @@ namespace ZooDefense.Core
         public string id;
         public int level;    // 0 = locked
         public int shards;   // spare shards toward the next level
+        /// <summary>Talent picks (Talents.Pack: tier1 + 3 * tier2, 0 = none). Free to change outside a match.</summary>
+        public int talent;
     }
 
     [Serializable]
@@ -55,6 +57,8 @@ namespace ZooDefense.Core
         public int adGemsDay = -1;
 
         public int gachaPity;
+        /// <summary>Pulls since the last SS (or better) / SSS.</summary>
+        public int gachaPitySS, gachaPitySSS;
         /// <summary>Ranked wins in a row (bonus gold from the second one).</summary>
         public int winStreak;
         public uint rng;

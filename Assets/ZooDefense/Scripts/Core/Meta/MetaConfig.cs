@@ -29,7 +29,9 @@ namespace ZooDefense.Core
         public int goldMin, goldMax;
         public int shards;            // total shards in the chest (before arena bonus)
         public int epicChance;        // % chance to contain epic shards
-        public int legendaryChance;   // % chance to contain one legendary shard
+        public int legendaryChance;   // % chance to contain one S shard
+        public int ssPermille;        // per-mille chance to contain one SS shard
+        public int sssPermille;       // per-mille chance to contain one SSS shard
         public int gemPrice;          // shop price, 0 = not sold
     }
 
@@ -67,7 +69,7 @@ namespace ZooDefense.Core
         public int maxCardLevel = 15;
         /// <summary>Shards to go from level L to L+1 for a Common card (index L-1). Other rarities divide by rarityShardDivisor.</summary>
         public int[] upgradeShards = { 2, 4, 8, 16, 30, 50, 80, 120, 180, 250, 350, 500, 700, 1000 };
-        public int[] rarityShardDivisor = { 1, 3, 8, 20 };   // Rare cards need a third of the shards, etc. (rounded up)
+        public int[] rarityShardDivisor = { 1, 3, 8, 20, 40, 80 };   // by rarity C..SSS: B cards need a third of the shards, etc. (rounded up)
         public int[] upgradeGold = { 20, 50, 100, 200, 400, 700, 1000, 1500, 2200, 3000, 4000, 5500, 7000, 9000 };
 
         // Chests
@@ -92,8 +94,8 @@ namespace ZooDefense.Core
 
         // Shop
         public int dailyDeals = 3;
-        public int[] dealShards = { 10, 4, 1, 0 };        // per rarity (legendary not sold for gold)
-        public int[] dealGold = { 100, 200, 500, 0 };
+        public int[] dealShards = { 10, 4, 1, 0, 0, 0 };        // per rarity C..SSS (S and above are not sold for gold)
+        public int[] dealGold = { 100, 200, 500, 0, 0, 0 };
         public int freeDailyGold = 50;
         public int adGems = 10;
         public int goldPackSmallGold = 1000, goldPackSmallGems = 60;
@@ -102,9 +104,17 @@ namespace ZooDefense.Core
 
         // Gacha
         public int gachaPrice = 100, gachaPrice10 = 900;
-        public int[] gachaRarityWeights = { 55, 30, 12, 3 };   // percent
-        public int[] gachaShards = { 15, 6, 2, 1 };
-        public int gachaPity = 40;                            // legendary guaranteed by this pull
+        /// <summary>Old 4-tier weights in percent (kept so old remote overrides still parse; not used).</summary>
+        public int[] gachaRarityWeights = { 55, 30, 12, 3 };
+        /// <summary>Chance per pull in per-mille, by rarity C, B, A, S, SS, SSS (sum 1000).</summary>
+        public int[] gachaRarityPermille = { 465, 280, 160, 45, 30, 20 };   // SSS 2% (16 SSS animals), SS 3% so SS stays more common than SSS
+        public int[] gachaShards = { 15, 6, 2, 1, 2, 3 };
+        public int gachaPity = 40;       // an S (or better) is guaranteed by this pull
+        public int gachaPitySS = 80;     // an SS (or better) by this pull
+        public int gachaPitySSS = 100;   // an SSS by this pull (at 2% about 1 player in 8 needs it)
+
+        /// <summary>Array value with a fallback (remote overrides may send shorter arrays).</summary>
+        public static int At(int[] a, int i, int fallback) { return a != null && i >= 0 && i < a.Length ? a[i] : fallback; }
 
         // Missions
         public int missionsPerDay = 3;
@@ -120,7 +130,7 @@ namespace ZooDefense.Core
         public int UpgradeShards(Rarity rarity, int fromLevel)
         {
             int baseShards = upgradeShards[Math.Min(upgradeShards.Length - 1, fromLevel - 1)];
-            int div = rarityShardDivisor[(int)rarity];
+            int div = Math.Max(1, At(rarityShardDivisor, (int)rarity, 20 * ((int)rarity - 2)));
             return Math.Max(1, (baseShards + div - 1) / div);
         }
 
@@ -145,9 +155,9 @@ namespace ZooDefense.Core
         {
             var c = new MetaConfig();
             c.chests.Add(new ChestDef { id = "wood", unlockSeconds = 3 * 3600, goldMin = 40, goldMax = 60, shards = 12, epicChance = 5, legendaryChance = 0, gemPrice = 0 });
-            c.chests.Add(new ChestDef { id = "silver", unlockSeconds = 8 * 3600, goldMin = 100, goldMax = 140, shards = 30, epicChance = 15, legendaryChance = 1, gemPrice = 60 });
-            c.chests.Add(new ChestDef { id = "gold", unlockSeconds = 12 * 3600, goldMin = 250, goldMax = 350, shards = 70, epicChance = 40, legendaryChance = 4, gemPrice = 150 });
-            c.chests.Add(new ChestDef { id = "magic", unlockSeconds = 24 * 3600, goldMin = 600, goldMax = 800, shards = 160, epicChance = 100, legendaryChance = 15, gemPrice = 400 });
+            c.chests.Add(new ChestDef { id = "silver", unlockSeconds = 8 * 3600, goldMin = 100, goldMax = 140, shards = 30, epicChance = 15, legendaryChance = 1, ssPermille = 2, sssPermille = 0, gemPrice = 60 });
+            c.chests.Add(new ChestDef { id = "gold", unlockSeconds = 12 * 3600, goldMin = 250, goldMax = 350, shards = 70, epicChance = 40, legendaryChance = 4, ssPermille = 8, sssPermille = 1, gemPrice = 150 });
+            c.chests.Add(new ChestDef { id = "magic", unlockSeconds = 24 * 3600, goldMin = 600, goldMax = 800, shards = 160, epicChance = 100, legendaryChance = 15, ssPermille = 40, sssPermille = 8, gemPrice = 400 });
 
             c.gemPacks.Add(new GemPack { id = "gems_small", gems = 80, price = "$0.99" });
             c.gemPacks.Add(new GemPack { id = "gems_medium", gems = 500, price = "$4.99" });

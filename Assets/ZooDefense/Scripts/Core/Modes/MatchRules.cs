@@ -22,6 +22,10 @@ namespace ZooDefense.Core
         ElementChaos = 2,  // counters x2, resisted x0.5, every wave monster has the wave element
         SendStorm = 3,     // sends cost half, income doubled
         StarHop = 4,       // star cells move every wave and give +50%
+        Blitz = 5,         // monsters 40% faster, shorter waves, more starting candy
+        BossRush = 6,      // a boss every 2 waves, bigger boss-duel prize
+        MonoElement = 7,   // every monster has the element of the week (announced: build your deck for it)
+        HexWar = 8,        // Element Hex from wave 2 at half price
     }
 
     /// <summary>
@@ -87,6 +91,26 @@ namespace ZooDefense.Core
                     b.starCellMoveEveryWaves = 1;
                     b.starCellBonusPercent = 50;
                     break;
+                case MayhemRule.Blitz:
+                    b.enemySpeedPercent = b.enemySpeedPercent * 140 / 100;
+                    b.waveDurationTicks = b.waveDurationTicks * 75 / 100;
+                    b.spawnWindowTicks = b.spawnWindowTicks * 75 / 100;
+                    b.firstWaveDelayTicks = b.firstWaveDelayTicks * 60 / 100;
+                    b.startCandy = b.startCandy * 150 / 100;
+                    break;
+                case MayhemRule.BossRush:
+                    b.bossEveryNWaves = 2;
+                    b.bossDuelCandy = b.bossDuelCandy * 2;
+                    b.suddenDeathWave = Math.Max(8, b.suddenDeathWave - 2);
+                    break;
+                case MayhemRule.MonoElement:
+                    b.waveElementPercent = 100;
+                    b.elementBonusPercent = 50;
+                    break;
+                case MayhemRule.HexWar:
+                    b.hexUnlockWave = 2;
+                    b.hexCostPercent = 50;
+                    break;
             }
             return b;
         }
@@ -96,7 +120,12 @@ namespace ZooDefense.Core
         public static MatchRules Endless() { return new MatchRules { mode = MatchMode.Endless, solo = true, noSuddenDeath = true, hpPercent = 140, hpGrowthPercent = 18 }; }
         public static MatchRules Raid() { return new MatchRules { mode = MatchMode.Raid, coop = true, noSuddenDeath = true, raidHpPercent = 4000, hpGrowthPercent = 11 }; }
         public static MatchRules Tournament() { return new MatchRules { mode = MatchMode.Tournament }; }
-        public static MatchRules MayhemOf(MayhemRule rule) { return new MatchRules { mode = MatchMode.Mayhem, mayhem = rule }; }
+        public static MatchRules MayhemOf(MayhemRule rule, int week = 0)
+        {
+            var r = new MatchRules { mode = MatchMode.Mayhem, mayhem = rule };
+            if (rule == MayhemRule.MonoElement) r.waveElements = new[] { (int)GameCalendar.ElementOfWeek(week) };
+            return r;
+        }
     }
 
     /// <summary>Calendar helpers shared by the client and the server (all in UTC days / weeks).</summary>
@@ -115,7 +144,23 @@ namespace ZooDefense.Core
 
         public static MayhemRule MayhemOfWeek(int week)
         {
-            switch (((week % 4) + 4) % 4) { case 0: return MayhemRule.Mirror; case 1: return MayhemRule.ElementChaos; case 2: return MayhemRule.SendStorm; default: return MayhemRule.StarHop; }
+            switch (((week % 8) + 8) % 8)
+            {
+                case 0: return MayhemRule.Mirror;
+                case 1: return MayhemRule.ElementChaos;
+                case 2: return MayhemRule.SendStorm;
+                case 3: return MayhemRule.StarHop;
+                case 4: return MayhemRule.Blitz;
+                case 5: return MayhemRule.BossRush;
+                case 6: return MayhemRule.MonoElement;
+                default: return MayhemRule.HexWar;
+            }
+        }
+
+        /// <summary>Element of the week for the Mono Element rule (Fire, Water or Grass).</summary>
+        public static Element ElementOfWeek(int week)
+        {
+            switch ((((week / 8) % 3) + 3) % 3) { case 0: return Element.Fire; case 1: return Element.Water; default: return Element.Grass; }
         }
 
         /// <summary>Ranked seasons last 4 weeks.</summary>

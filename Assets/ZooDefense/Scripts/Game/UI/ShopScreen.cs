@@ -234,21 +234,43 @@ namespace ZooDefense.Game
             var rays = UIKit.Icon(c, "rays", Art.Rays, new Color(1f, 0.85f, 1f, 0.35f));
             _raysA = rays.rectTransform.Place(new Vector2(0.5f, 1f), new Vector2(0.5f, 0.5f), new Vector2(0, -170), new Vector2(760, 760));
             var units = App.Content.Units;
+            // Showcase: three SSS animals that change every day (the rates do not change); falls back to SS / lower tiers.
             UnitDef legendary = null, epicA = null, epicB = null;
-            foreach (var u in units)
+            var sss = new List<UnitDef>();
+            foreach (var u in units) if (u.rarity == Rarity.SSS) sss.Add(u);
+            if (sss.Count >= 3)
             {
-                if (u.rarity == Rarity.Legendary && legendary == null) legendary = u;
-                else if (u.rarity == Rarity.Epic) { if (epicA == null) epicA = u; else if (epicB == null) epicB = u; }
+                int day = GameCalendar.DayIndex(App.Now);
+                legendary = sss[day % sss.Count];
+                epicA = sss[(day + 1) % sss.Count];
+                epicB = sss[(day + 2) % sss.Count];
             }
-            if (epicA != null) Icons.Unit(c, epicA, 4, 200).Place(new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-230, -60), new Vector2(200, 200));
-            if (epicB != null) Icons.Unit(c, epicB, 4, 200).Place(new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(230, -60), new Vector2(200, 200));
-            if (legendary != null) Icons.Unit(c, legendary, 7, 280).Place(new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0, -16), new Vector2(280, 280));
+            for (int tier = (int)Rarity.SSS; tier >= 0 && legendary == null; tier--)
+                foreach (var u in units) if ((int)u.rarity == tier) { legendary = u; break; }
+            for (int tier = (int)Rarity.SS; tier >= 0 && epicB == null; tier--)
+                foreach (var u in units)
+                {
+                    if ((int)u.rarity != tier || u == legendary) continue;
+                    if (epicA == null) epicA = u; else if (epicB == null) epicB = u;
+                }
+            int sideLook = epicA != null && epicA.rarity == Rarity.SSS ? 7 : 4;
+            if (epicA != null) Icons.Unit(c, epicA, sideLook, 200).Place(new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-230, -60), new Vector2(200, 200));
+            if (epicB != null) Icons.Unit(c, epicB, sideLook, 200).Place(new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(230, -60), new Vector2(200, 200));
+            if (legendary != null)
+            {
+                Icons.Unit(c, legendary, 7, 280).Place(new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0, -16), new Vector2(280, 280));
+                DeckScreen.RankBadge(c, legendary.rarity, 56f)
+                    .Place(new Vector2(0.5f, 1f), new Vector2(0.5f, 0.5f), new Vector2(0, -282), DeckScreen.RankSize(legendary.rarity, 56f));
+            }
             UIKit.Label(c, Loc.T("shop.gacha_text"), 28, Palette.Text).rectTransform.Band(true, 70, 300, 30);
 
             int left = cfg.gachaPity - meta.State.gachaPity;
             var pity = new Bar(c, Art.Hex(0xFFD23F), 24);
             pity.Root.Place(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0, 130), new Vector2(700, 44));
             pity.Set(meta.State.gachaPity / (float)cfg.gachaPity, Loc.F("shop.pity", left));
+            int leftSS = Mathf.Max(1, cfg.gachaPitySS - meta.State.gachaPitySS), leftSSS = Mathf.Max(1, cfg.gachaPitySSS - meta.State.gachaPitySSS);
+            UIKit.Label(c, Loc.F("shop.pity_high", leftSS, leftSSS), 22, Palette.TextDim).rectTransform
+                .Place(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0, 176), new Vector2(760, 32));
 
             var one = UIKit.ChunkyButton(c, "pull1", "", Art.Hex(0x3D8BFF), () => Pull(1), 30);
             one.GetComponent<RectTransform>().Place(new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(20, 16), new Vector2(390, 104));
@@ -346,12 +368,18 @@ namespace ZooDefense.Game
         void ShowRates()
         {
             var c = App.MetaConfig;
-            var box = Modal.Open(App, Loc.T("shop.rates"), 760);
+            var box = Modal.Open(App, Loc.T("shop.rates"), 1060);
             var lines = new List<string>();
-            for (int r = 0; r < 4; r++)
-                lines.Add(Loc.F("shop.rate_line", Loc.RarityName((Rarity)r), c.gachaRarityWeights[r], c.gachaShards[r]));
+            for (int r = 0; r <= (int)Rarity.SSS; r++)
+            {
+                int pm = MetaConfig.At(c.gachaRarityPermille, r, 0);
+                string pct = (pm / 10f).ToString(pm % 10 == 0 ? "0" : "0.0", System.Globalization.CultureInfo.InvariantCulture);
+                lines.Add(Loc.F("shop.rate_line", Loc.RarityName((Rarity)r), pct, MetaConfig.At(c.gachaShards, r, 1)));
+            }
             lines.Add("");
             lines.Add(Loc.F("shop.pity_rule", c.gachaPity));
+            lines.Add(Loc.F("shop.pity_rule_ss", c.gachaPitySS));
+            lines.Add(Loc.F("shop.pity_rule_sss", c.gachaPitySSS));
             UIKit.Label(box, string.Join("\n", lines.ToArray()), 36, Palette.Text, TextAnchor.UpperLeft).rectTransform.Stretch(60, 60, 150, 60);
         }
 

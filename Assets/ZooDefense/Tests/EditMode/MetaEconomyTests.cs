@@ -107,6 +107,43 @@ namespace ZooDefense.Tests
         }
 
         [Test]
+        public void Gacha_HighTierPity_SSandSSS()
+        {
+            MetaConfig cfg;
+            var meta = NewService(out cfg);
+            var content = DefaultContent.CreateDatabase();
+            meta.State.gems = cfg.gachaPrice * 10;
+            meta.State.gachaPitySSS = cfg.gachaPitySSS - 1;
+            var r = meta.Pull(1);
+            Assert.AreEqual((int)Rarity.SSS, (int)content.Unit(r[0].id).rarity, "SSS pity");
+            Assert.AreEqual(0, meta.State.gachaPitySSS);
+            Assert.AreEqual(0, meta.State.gachaPitySS, "an SSS also resets the SS and S counters");
+            meta.State.gachaPitySS = cfg.gachaPitySS - 1;
+            r = meta.Pull(1);
+            Assert.GreaterOrEqual((int)content.Unit(r[0].id).rarity, (int)Rarity.SS, "SS pity");
+            int sum = 0;
+            foreach (var w in cfg.gachaRarityPermille) sum += w;
+            Assert.AreEqual(1000, sum, "rates add up to 100%");
+        }
+
+        [Test]
+        public void Gacha_LongRun_HitsEveryTierAndSSSIsRare()
+        {
+            MetaConfig cfg;
+            var meta = NewService(out cfg);
+            var content = DefaultContent.CreateDatabase();
+            var counts = new int[6];
+            meta.State.gems = cfg.gachaPrice10 * 200;
+            for (int i = 0; i < 200; i++)
+                foreach (var r in meta.Pull(10))
+                    if (r.type == RewardType.Shards) counts[(int)content.Unit(r.id).rarity]++;
+            for (int t = 0; t < 6; t++) Assert.Greater(counts[t], 0, "tier " + t + " appears in 2000 pulls");
+            Assert.Less(counts[5], counts[4], "SSS rarer than SS");
+            Assert.Less(counts[4], counts[3], "SS rarer than S");
+            Assert.GreaterOrEqual(counts[5], 2000 / cfg.gachaPitySSS, "SSS pity guarantees at least one per window");
+        }
+
+        [Test]
         public void Gacha_RespectsPity()
         {
             MetaConfig cfg;
@@ -115,7 +152,7 @@ namespace ZooDefense.Tests
             meta.State.gachaPity = cfg.gachaPity - 1;
             var rewards = meta.Pull(1);
             var def = DefaultContent.CreateDatabase().Unit(rewards[0].id);
-            Assert.AreEqual((int)Rarity.Legendary, (int)def.rarity);
+            Assert.GreaterOrEqual((int)def.rarity, (int)Rarity.S);
             Assert.AreEqual(0, meta.State.gachaPity);
             Assert.IsTrue(meta.Pull(10).Count == 10);
         }

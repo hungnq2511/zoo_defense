@@ -66,9 +66,11 @@ namespace ZooDefense.Game
             }
             y += 306;
 
-            // Send monsters
+            // Send monsters (tap a card to swap it; the hint and the "swap" badges make that obvious)
             Deco.Section(list, Loc.T("deck.sends_title"), y, Art.Hex(0xC9A5FF));
-            y += 74;
+            y += 66;
+            SwapHint(list, y, profile.sendDeck.Length, PickableSends(), Art.Hex(0xC9A5FF));
+            y += 52;
             for (int i = 0; i < profile.sendDeck.Length; i++)
             {
                 int slot = i;
@@ -78,7 +80,9 @@ namespace ZooDefense.Game
 
             // Keeper spells
             Deco.Section(list, Loc.T("deck.spells_title"), y, Art.Hex(0x7FD3FF));
-            y += 74;
+            y += 66;
+            SwapHint(list, y, profile.spells.Length, content.Spells.Count, Art.Hex(0x7FD3FF));
+            y += 52;
             for (int i = 0; i < profile.spells.Length; i++)
             {
                 int slot = i;
@@ -148,6 +152,37 @@ namespace ZooDefense.Game
 
         // ------------------------------------------------------------------ widgets
 
+        /// <summary>Tier badge (C..SSS) in the card's top-right corner. Uses rank_*.png art when present (no zoom effect).</summary>
+        public static void RarityBadge(RectTransform card, Rarity r, float cardWidth)
+        {
+            RankBadge(card, r, 44f).Place(new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-2, -2), RankSize(r, 44f));
+        }
+
+        /// <summary>Size of a rank badge of the given height (art is 2:1; the code fallback grows with the letters).</summary>
+        public static Vector2 RankSize(Rarity r, float height)
+        {
+            var art = Art.RankIcon(r);
+            if (art != null) return new Vector2(height * Mathf.Max(0.5f, art.rect.width / Mathf.Max(1f, art.rect.height)), height);
+            return new Vector2(height * 0.75f + height * 0.45f * Art.RarityLetter(r).Length, height * 0.9f);
+        }
+
+        /// <summary>Rank art (or a coloured pill with the letter); call Place on the result. Static: no pulsing.</summary>
+        public static RectTransform RankBadge(Transform parent, Rarity r, float height)
+        {
+            var art = Art.RankIcon(r);
+            if (art != null)
+            {
+                var img = UIKit.Icon(parent, "rank", art, Color.white);
+                img.preserveAspect = true;
+                img.raycastTarget = false;
+                return img.rectTransform;
+            }
+            var badge = UIKit.Panel(parent, "rank", Art.RarityColor(r)).rectTransform;
+            UIKit.Outlined(UIKit.Label(badge, Art.RarityLetter(r), Mathf.RoundToInt(height * 0.6f), Color.white), 2f).rectTransform.Stretch();
+            if (r == Rarity.SSS) badge.gameObject.AddComponent<RainbowTint>();
+            return badge;
+        }
+
         /// <summary>Animal card: rarity-coloured frame, element dot, big art, level ribbon, name and shard bar.</summary>
         Button UnitCard(RectTransform parent, UnitDef def, Vector2 pos, Vector2 size, System.Action onTap)
         {
@@ -175,6 +210,7 @@ namespace ZooDefense.Game
             icon.Place(new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0, -4), new Vector2(art, art));
 
             UIKit.Label(c, Loc.UnitName(def), size.x < 220 ? 22 : 24, unlocked ? Palette.Text : Palette.TextDim).rectTransform.Band(false, 34, 46, 2);
+            RarityBadge(c, def.rarity, size.x);
 
             if (!unlocked)
             {
@@ -209,6 +245,51 @@ namespace ZooDefense.Game
             return btn;
         }
 
+        const string SwapSeenKey = "zoo_swap_seen";
+        static bool SwapSeen { get { return PlayerPrefs.GetInt(SwapSeenKey, 0) == 1; } }
+        static void MarkSwapSeen() { PlayerPrefs.SetInt(SwapSeenKey, 1); PlayerPrefs.Save(); }
+
+        int PickableSends()
+        {
+            int n = 0;
+            foreach (var d in App.Content.Sends) if (d.cost > 0) n++;   // the boss remnant is not pickable
+            return n;
+        }
+
+        /// <summary>"Tap a card to swap · using 4 of 6" under the section title.</summary>
+        static void SwapHint(RectTransform list, float y, int used, int total, Color color)
+        {
+            var row = UIKit.Panel(list, "swapHint", new Color(color.r * 0.25f, color.g * 0.25f, color.b * 0.3f, 0.75f)).rectTransform;
+            row.Band(true, 44, y, 6);
+            UIKit.Label(row, Loc.F("deck.swap_hint", used, total), 26, Color.Lerp(color, Color.white, 0.55f)).rectTransform.Stretch(12, 12, 0, 0);
+        }
+
+        /// <summary>
+        /// Swap marker in the card corner: the icon_swap.png art when present, else a small yellow "SWAP" tag.
+        /// Until the player has opened a swap once, a soft static glow sits behind it (no zooming).
+        /// </summary>
+        static void SwapBadge(Transform card)
+        {
+            var art = Art.Icon("icon_swap");
+            if (!SwapSeen)
+            {
+                var glow = UIKit.Icon(card, "swapGlow", Art.Glow, new Color(1f, 0.85f, 0.3f, 0.75f)).rectTransform;
+                glow.Place(new Vector2(1f, 1f), new Vector2(0.5f, 0.5f), new Vector2(-22, -6), new Vector2(110, 110));
+                glow.GetComponent<Image>().raycastTarget = false;
+            }
+            if (art != null)
+            {
+                var img = UIKit.Icon(card, "swap", art, Color.white);
+                img.preserveAspect = true;
+                img.raycastTarget = false;
+                img.rectTransform.Place(new Vector2(1f, 1f), new Vector2(0.5f, 0.5f), new Vector2(-22, -6), new Vector2(62, 62));
+                return;
+            }
+            var badge = UIKit.Panel(card, "swap", Art.Hex(0xFFD23F)).rectTransform;
+            badge.Place(new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-2, 8), new Vector2(84, 36));
+            UIKit.Outlined(UIKit.Label(badge, Loc.T("deck.swap_badge"), 22, Art.Hex(0x3B2412)), 1f).rectTransform.Stretch();
+        }
+
         void SendCard(RectTransform parent, SendDef def, Vector2 pos, System.Action onTap)
         {
             var btn = UIKit.Button(parent, def.id, "", new Color(0f, 0f, 0f, 0f), onTap);
@@ -221,6 +302,7 @@ namespace ZooDefense.Game
             var pill = Deco.Pill(c, null, def.cost + (def.oncePerMatch ? " · " + Loc.T("deck.once") : ""), 24);
             pill.Place(new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-4, 6), new Vector2(120, 44));
             pill.GetComponent<Image>().color = new Color(0.36f, 0.2f, 0.6f, 0.9f);
+            SwapBadge(btn.transform);
         }
 
         void SpellCard(RectTransform parent, SpellDef def, Vector2 pos, System.Action onTap)
@@ -236,6 +318,7 @@ namespace ZooDefense.Game
             else UIKit.Icon(orb, "core", Art.Diamond, color).rectTransform.Stretch(34, 34, 34, 34);
             UIKit.Label(c, Loc.T("spell." + def.id), 24, Palette.Text, TextAnchor.UpperLeft).rectTransform.Stretch(104, 4, 10, 60);
             Deco.Pill(c, "candy", def.cost.ToString(), 26).Place(new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-4, 6), new Vector2(120, 44));
+            SwapBadge(btn.transform);
         }
 
         static Color SpellColor(SpellKind k)
@@ -247,6 +330,10 @@ namespace ZooDefense.Game
                 case SpellKind.Gust: return Art.Hex(0x7CC48A);
                 case SpellKind.Rage: return Art.Hex(0xE5484D);
                 case SpellKind.CandyRain: return Art.Hex(0xFF7AC8);
+                case SpellKind.PoisonFog: return Art.Hex(0xA66BEB);
+                case SpellKind.StarMark: return Art.Hex(0xFFC54A);
+                case SpellKind.ShieldDome: return Art.Hex(0x5CC8EA);
+                case SpellKind.LuckyStar: return Art.Hex(0x5FD884);
                 default: return Art.Hex(0xFFD23F);
             }
         }
@@ -308,6 +395,13 @@ namespace ZooDefense.Game
 
             if (!unlocked) return;
 
+            // Talents (card level 9 / 12): pick a branch for each tier.
+            bool unpicked = TalentPopup.HasUnpicked(meta, unitId);
+            var talents = UIKit.ChunkyButton(box, "talents", TalentPopup.ButtonText(meta, unitId), unpicked ? Art.Hex(0x8A3FD1) : Palette.Panel, null, 30);
+            talents.GetComponent<RectTransform>().Place(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0, 286), new Vector2(860, 84));
+            talents.onClick.AddListener(() => { Modal.CloseFrom(talents.transform); TalentPopup.Open(App, unitId, () => { Rebuild(); }); });
+            if (unpicked) UIKit.Motion(talents.GetComponent<RectTransform>()).Pulse(0.04f, 4f);
+
             int needShards, needGold;
             if (meta.UpgradeCost(unitId, out needShards, out needGold))
             {
@@ -368,28 +462,36 @@ namespace ZooDefense.Game
 
         void SpellPopup(int slot)
         {
+            MarkSwapSeen();
             var content = App.Content;
             var profile = App.Profile;
             var current = content.Spell(profile.spells[slot]);
-            var box = Modal.Open(App, Loc.T("spell." + current.id), 1300);
-            UIKit.Label(box, Loc.T("spell." + current.id + ".desc"), 30, Palette.Text).rectTransform.Band(true, 90, 115, 40);
-            UIKit.Label(box, Loc.T("deck.spell_swap"), 28, Palette.TextDim).rectTransform.Band(true, 50, 210, 30);
+            int others = content.Spells.Count - profile.spells.Length;
+            var box = Modal.Open(App, Loc.T("spell." + current.id), Mathf.Min(1700, 330 + Mathf.Max(1, others) * 150), () => Rebuild());
+            UIKit.Label(box, Loc.T("spell." + current.id + ".desc"), 28, Palette.Text).rectTransform.Band(true, 80, 110, 40);
+            UIKit.Label(box, Loc.T("deck.spell_swap"), 28, Palette.Primary).rectTransform.Band(true, 44, 200, 30);
             int row = 0;
             foreach (var def in content.Spells)
             {
                 if (System.Array.IndexOf(profile.spells, def.id) >= 0) continue;
                 var d = def;
-                var btn = UIKit.Button(box, d.id, "", Palette.PanelDark, null, 28);
-                btn.GetComponent<RectTransform>().Band(true, 170, 270 + row * 185, 40);
+                var btn = UIKit.Button(box, d.id, "", Palette.PanelDark, null, 26);
+                btn.GetComponent<RectTransform>().Band(true, 138, 255 + row * 150, 40);
+                var color = SpellColor(d.kind);
+                var orb = UIKit.Icon(btn.transform, "orb", Art.Glow, Color.Lerp(color, Color.white, 0.4f)).rectTransform;
+                orb.Place(new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(8, 0), new Vector2(112, 112));
+                var art = Art.Icon("spell_" + d.id);
+                UIKit.Icon(orb, "core", art != null ? art : Art.Diamond, art != null ? Color.white : color).rectTransform.Stretch(art != null ? 14 : 32, art != null ? 14 : 32, art != null ? 14 : 32, art != null ? 14 : 32);
                 var t = btn.GetComponentInChildren<Text>();
                 t.alignment = TextAnchor.MiddleLeft;
                 t.text = Loc.T("spell." + d.id) + "  (" + Loc.F("deck.spell_cost", d.cost) + ")\n" + Loc.T("spell." + d.id + ".desc");
-                t.rectTransform.Stretch(24, 24, 8, 8);
+                t.rectTransform.Stretch(136, 18, 6, 6);
                 btn.onClick.AddListener(() =>
                 {
                     profile.spells[slot] = d.id;
                     App.SaveProfile();
                     App.Toast(Loc.T("deck.saved"));
+                    Modal.CloseFrom(box);
                     Rebuild();
                 });
                 row++;
@@ -398,33 +500,44 @@ namespace ZooDefense.Game
 
         void SendPopup(int slot)
         {
+            MarkSwapSeen();
             var content = App.Content;
             var profile = App.Profile;
             var current = content.Send(profile.sendDeck[slot]);
-            var box = Modal.Open(App, Loc.SendName(current), 1100);
-            UIKit.Label(box, Loc.T("deck.send_swap"), 32, Palette.TextDim).rectTransform.Band(true, 50, 115, 30);
+            int others = PickableSends() - profile.sendDeck.Length;
+            var box = Modal.Open(App, Loc.SendName(current), Mathf.Min(1700, 330 + Mathf.Max(1, others) * 150), () => Rebuild());
+            UIKit.Label(box, Loc.T("send." + current.id + ".desc") + "\n" + SendInfo(current), 26, Palette.Text).rectTransform.Band(true, 80, 110, 40);
+            UIKit.Label(box, Loc.T("deck.send_swap"), 28, Palette.Primary).rectTransform.Band(true, 44, 200, 30);
             int row = 0;
             foreach (var def in content.Sends)
             {
-                if (System.Array.IndexOf(profile.sendDeck, def.id) >= 0) continue;
+                if (def.cost <= 0 || System.Array.IndexOf(profile.sendDeck, def.id) >= 0) continue;
                 var d = def;
                 var btn = UIKit.Button(box, d.id, "", Palette.PanelDark, null);
-                btn.GetComponent<RectTransform>().Band(true, 150, 190 + row * 170, 40);
+                btn.GetComponent<RectTransform>().Band(true, 138, 255 + row * 150, 40);
                 var art = Art.Enemy(d.enemyId);
                 var icon = UIKit.Icon(btn.transform, "icon", art != null ? art : Art.Diamond, art != null ? Color.white : Palette.Candy);
-                icon.rectTransform.Place(new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(14, 0), new Vector2(120, 120));
-                UIKit.Label(btn.transform, Loc.F("deck.send_label", Loc.SendName(d), d.cost, d.oncePerMatch ? Loc.T("deck.once") : ""), 32, Palette.Text, TextAnchor.MiddleLeft)
-                    .rectTransform.Stretch(150, 20, 0, 0);
+                icon.rectTransform.Place(new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(10, 0), new Vector2(116, 116));
+                UIKit.Label(btn.transform, Loc.SendName(d) + "  ·  " + SendInfo(d) + "\n" + Loc.T("send." + d.id + ".desc"), 24, Palette.Text, TextAnchor.MiddleLeft).rectTransform.Stretch(140, 18, 4, 4);
                 btn.onClick.AddListener(() =>
                 {
                     profile.sendDeck[slot] = d.id;
                     App.SaveProfile();
                     App.Toast(Loc.T("deck.saved"));
+                    Modal.CloseFrom(box);
                     Rebuild();
                 });
                 row++;
             }
-            if (row == 0) UIKit.Label(box, Loc.T("deck.no_other_sends"), 34, Palette.TextDim).rectTransform.Band(true, 80, 200, 30);
+            if (row == 0) UIKit.Label(box, Loc.T("deck.no_other_sends"), 34, Palette.TextDim).rectTransform.Band(true, 80, 260, 30);
+        }
+
+        /// <summary>"3 monsters · 35 candy · +6 candy per wave · Grass" (+ "once per match").</summary>
+        string SendInfo(SendDef d)
+        {
+            string s = Loc.F("deck.send_info", d.count, d.cost, d.income) + " · " + Loc.ElementName(d.element);
+            if (d.oncePerMatch) s += " · " + Loc.T("deck.once");
+            return s;
         }
     }
 }

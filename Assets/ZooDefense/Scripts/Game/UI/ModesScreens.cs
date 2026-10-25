@@ -53,7 +53,7 @@ namespace ZooDefense.Game
         {
             var rule = GameCalendar.MayhemOfWeek(GameCalendar.WeekIndex(app.Now));
             int seed = NewSeed();
-            var cfg = new BattleConfig { seed = seed, rules = MatchRules.MayhemOf(rule), difficulty = 1, opponentName = MetaRules.RandomBotName(seed) };
+            var cfg = new BattleConfig { seed = seed, rules = MatchRules.MayhemOf(rule, GameCalendar.WeekIndex(app.Now)), difficulty = 1, opponentName = MetaRules.RandomBotName(seed) };
             if (rule == MayhemRule.Mirror)
             {
                 // Same random deck and card levels for both: pure skill.
@@ -236,7 +236,10 @@ namespace ZooDefense.Game
             Section(Loc.T("modes.versus"));
             bool weekend = GameCalendar.IsWeekend(now);
             var rule = GameCalendar.MayhemOfWeek(GameCalendar.WeekIndex(now));
-            ModeCard(MatchMode.Mayhem, Loc.T("mode.mayhem") + " · " + Loc.T("mayhem." + (int)rule), Loc.T("mayhem_desc." + (int)rule),
+            string mayhemDesc = rule == MayhemRule.MonoElement
+                ? Loc.F("mayhem_desc.7", Loc.T("element." + GameCalendar.ElementOfWeek(GameCalendar.WeekIndex(now)).ToString().ToLowerInvariant()))
+                : Loc.T("mayhem_desc." + (int)rule);
+            ModeCard(MatchMode.Mayhem, Loc.T("mode.mayhem") + " · " + Loc.T("mayhem." + (int)rule), mayhemDesc,
                 weekend ? Loc.F("mode.mayhem_wins", s.mayhemWins) : Loc.F("mode.opens_in", Fmt.Duration(OpensIn(now))),
                 Loc.T("mode.play"), weekend, () => ModeLauncher.Mayhem(App), false);
             ModeCard(MatchMode.Tournament, Loc.T("mode.tournament"), Loc.F("mode.tournament_desc", TournamentRules.CardLevel),
@@ -557,7 +560,9 @@ namespace ZooDefense.Game
             var next = UIKit.ChunkyButton(Root, "next", Loc.T("result.continue"), Art.Hex(0xFFB020), Continue, 44, "button_battle");
             next.GetComponent<RectTransform>().Place(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(260, 120), new Vector2(480, 150));
             var watch = UIKit.ChunkyButton(Root, "watch", Loc.T("replay.watch"), Palette.Purple, () => { var list = ReplayStore.Load(); if (list.Count > 0) ModeLauncher.Replay(App, list[0]); }, 30);
-            watch.GetComponent<RectTransform>().Place(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0, 300), new Vector2(360, 96));
+            watch.GetComponent<RectTransform>().Place(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-195, 300), new Vector2(360, 96));
+            var stats = UIKit.ChunkyButton(Root, "stats", Loc.T("stats.button"), Palette.Blue, () => MatchStats.Show(App, _record, _summary.localPlayer), 30);
+            stats.GetComponent<RectTransform>().Place(new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(195, 300), new Vector2(360, 96));
         }
 
         void Continue()
@@ -574,7 +579,7 @@ namespace ZooDefense.Game
     /// <summary>Last matches kept on the device for replay viewing (the command log replays the match exactly).</summary>
     public static class ReplayStore
     {
-        const string Key = "zoo_replays_v1";
+        const string Key = "zoo_replays_v10";   // v10: evolve price (older command logs replay differently)
         public const int Max = 5;
 
         [Serializable]
@@ -585,6 +590,8 @@ namespace ZooDefense.Game
             public int result;     // 0 win, 1 loss, -1 draw
             public long time;
             public int mode;
+            /// <summary>Our board in the record (1 = online guest).</summary>
+            public int local;
         }
 
         [Serializable] class Box { public List<Entry> items = new List<Entry>(); }
@@ -601,13 +608,13 @@ namespace ZooDefense.Game
             catch { return new List<Entry>(); }
         }
 
-        public static void Add(MatchRecord record, string opponent, int result, long time)
+        public static void Add(MatchRecord record, string opponent, int result, long time, int local = 0)
         {
             try
             {
                 var list = Load();
                 int mode = record.setup != null && record.setup.rules != null ? (int)record.setup.rules.mode : 0;
-                list.Insert(0, new Entry { record = record, opponent = opponent, result = result, time = time, mode = mode });
+                list.Insert(0, new Entry { record = record, opponent = opponent, result = result, time = time, mode = mode, local = local });
                 while (list.Count > Max) list.RemoveAt(list.Count - 1);
                 PlayerPrefs.SetString(Key, JsonUtility.ToJson(new Box { items = list }));
                 PlayerPrefs.Save();

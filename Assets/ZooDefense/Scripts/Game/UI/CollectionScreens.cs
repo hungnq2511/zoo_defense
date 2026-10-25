@@ -220,12 +220,13 @@ namespace ZooDefense.Game
                 var c = Card(190, BattleScreen.ModeColor(mode));
                 string res = Loc.T(e.result == 0 ? "result.victory" : (e.result == 1 ? "result.defeat" : "result.draw"));
                 string modeName = mode == MatchMode.Versus ? Loc.T("mode.versus") : Loc.T("mode." + mode.ToString().ToLowerInvariant());
-                Label(c, modeName + " · " + res, 32, e.result == 0 ? Palette.Green : Palette.Text, TextAnchor.UpperLeft).rectTransform.Stretch(24, 300, 14, 110);
+                Label(c, modeName + " · " + res, 32, e.result == 0 ? Palette.Green : Palette.Text, TextAnchor.UpperLeft).rectTransform.Stretch(24, 540, 14, 110);
                 string vs = e.opponent == "-" ? "" : Loc.F("tournament.vs", e.opponent) + " · ";
                 int seconds = e.record != null ? e.record.finalTick / 20 : 0;
                 Label(c, vs + Loc.F("replay.length", seconds / 60, (seconds % 60).ToString("00")) + " · " + Fmt.Duration(Math.Max(0, App.Now - e.time)) + " " + Loc.T("replay.ago"), 24, Palette.TextDim, TextAnchor.LowerLeft)
-                    .rectTransform.Stretch(24, 300, 80, 18);
+                    .rectTransform.Stretch(24, 540, 80, 18);
                 Btn(c, Loc.T("replay.watch"), Palette.Purple, () => ModeLauncher.Replay(App, e), new Vector2(-16, 36), new Vector2(260, 110), 32);
+                Btn(c, Loc.T("stats.button"), Palette.Blue, () => MatchStats.Show(App, e.record, e.local), new Vector2(-290, 36), new Vector2(230, 110), 28);
             }
             Done();
         }

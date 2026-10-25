@@ -31,7 +31,7 @@ result.gold_doubled	Ouro dobrado!
 result.continue	CONTINUAR
 deck.title	DECK
 deck.counter	Animais {0}/5     Monstros de envio {1}/4
-deck.sends_title	MONSTROS DE ENVIO (escolha 4)
+deck.sends_title	MONSTROS DE ENVIO
 deck.send_label	{0}\n{1} pts{2}
 deck.once	 (uma vez)
 deck.hint	Toque em um animal para adicionar ou remover.
@@ -78,9 +78,15 @@ status.2	Silenciado
 status.3	Congelado
 status.4	Armadura quebrada
 status.5	Marcado
+status.6	Maremoto
+status.7	Encantado
 ability.1	Tambores!
 ability.2	Enfurecido!
 ability.3	Arrancada!
+ability.4	Cavar!
+ability.5	Curar!
+ability.6	Névoa!
+ability.7	Sumir!
 ability.104	Sobrecarga!
 guide.title	ELEMENTOS
 guide.button	Elementos
@@ -336,6 +342,21 @@ skill.nectarhaste	+{0}% de velocidade de ataque para os 3 atacantes mais próxim
 skill.rootarea	Enraíza os monstros de uma área por 0,6 s (Nv4: 0,75 s, uma vez a cada 4 s cada). Chefes ficam lentos em vez disso
 skill.silence	A cada 4º golpe silencia o alvo por 1 s: sem habilidades nem aceleração. Chefes: metade
 skill.aegisguard	Protege os {0} aliados mais próximos: +{1}% de dano e bloqueia 1 atordoamento / trava de casa. Nv4: +1 aliado. Nv7: bloqueia 2
+skill.starfall	A cada 6.º ataque, 2 estrelas cadentes (Nv4: 3) caem nos maiores grupos, {0}% de dano cada. Nv7: a cada 4.º ataque
+skill.tidallance	+{1}% de dano em monstros acima da metade da vida. A cada 5.º ataque, um maremoto atinge todo o caminho atrás do alvo ({0}%). Nv4: onda maior. Nv7: a cada 4.º
+skill.solarflare	Os golpes queimam e acumulam ({0} por pulso), o fogo pula para 1 vizinho (Nv7: 2). +{1}% de dano em monstros em chamas. Nv4: queima por mais tempo
+skill.worldtree	+{0} doces por nível a cada onda. A cada 4 ondas: +1 nível a um aliado aleatório (Nv7: a cada 3). Nv4: protege 2 aliados (+{1}% de dano, bloqueia 1 atordoamento / trava)
+skill.starcharm	Desacelera {1}%. A cada 4.º golpe encanta o alvo: ele anda para trás por 0,7 s (chefes: desacelerados). Nv4: encanta mais 1. Nv7: a cada 3.º golpe
+skill.chainlightning	O raio salta para mais {0} monstros (Nv4: +1) com {1}% de dano. Nv7: monstros atingidos ficam atordoados por um instante
+skill.glacierhowl	Desacelera {1}%. A cada 5.º ataque, um uivo congela os monstros ao redor do alvo por 0,6 s (Nv4: 0,8 s; chefes: desacelerados). Nv7: a cada 4.º
+skill.magmacharge	A cada 4.º ataque, uma investida: explosão bem maior, +{0}% de dano, empurra os monstros (exceto chefes). Nv4: empurrão mais forte. Nv7: a explosão queima
+skill.bloomdisplay	A cada 4 s: +{0}% de velocidade de ataque (Nv4: +5%) e +{1}% de dano aos 4 atacantes mais próximos. Nv7: 6 aliados
+skill.crystalroll	Quebra {0}% da armadura (Nv4: +10%). +{1}% de dano em monstros blindados, elites e chefes. Nv7: a cada 3.ª rolada, 50% mais larga
+skill.lanternglow	Revela monstros invisíveis ao redor do alvo. Desacelera {0}% e marca +{1}% de dano recebido (Nv4: +5%). Nv7: a cada 5.º golpe, atordoa
+skill.tigerpounce	+{0}% de dano em monstros enviados. A cada 4.º ataque, um bote de dano dobrado (Nv4: também acerta um vizinho). Nv7: a cada 3.º
+skill.bamboocombo	+{0}% de dano para cada golpe seguido no mesmo monstro (máx. 5, Nv4: 6, Nv7: 8). Nv7: a cada 6.º golpe ataca duas vezes
+skill.cometshower	Cada ataque também lança {0} cometa (Nv4: +1, Nv7: +1) em outro monstro, {1}% de dano em área
+skill.bubbletrap	Desacelera {0}%. A cada 4.º golpe prende o alvo numa bolha: atordoado por 0,8 s (Nv4: 1 s; chefes: desacelerados) e recebe +15% de dano
 arena.1	Campo Verdejante
 arena.2	Floresta Profunda
 arena.3	Vulcão
@@ -345,7 +366,7 @@ shop.free_tag	GRÁTIS
 shop.best_value	MELHOR PREÇO
 shop.popular	POPULAR
 shop.save_10	ECONOMIZE 10%
-shop.legendary_chance	LENDÁRIO!
+shop.legendary_chance	CHANCE SSS!
 pass.tier_short	NÍVEL
 pass.unlock_premium	Liberar Premium
 lobby.pass_short	Passe {0}/{1}
@@ -478,7 +499,30 @@ reject.not_ready	Habilidade carregando
 reject.no_target	Sem alvo
 reject.invalid_cell	Não dá para colocar aí
 reject.not_on_board	Invoque este animal primeiro - as melhorias só funcionam em animais do seu zoo
-deck.spells_title	Feitiços do tratador (toque para trocar)
+deck.spells_title	FEITIÇOS DO TRATADOR
+deck.swap_hint	Toque numa carta para trocar · usando {0} de {1}
+send.rat_rush.desc	Muito rápido e barato. Bom para subir a renda cedo.
+send.sneaky_ghost.desc	Invisível: só animais que veem o oculto o acertam até ser revelado.
+send.shield_turtle.desc	Muito resistente e sofre 50% menos dano em área.
+send.candy_crow.desc	Rouba 30 doces se chegar ao portão.
+send.brick_golem.desc	Resistente. Ao morrer trava uma casa deles por um tempo.
+send.mini_king.desc	Um minichefe que chama ratinhos. Uma vez por partida.
+send.twin_slime.desc	Ao morrer se divide em 2 slimes menores.
+send.digger_mole.desc	Cava a cada poucos segundos: aí os animais não o acertam.
+send.healer_shroom.desc	Cura os monstros ao redor a cada 2 segundos.
+send.fog_wisp.desc	Invisível, e esconde os monstros ao redor de novo e de novo.
+send.bomb_beetle.desc	Ao morrer explode e atordoa 2 animais deles por 1 s.
+send.pixie_swarm.desc	Seis fadinhas minúsculas e muito rápidas. Ruim para decks de alvo único.
+deck.swap_badge	TROCAR
+deck.send_info	{0} monstros · {1} doces · +{2} renda/onda
+spell.poison_fog	Névoa Venenosa
+spell.poison_fog.desc	Uma nuvem venenosa: monstros na área sofrem dano por 3 segundos e ficam 25% mais lentos.
+spell.star_mark	Marca Estelar
+spell.star_mark.desc	Marca todos os monstros na área: +30% de dano recebido por 4 segundos. Também revela os invisíveis.
+spell.shield_dome	Cúpula Escudo
+spell.shield_dome.desc	Protege todos os seus animais por 6 segundos: +15% de dano e bloqueia 1 atordoamento / trava. Sem mirar.
+spell.lucky_star	Estrela da Sorte
+spell.lucky_star.desc	+1 nível ao seu animal de menor nível. Sem mirar.
 deck.spell_cost	{0} doces
 deck.spell_swap	Escolha um feitiço para este espaço
 tutorial.spell	Feitiços! Toque em Meteoro ou Congelar ao lado de INVOCAR e depois toque no caminho onde os inimigos se juntam.
@@ -549,13 +593,13 @@ shop.sold	Vendido
 shop.gold_price	{0} de ouro
 shop.gems_price	{0} gemas
 shop.gacha	Invocação de animais
-shop.gacha_text	Invoque fragmentos de animais. Toda tiragem pode ser Lendária!
-shop.pity	Lendário garantido em até {0} tiragens
+shop.gacha_text	Invoque fragmentos. Todo giro pode ser SSS!
+shop.pity	Rank S ou melhor em {0} giros
 shop.pull1	x1  {0} gemas
 shop.pull10	x10  {0} gemas
 shop.rates	Chances
 shop.rate_line	{0}: {1}%  ({2} fragmentos)
-shop.pity_rule	Um Lendário é garantido pelo menos uma vez a cada {0} tiragens.
+shop.pity_rule	Um rank S (ou melhor) garantido pelo menos uma vez a cada {0} giros.
 shop.chests	Baús
 shop.chest_info	{0}+ fragmentos, {1}+ de ouro
 shop.gold	Ouro
@@ -712,7 +756,50 @@ unit.nectar_bee	Abelha néctar
 unit.sprout_elephant	Elefante broto
 unit.moon_moth	Mariposa lunar
 unit.aegis_ram	Carneiro Égide
+unit.celestial_qilin	Qilin Celestial
+unit.abyss_leviathan	Leviatã do Abismo
+unit.solar_lion	Leão Solar
+unit.worldtree_tortoise	Tartaruga Árvore-Mundo
+unit.ninetail_star_fox	Raposa Estelar de Nove Caudas
+unit.thunder_griffin	Grifo do Trovão
+unit.glacier_wolf	Lobo Glacial
+unit.magma_rhino	Rinoceronte de Magma
+unit.bloom_peacock	Pavão Florido
+unit.crystal_pangolin	Pangolim de Cristal
+unit.lantern_jellyfish	Água-viva Lanterna
+unit.flame_tiger_cub	Filhote de Tigre Flamejante
+unit.bamboo_red_panda	Panda-vermelho do Bambu
+unit.comet_hamster	Hamster Cometa
+unit.puddle_duckling	Patinho da Poça
+unit.sprout_anteater	Tamanduá Broto
+unit.leaf_okapi	Ocapi Folha
+unit.moss_kiwi	Kiwi de Musgo
+unit.bloom_snail	Caracol Florido
+unit.drop_platypus	Ornitorrinco Gota
+unit.brook_moose	Alce do Riacho
+unit.frost_bear	Filhote Polar Gelado
+unit.river_otter	Lontra do Rio
+unit.moon_lemur	Lêmure Lunar
+unit.star_eagle	Águia Estelar
+unit.sun_alpaca	Alpaca Solar
+unit.prism_hummingbird	Beija-flor Prisma
+unit.ember_devil	Diabo Brasa
+unit.blaze_bison	Bisão Flamejante
+unit.torch_toucan	Tucano Tocha
+unit.chili_chameleon	Camaleão Pimenta
 enemy.slime	Gosma
+enemy.spore_puff	Bufa de Esporos
+enemy.dash_lizard	Lagarto Veloz
+enemy.pebble_golem	Golem de Seixos
+enemy.shadow_blob	Bolha Sombria
+enemy.balloon_bat	Morcego Balão
+enemy.shield_beetle	Besouro Escudo
+enemy.send_splitter	Slime Gêmeo
+enemy.send_mole	Toupeira Escavadora
+enemy.send_mushroom	Cogumelo Curandeiro
+enemy.send_wisp	Fogo-fátuo Nebuloso
+enemy.send_bomb	Besouro Bomba
+enemy.send_pixies	Fadinha
 enemy.imp	Diabrete
 enemy.rock_beetle	Besouro rocha
 enemy.armored_knight	Cavaleiro blindado
@@ -732,6 +819,12 @@ enemy.armored_scorpion	Escorpião blindado
 enemy.clockwork_gorilla	Gorila mecânico
 enemy.void_hermit_crab	Ermitão do vazio
 send.rat_rush	Corrida de ratos
+send.twin_slime	Slime Gêmeo
+send.digger_mole	Toupeira Escavadora
+send.healer_shroom	Cogumelo Curandeiro
+send.fog_wisp	Fogo-fátuo Nebuloso
+send.bomb_beetle	Besouro Bomba
+send.pixie_swarm	Enxame de Fadinhas
 send.sneaky_ghost	Fantasma sorrateiro
 send.shield_turtle	Tartaruga escudo
 send.candy_crow	Corvo de doces
@@ -819,3 +912,90 @@ notify.login	Seu presente do dia {0} está esperando!
 notify.monthly	As gemas do seu cartão mensal estão prontas.
 notify.comeback	Os monstros voltaram! Seus animais precisam de você.
 notify.missions	Novas missões chegaram!
+stats.button	Estatísticas
+stats.title	Estatísticas
+stats.you	{0} (você)
+stats.total	Dano {0}
+stats.line	Envios tiraram {0} corações · Fusões {1} · Feitiços {2}
+stats.spells	Feitiços
+stats.none	Sem dano
+stats.mvp	MVP
+reject.sends_locked	Envios liberam após a primeira onda
+battle.send_unlock	Onda {0}
+talent.1	Caçador de chefes
+talent_desc.1	+90% de dano a elites e chefes.
+talent.2	Interceptador
+talent_desc.2	+50% de dano a monstros enviados pelo rival.
+talent.3	Crítico
+talent_desc.3	A cada 3 ataques, um causa dano dobrado.
+talent.4	Mestre do contra
+talent_desc.4	Golpes que contra-atacam o elemento causam +75%.
+talent.5	Explosão ampla
+talent_desc.5	Raio de área +30%.
+talent.6	Foco
+talent_desc.6	+35% de dano ao alvo principal.
+talent.7	Fumaça gelada
+talent_desc.7	Cada golpe desacelera 12% por 1 s.
+talent.8	Estilhaçar
+talent_desc.8	Cada golpe quebra 12% de armadura por 2 s.
+talent.9	Persistente
+talent_desc.9	Lentidão e atordoamento duram 60% mais.
+talent.10	Ferrão
+talent_desc.10	+25% de dano.
+talent.11	Flagelo de chefes
+talent_desc.11	Atordoamento completo em chefes, +20% de dano a chefes.
+talent.12	Marca
+talent_desc.12	Monstros atingidos recebem +7% de dano por 2 s.
+talent.13	Generoso
+talent_desc.13	+3 doces por nível a cada onda.
+talent.14	Firme
+talent_desc.14	Chefes não podem atordoá-lo nem bloquear sua casa.
+talent.15	Torcida
+talent_desc.15	Animais vizinhos causam +10% de dano.
+talent.16	Carga rápida
+talent_desc.16	A habilidade ativa carrega 30% mais rápido.
+talent.title	{0}: talentos
+talent.intro	Escolha um ramo por nível para este animal de {0}. Troque grátis fora da partida.
+talent.tier	Nível {0}
+talent.tier_locked	Nível {0} · carta nível {1}
+talent.need_level	Precisa da carta nível {0}
+talent.selected	Em uso
+talent.pick	Toque para escolher
+talent.locked	Bloqueado
+talent.button	Talentos {0}/{1}
+talent.button_locked	Talentos · no nível {0}
+battle.hex	Feitiço
+battle.hex_pending	Ativo
+battle.hex_title	Enfeitiçar a próxima onda de {0} · {1} doces
+battle.hex_hint	Todos os monstros normais da próxima onda deles terão o elemento escolhido. Eles são avisados.
+battle.hex_their_damage	Dano deles: {0}%
+battle.hexed	{0} te enfeitiçou: próxima onda toda {1}!
+battle.hex_cast	Enfeitiçado: a próxima onda deles é {0}
+battle.hex_wave	Onda enfeitiçada: monstros {0}
+battle.sold	+{0} doces
+battle.target	Alvo:\n{0}
+battle.sell	Vender
+battle.sell_confirm	Certeza?
+battle.talents	Talentos: {0}
+target.0	Primeiro
+target.1	Grupo
+target.2	Mais forte
+target.3	Enviados
+reject.already_hexed	A próxima onda deles já está enfeitiçada
+reject.hex_locked	Feitiço libera na onda 3
+mayhem.5	Blitz
+mayhem.6	Corrida de chefes
+mayhem.7	Elemento único
+mayhem.8	Guerra de feitiços
+mayhem_desc.5	Monstros 40% mais rápidos, ondas curtas, +50% de doces iniciais.
+mayhem_desc.6	Um chefe a cada 2 ondas, prêmio do duelo em dobro, morte súbita mais cedo.
+mayhem_desc.7	Nesta semana todo monstro é {0} (+50% no contra). Monte seu deck!
+mayhem_desc.8	Feitiço de elemento a partir da onda 2 pela metade do preço.
+rank.name	Rank {0}
+shop.pity_high	SS em {0} giros · SSS em {1} giros
+shop.pity_rule_ss	Um SS garantido pelo menos uma vez a cada {0} giros.
+shop.pity_rule_sss	Um SSS garantido pelo menos uma vez a cada {0} giros.
+battle.aura	Aura rank {0}: equipe toda +{1}% de dano
+battle.aura_full	Aura rank {0}: equipe toda +{1}% de dano, +{2}% de velocidade
+battle.evolve	Evoluir
+battle.evolved	Evoluiu para o nível {0}!

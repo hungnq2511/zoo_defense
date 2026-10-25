@@ -18,6 +18,7 @@ namespace ZooDefense.Game
         public string[] deck;
         public string[] sendDeck;
         public int[] levels;
+        public int[] talents;
         public string[] spells;
         /// <summary>Hidden rating (pairing and Elo).</summary>
         public int mmr;
@@ -105,13 +106,13 @@ namespace ZooDefense.Game
                 content = ContentFingerprint(app.Content),
                 name = p.playerName, title = app.Meta.State.title, trophies = app.Meta.State.trophies, mmr = app.Meta.State.mmr,
                 deck = (string[])p.deck.Clone(), sendDeck = (string[])p.sendDeck.Clone(),
-                levels = app.Meta.DeckLevels(p.deck), spells = (string[])p.spells.Clone(),
+                levels = app.Meta.DeckLevels(p.deck), talents = app.Meta.DeckTalents(p.deck), spells = (string[])p.spells.Clone(),
             };
         }
 
         public static PlayerSetup ToSetup(OnlineHello h)
         {
-            return new PlayerSetup { name = h.name, deck = h.deck, sendDeck = h.sendDeck, cardLevels = h.levels, spells = h.spells };
+            return new PlayerSetup { name = h.name, deck = h.deck, sendDeck = h.sendDeck, cardLevels = h.levels, talents = h.talents, spells = h.spells };
         }
 
         // ------------------------------------------------------------------ message helpers (JSON inside a typed packet)

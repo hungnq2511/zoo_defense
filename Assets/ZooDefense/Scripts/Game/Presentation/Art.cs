@@ -36,6 +36,11 @@ namespace ZooDefense.Game
 
         public static void ClearCache() { _cache.Clear(); _walks = null; _casts.Clear(); }
 
+        /// <summary>In-battle level (1-7) -> art look (1, 4 or 7): the look changes at level 3 and level 5.</summary>
+        public const int Look4FromLevel = 3, Look7FromLevel = 5;
+        public static int BattleLook(int level) { return level >= Look7FromLevel ? 7 : (level >= Look4FromLevel ? 4 : 1); }
+
+        /// <summary>Animal art for a look tier (1, 4 or 7; any value >= 4 / >= 7 picks that tier). In battle pass BattleLook(level).</summary>
         public static Sprite Unit(string unitId, int level)
         {
             if (level >= 7) { var s7 = Load("ZooArt/Units/" + unitId + "_7"); if (s7 != null) return s7; }
@@ -45,6 +50,17 @@ namespace ZooDefense.Game
         }
 
         public static Sprite Enemy(string enemyId) { return Load("ZooArt/Enemies/" + enemyId); }
+
+        /// <summary>
+        /// Monsters drawn in side view facing RIGHT: they are mirrored on lanes that go left so they never walk
+        /// backwards. Older monsters are drawn facing the viewer and are left as they are.
+        /// </summary>
+        static readonly HashSet<string> _facesRight = new HashSet<string>
+        {
+            "send_splitter", "send_mole", "send_mushroom", "send_wisp", "send_bomb", "send_pixies",
+            "spore_puff", "dash_lizard", "pebble_golem", "shadow_blob", "balloon_bat", "shield_beetle",
+        };
+        public static bool EnemyFacesRight(string enemyId) { return enemyId != null && _facesRight.Contains(enemyId); }
 
         // ------------------------------------------------------------------ enemy walk sheets
 
@@ -155,6 +171,8 @@ namespace ZooDefense.Game
         /// <summary>Loading / matchmaking artwork (portrait, sky at the top left empty for the logo).</summary>
         public static Sprite Loading() { return Load("ZooArt/Backgrounds/loading"); }
         public static Sprite Icon(string name) { return Load("ZooArt/UI/" + name); }
+        /// <summary>Optional rank art: ZooArt/UI/rank_{c|b|a|s|ss|sss}.png (2:1, transparent). Null = draw the letter in code.</summary>
+        public static Sprite RankIcon(Rarity r) { return Icon("rank_" + RarityLetter(r).ToLowerInvariant()); }
 
         // ------------------------------------------------------------------ colours
 
@@ -170,15 +188,32 @@ namespace ZooDefense.Game
             }
         }
 
+        /// <summary>Tier colours: C grey, B blue, A purple, S gold, SS crimson, SSS aqua (shown with a rainbow shimmer).</summary>
         public static Color RarityColor(Rarity r)
         {
-            switch (r)
+            switch ((int)r)
             {
-                case Rarity.Rare: return Hex(0x4D9DFF);
-                case Rarity.Epic: return Hex(0xB46BFF);
-                case Rarity.Legendary: return Hex(0xFFB020);
+                case 1: return Hex(0x4D9DFF);
+                case 2: return Hex(0xB46BFF);
+                case 3: return Hex(0xFFB020);
+                case 4: return Hex(0xFF3D6E);
+                case 5: return Hex(0x34F0D8);
                 default: return Hex(0xB9C3CF);
             }
+        }
+
+        /// <summary>Tier letters C, B, A, S, SS, SSS.</summary>
+        public static string RarityLetter(Rarity r)
+        {
+            switch ((int)r) { case 1: return "B"; case 2: return "A"; case 3: return "S"; case 4: return "SS"; case 5: return "SSS"; default: return "C"; }
+        }
+
+        /// <summary>Animated colour for SSS (cycles through the rainbow); other tiers return their fixed colour.</summary>
+        public static Color RarityColorAnimated(Rarity r, float time)
+        {
+            if ((int)r < 5) return RarityColor(r);
+            var c = Color.HSVToRGB(Mathf.Repeat(time * 0.25f, 1f), 0.55f, 1f);
+            return c;
         }
 
         public static string ElementName(Element e)

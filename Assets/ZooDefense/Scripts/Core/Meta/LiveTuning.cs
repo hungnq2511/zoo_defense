@@ -15,7 +15,8 @@ namespace ZooDefense.Core
     public sealed class LiveTuning
     {
         /// <summary>Ranked search: seconds before a bot match is offered instead of a real player.</summary>
-        public float botWaitSeconds = 10f;
+        public const float MaxBotWaitSeconds = 6f;
+        public float botWaitSeconds = 6f;
         /// <summary>Online match: how long a dropped player has to come back before the match is lost.</summary>
         public float reconnectSeconds = 20f;
         /// <summary>Full-screen ads: first after this many matches, then every N matches, at least this many seconds apart.</summary>
@@ -35,7 +36,8 @@ namespace ZooDefense.Core
         {
             var t = new LiveTuning();
             if (cfg == null) return t;
-            t.botWaitSeconds = Clamp((float)MiniJson.Num(cfg, "bot_wait_seconds", t.botWaitSeconds), 3f, 60f);
+            // Capped at 6 s (Oct 2026): an old Remote Config value (10 s) must not bring back the long wait.
+            t.botWaitSeconds = Clamp((float)MiniJson.Num(cfg, "bot_wait_seconds", t.botWaitSeconds), 3f, MaxBotWaitSeconds);
             t.reconnectSeconds = Clamp((float)MiniJson.Num(cfg, "reconnect_seconds", t.reconnectSeconds), 5f, 60f);
             t.adFirstAfter = Math.Max(0, Math.Min(50, MiniJson.Int(cfg, "ad_first_after", t.adFirstAfter)));
             t.adEvery = Math.Max(1, Math.Min(50, MiniJson.Int(cfg, "ad_every", t.adEvery)));

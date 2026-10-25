@@ -180,6 +180,7 @@ namespace ZooDefense.Tests
             var m = NewMatch();
             var a = m.Boards[0];
             var b = m.Boards[1];
+            while (m.Wave < m.Balance.sendUnlockWave) m.Step();   // sends unlock at wave 2
             m.Submit(new Command(m.Tick, 1, CommandType.SendMonster, 0));
             m.Step();
             Assert.AreEqual(1, a.IncomingSends.Count, "B's send travels to A");

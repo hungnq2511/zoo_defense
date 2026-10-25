@@ -31,7 +31,7 @@ result.gold_doubled	Gold verdoppelt!
 result.continue	WEITER
 deck.title	DECK
 deck.counter	Tiere {0}/5     Schick-Monster {1}/4
-deck.sends_title	SCHICK-MONSTER (wähle 4)
+deck.sends_title	SCHICK-MONSTER
 deck.send_label	{0}\n{1} Pkt.{2}
 deck.once	 (einmal)
 deck.hint	Tippe auf ein Tier, um es hinzuzufügen oder zu entfernen.
@@ -78,9 +78,15 @@ status.2	Verstummt
 status.3	Eingefroren
 status.4	Rüstungsbruch
 status.5	Markiert
+status.6	Flutwelle
+status.7	Bezaubert
 ability.1	Trommeln!
 ability.2	Wütend!
 ability.3	Sprint!
+ability.4	Eingraben!
+ability.5	Heilen!
+ability.6	Nebel!
+ability.7	Verblassen!
 ability.104	Overdrive!
 guide.title	ELEMENTE
 guide.button	Elemente
@@ -336,6 +342,21 @@ skill.nectarhaste	+{0}% Angriffstempo für die 3 nächsten Angreifer (St4: {1}%)
 skill.rootarea	Wurzelt Monster in einer Fläche für 0,6 s fest (St4: 0,75 s, je einmal pro 4 s). Bosse werden stattdessen verlangsamt
 skill.silence	Jeder 4. Treffer lässt das Ziel 1 s verstummen: keine Fähigkeiten, keine Beschleunigung. Bosse: halb
 skill.aegisguard	Schützt die {0} nächsten Verbündeten: +{1}% Schaden und blockt 1 Betäubung / Feldsperre. St4: +1 Verbündeter. St7: blockt 2
+skill.starfall	Jeder 6. Angriff ruft 2 Sternschnuppen (St4: 3) auf die größten Gruppen, je {0}% Schaden. St7: jeder 4. Angriff
+skill.tidallance	+{1}% Schaden gegen Monster über halber LP. Jeder 5. Angriff: eine Flutwelle trifft die ganze Bahn hinter dem Ziel ({0}%). St4: längere Welle. St7: jeder 4.
+skill.solarflare	Treffer brennen gestapelt ({0} pro Puls), das Feuer springt auf 1 Nachbarn über (St7: 2). +{1}% Schaden gegen brennende Monster. St4: brennt länger
+skill.worldtree	+{0} Bonbons pro Stufe jede Welle. Alle 4 Wellen: +1 Stufe für einen zufälligen Verbündeten (St7: alle 3). St4: schützt 2 Verbündete (+{1}% Schaden, blockt 1 Betäubung / Sperre)
+skill.starcharm	Verlangsamt um {1}%. Jeder 4. Treffer bezaubert: das Monster läuft 0,7 s rückwärts (Bosse: verlangsamt). St4: 1 weiteres. St7: jeder 3. Treffer
+skill.chainlightning	Blitz springt auf {0} weitere Monster (St4: +1) mit {1}% Schaden. St7: getroffene Monster werden kurz betäubt
+skill.glacierhowl	Verlangsamt um {1}%. Jeder 5. Angriff: ein Heulen friert Monster um das Ziel 0,6 s ein (St4: 0,8 s; Bosse: verlangsamt). St7: jeder 4.
+skill.magmacharge	Jeder 4. Angriff ist ein Ansturm: viel größere Explosion, +{0}% Schaden, stößt Monster zurück (keine Bosse). St4: stärker. St7: die Explosion brennt
+skill.bloomdisplay	Alle 4 s: +{0}% Angriffstempo (St4: +5%) und +{1}% Schaden für die 4 nächsten Angreifer. St7: 6 Verbündete
+skill.crystalroll	Bricht {0}% Rüstung (St4: +10%). +{1}% Schaden gegen gepanzerte Monster, Elite und Bosse. St7: jede 3. Rolle 50% breiter
+skill.lanternglow	Enthüllt unsichtbare Monster um das Ziel. Verlangsamt um {0}% und markiert +{1}% erlittenen Schaden (St4: +5%). St7: jeder 5. Treffer betäubt
+skill.tigerpounce	+{0}% Schaden gegen gesendete Monster. Jeder 4. Angriff ist ein Sprung mit doppeltem Schaden (St4: trifft auch einen Nachbarn). St7: jeder 3.
+skill.bamboocombo	+{0}% Schaden für jeden Treffer in Folge auf dasselbe Monster (max. 5, St4: 6, St7: 8). St7: jeder 6. Treffer schlägt zweimal zu
+skill.cometshower	Jeder Angriff wirft zusätzlich {0} Komet (St4: +1, St7: +1) auf ein anderes Monster, {1}% Flächenschaden
+skill.bubbletrap	Verlangsamt um {0}%. Jeder 4. Treffer fängt das Ziel in einer Blase: 0,8 s betäubt (St4: 1 s; Bosse: verlangsamt) und +15% erlittener Schaden
 arena.1	Grüne Wiese
 arena.2	Tiefer Wald
 arena.3	Vulkan
@@ -345,7 +366,7 @@ shop.free_tag	GRATIS
 shop.best_value	BESTER WERT
 shop.popular	BELIEBT
 shop.save_10	10% SPAREN
-shop.legendary_chance	LEGENDÄR!
+shop.legendary_chance	SSS-CHANCE!
 pass.tier_short	STUFE
 pass.unlock_premium	Premium freischalten
 lobby.pass_short	Pass {0}/{1}
@@ -478,7 +499,30 @@ reject.not_ready	Fähigkeit lädt noch
 reject.no_target	Kein Ziel
 reject.invalid_cell	Kann dort nicht platziert werden
 reject.not_on_board	Beschwöre dieses Tier zuerst - Verstärkungen wirken nur auf Tiere in deinem Zoo
-deck.spells_title	Wärter-Zauber (zum Ändern tippen)
+deck.spells_title	WÄRTER-ZAUBER
+deck.swap_hint	Tippe eine Karte zum Tauschen · {0} von {1} im Einsatz
+send.rat_rush.desc	Sehr schnell und günstig. Gut für frühes Einkommen.
+send.sneaky_ghost.desc	Unsichtbar: nur Tiere, die Verstecktes sehen, treffen es, bis es enthüllt ist.
+send.shield_turtle.desc	Sehr zäh und nimmt 50% weniger Flächenschaden.
+send.candy_crow.desc	Stiehlt 30 Bonbons, wenn es das Tor erreicht.
+send.brick_golem.desc	Zäh. Stirbt es, sperrt es eine Feld des Gegners eine Weile.
+send.mini_king.desc	Ein Mini-Boss, der kleine Ratten ruft. Einmal pro Match.
+send.twin_slime.desc	Teilt sich beim Tod in 2 kleinere Schleime.
+send.digger_mole.desc	Gräbt sich alle paar Sekunden ein: dann können Tiere es nicht treffen.
+send.healer_shroom.desc	Heilt die Monster um sich herum alle 2 Sekunden.
+send.fog_wisp.desc	Unsichtbar und versteckt die Monster um sich immer wieder.
+send.bomb_beetle.desc	Explodiert beim Tod und betäubt 2 gegnerische Tiere 1 s.
+send.pixie_swarm.desc	Sechs winzige, sehr schnelle Pixies. Schlecht für Einzelziel-Decks.
+deck.swap_badge	TAUSCH
+deck.send_info	{0} Monster · {1} Bonbons · +{2} Einkommen/Welle
+spell.poison_fog	Giftnebel
+spell.poison_fog.desc	Eine Giftwolke: Monster im Bereich nehmen 3 Sekunden lang Schaden und sind um 25% verlangsamt.
+spell.star_mark	Sternmal
+spell.star_mark.desc	Markiert alle Monster im Bereich: +30% erlittener Schaden für 4 Sekunden. Enthüllt auch unsichtbare.
+spell.shield_dome	Schildkuppel
+spell.shield_dome.desc	Schützt alle deine Tiere 6 Sekunden: +15% Schaden, blockt 1 Betäubung / Feldsperre. Kein Zielen nötig.
+spell.lucky_star	Glücksstern
+spell.lucky_star.desc	+1 Stufe für dein Tier mit der niedrigsten Stufe. Kein Zielen nötig.
 deck.spell_cost	{0} Süßigkeiten
 deck.spell_swap	Wähle einen Zauber für diesen Platz
 tutorial.spell	Zauber! Tippe neben BESCHWÖREN auf Meteor oder Frost und dann auf den Weg, wo sich die Gegner sammeln.
@@ -549,13 +593,13 @@ shop.sold	Verkauft
 shop.gold_price	{0} Gold
 shop.gems_price	{0} Edelsteine
 shop.gacha	Tier-Beschwörung
-shop.gacha_text	Beschwöre Tiersplitter. Jeder Zug kann legendär sein!
-shop.pity	Legendär garantiert innerhalb von {0} Zügen
+shop.gacha_text	Beschwöre Tiersplitter. Jeder Zug kann SSS sein!
+shop.pity	Rang S oder besser innerhalb von {0} Zügen
 shop.pull1	x1  {0} Edelsteine
 shop.pull10	x10  {0} Edelsteine
 shop.rates	Wahrscheinlichkeiten
 shop.rate_line	{0}: {1}%  ({2} Splitter)
-shop.pity_rule	Mindestens einmal alle {0} Züge ist ein legendäres Tier garantiert.
+shop.pity_rule	Mindestens einmal alle {0} Züge ist Rang S (oder besser) garantiert.
 shop.chests	Truhen
 shop.chest_info	{0}+ Splitter, {1}+ Gold
 shop.gold	Gold
@@ -712,7 +756,50 @@ unit.nectar_bee	Nektarbiene
 unit.sprout_elephant	Sprossenelefant
 unit.moon_moth	Mondmotte
 unit.aegis_ram	Aegis-Widder
+unit.celestial_qilin	Himmels-Qilin
+unit.abyss_leviathan	Abgrund-Leviathan
+unit.solar_lion	Sonnenlöwe
+unit.worldtree_tortoise	Weltenbaum-Schildkröte
+unit.ninetail_star_fox	Neunschwänziger Sternfuchs
+unit.thunder_griffin	Donnergreif
+unit.glacier_wolf	Gletscherwolf
+unit.magma_rhino	Magma-Nashorn
+unit.bloom_peacock	Blütenpfau
+unit.crystal_pangolin	Kristall-Schuppentier
+unit.lantern_jellyfish	Laternenqualle
+unit.flame_tiger_cub	Flammen-Tigerjunges
+unit.bamboo_red_panda	Bambus-Roter-Panda
+unit.comet_hamster	Kometenhamster
+unit.puddle_duckling	Pfützenküken
+unit.sprout_anteater	Sprossen-Ameisenbär
+unit.leaf_okapi	Blatt-Okapi
+unit.moss_kiwi	Moos-Kiwi
+unit.bloom_snail	Blütenschnecke
+unit.drop_platypus	Tropfen-Schnabeltier
+unit.brook_moose	Bach-Elch
+unit.frost_bear	Frost-Eisbärjunges
+unit.river_otter	Flussotter
+unit.moon_lemur	Mond-Lemur
+unit.star_eagle	Sternadler
+unit.sun_alpaca	Sonnen-Alpaka
+unit.prism_hummingbird	Prisma-Kolibri
+unit.ember_devil	Glut-Teufel
+unit.blaze_bison	Flammen-Bison
+unit.torch_toucan	Fackel-Tukan
+unit.chili_chameleon	Chili-Chamäleon
 enemy.slime	Schleim
+enemy.spore_puff	Sporenbovist
+enemy.dash_lizard	Sprint-Echse
+enemy.pebble_golem	Kiesel-Golem
+enemy.shadow_blob	Schattenklecks
+enemy.balloon_bat	Ballon-Fledermaus
+enemy.shield_beetle	Schildkäfer
+enemy.send_splitter	Zwillingsschleim
+enemy.send_mole	Grabe-Maulwurf
+enemy.send_mushroom	Heilpilz
+enemy.send_wisp	Nebel-Irrlicht
+enemy.send_bomb	Bombenkäfer
+enemy.send_pixies	Pixie
 enemy.imp	Kobold
 enemy.rock_beetle	Steinkäfer
 enemy.armored_knight	Rüstungsritter
@@ -732,6 +819,12 @@ enemy.armored_scorpion	Panzerskorpion
 enemy.clockwork_gorilla	Uhrwerk-Gorilla
 enemy.void_hermit_crab	Leere-Einsiedlerkrebs
 send.rat_rush	Rattenrausch
+send.twin_slime	Zwillingsschleim
+send.digger_mole	Grabe-Maulwurf
+send.healer_shroom	Heilpilz
+send.fog_wisp	Nebel-Irrlicht
+send.bomb_beetle	Bombenkäfer
+send.pixie_swarm	Pixie-Schwarm
 send.sneaky_ghost	Schleichgeist
 send.shield_turtle	Schildkröte
 send.candy_crow	Naschkrähe
@@ -819,3 +912,90 @@ notify.login	Dein Geschenk für Tag {0} wartet!
 notify.monthly	Deine Monatskarten-Edelsteine sind bereit.
 notify.comeback	Die Monster sind zurück! Deine Tiere brauchen dich.
 notify.missions	Neue Missionen sind da!
+stats.button	Statistik
+stats.title	Spielstatistik
+stats.you	{0} (du)
+stats.total	Schaden {0}
+stats.line	Gesendete nahmen {0} Herzen · Fusionen {1} · Zauber {2}
+stats.spells	Wächterzauber
+stats.none	Kein Schaden
+stats.mvp	MVP
+reject.sends_locked	Senden ab der zweiten Welle
+battle.send_unlock	Welle {0}
+talent.1	Bossjäger
+talent_desc.1	+90% Schaden gegen Elite und Bosse.
+talent.2	Abfänger
+talent_desc.2	+50% Schaden gegen geschickte Monster.
+talent.3	Kritisch
+talent_desc.3	Jeder 3. Angriff macht doppelten Schaden.
+talent.4	Kontermeister
+talent_desc.4	Konter-Treffer machen +75% mehr Schaden.
+talent.5	Weite Explosion
+talent_desc.5	Flächenradius +30%.
+talent.6	Fokuskern
+talent_desc.6	+35% Schaden am Hauptziel.
+talent.7	Frostrauch
+talent_desc.7	Jeder Treffer verlangsamt 1 s um 12%.
+talent.8	Zertrümmern
+talent_desc.8	Jeder Treffer bricht 2 s lang 12% Rüstung.
+talent.9	Nachwirkung
+talent_desc.9	Verlangsamung und Betäubung halten 60% länger.
+talent.10	Stachel
+talent_desc.10	+25% Schaden.
+talent.11	Bossbann
+talent_desc.11	Betäubungen auf Bossen nicht halbiert, +20% Schaden gegen Bosse.
+talent.12	Markierung
+talent_desc.12	Getroffene Monster nehmen 2 s lang +7% Schaden.
+talent.13	Großzügig
+talent_desc.13	+3 Süßigkeiten pro Stufe zu jeder Welle.
+talent.14	Standhaft
+talent_desc.14	Bosse können dieses Tier nicht betäuben oder sein Feld sperren.
+talent.15	Anfeuern
+talent_desc.15	Angrenzende Tiere machen +10% Schaden.
+talent.16	Schnellladung
+talent_desc.16	Aktive Fähigkeit lädt 30% schneller.
+talent.title	{0}: Talente
+talent.intro	Wähle pro Stufe einen Zweig für dieses {0}-Tier. Außerhalb von Spielen kostenlos änderbar.
+talent.tier	Stufe {0}
+talent.tier_locked	Stufe {0} · Kartenstufe {1}
+talent.need_level	Kartenstufe {0} nötig
+talent.selected	Aktiv
+talent.pick	Tippen zum Wählen
+talent.locked	Gesperrt
+talent.button	Talente {0}/{1}
+talent.button_locked	Talente · ab Stufe {0}
+battle.hex	Fluch
+battle.hex_pending	Aktiv
+battle.hex_title	Nächste Welle von {0} verfluchen · {1} Süßigkeiten
+battle.hex_hint	Alle normalen Monster ihrer nächsten Welle bekommen dein Element. Sie werden gewarnt.
+battle.hex_their_damage	Ihr Schaden: {0}%
+battle.hexed	{0} hat dich verflucht: nächste Welle ganz {1}!
+battle.hex_cast	Verflucht: ihre nächste Welle ist {0}
+battle.hex_wave	Verfluchte Welle: {0}-Monster
+battle.sold	+{0} Süßigkeiten
+battle.target	Ziel:\n{0}
+battle.sell	Verkaufen
+battle.sell_confirm	Sicher?
+battle.talents	Talente: {0}
+target.0	Erstes
+target.1	Gruppe
+target.2	Stärkstes
+target.3	Geschickt
+reject.already_hexed	Ihre nächste Welle ist schon verflucht
+reject.hex_locked	Fluch ab Welle 3
+mayhem.5	Blitz
+mayhem.6	Bossansturm
+mayhem.7	Ein Element
+mayhem.8	Fluchkrieg
+mayhem_desc.5	Monster 40% schneller, kürzere Wellen, +50% Startsüßigkeiten.
+mayhem_desc.6	Alle 2 Wellen ein Boss, doppelter Bossduell-Preis, früherer Sudden Death.
+mayhem_desc.7	Diese Woche ist jedes Monster {0} (+50% für Konter). Baue dein Deck danach!
+mayhem_desc.8	Elementfluch ab Welle 2 zum halben Preis.
+rank.name	Rang {0}
+shop.pity_high	SS in {0} Zügen · SSS in {1} Zügen
+shop.pity_rule_ss	Mindestens einmal alle {0} Züge ist ein SS-Tier garantiert.
+shop.pity_rule_sss	Mindestens einmal alle {0} Züge ist ein SSS-Tier garantiert.
+battle.aura	Rang-{0}-Aura: ganzes Team +{1}% Schaden
+battle.aura_full	Rang-{0}-Aura: ganzes Team +{1}% Schaden, +{2}% Angriffstempo
+battle.evolve	Entwickeln
+battle.evolved	Auf Stufe {0} entwickelt!

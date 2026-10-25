@@ -542,6 +542,12 @@ namespace ZooDefense.Game
                 AddPop(chip, 0.45f + i * 0.08f);
             }
 
+            // Match stats: damage per animal and MVP.
+            var statsOpen = UIKit.ChunkyButton(Root, "statsOpen", Loc.T("stats.button"), Palette.Blue, () => MatchStats.Show(App, _record, _summary.localPlayer), 30);
+            statsOpen.GetComponent<RectTransform>().Place(new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-24, -48), new Vector2(250, 96));
+            statsOpen.gameObject.SetActive(!_tutorial);
+            AddPop(statsOpen.GetComponent<RectTransform>(), 1.0f);
+
             // Reward card
             var card = UIKit.Panel(Root, "rewards", new Color(0.16f, 0.11f, 0.26f, 0.94f)).rectTransform;
             card.Place(new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0, -1030), new Vector2(1000, 420));

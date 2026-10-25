@@ -178,16 +178,26 @@ namespace ZooDefense.Game
     /// <summary>Tiny "this wave -> next wave" element chip: big dot, arrow, small dot.</summary>
     public static class WaveChip
     {
-        public static void Draw(RectTransform holder, Element now, Element next)
+        /// <summary>Hexed elements get a purple ring (the opponent forced that wave's element).</summary>
+        public static void Draw(RectTransform holder, Element now, Element next, bool hexNow = false, bool hexNext = false)
         {
             UIKit.Clear(holder);
             var h = holder.rect.height > 1f ? holder.rect.height : 60f;
+            if (hexNow) HexRing(holder, new Vector2(h * 0.5f, 0f), h * 1.15f);
+            if (hexNext) HexRing(holder, new Vector2(h * 1.68f, 0f), h * 0.85f);
             Dot(holder, now, new Vector2(0f, 0.5f), new Vector2(h * 0.5f, 0f), h * 0.9f);
             var arrow = UIKit.Label(holder, "→", (int)(h * 0.55f), Art.Hex(0x3B2412));
             var shadow = arrow.GetComponent<Shadow>();
             if (shadow != null) shadow.enabled = false;
             arrow.rectTransform.Place(new Vector2(0f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(h * 1.18f, 0f), new Vector2(h * 0.6f, h));
             Dot(holder, next, new Vector2(0f, 0.5f), new Vector2(h * 1.68f, 0f), h * 0.6f);
+        }
+
+        static void HexRing(RectTransform holder, Vector2 pos, float size)
+        {
+            var ring = UIKit.Icon(holder, "hex", Art.Circle, new Color(0.62f, 0.25f, 0.95f, 0.95f)).rectTransform
+                .Place(new Vector2(0f, 0.5f), new Vector2(0.5f, 0.5f), pos, new Vector2(size, size));
+            UIKit.Motion(ring).Pulse(0.1f, 6f);
         }
 
         static void Dot(RectTransform holder, Element e, Vector2 anchor, Vector2 pos, float size)

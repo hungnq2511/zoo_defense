@@ -328,7 +328,8 @@ namespace ZooDefense.Game
                     pvp.Update(dt);
                     _onlineTime += dt;
                     if (pvp.State == OnlineState.Ready && pvp.Match != null) FoundOnline(pvp.Match);
-                    else if (_onlineTime >= OnlineWait && pvp.State != OnlineState.Handshake)
+                    // A half-finished handshake gets 2 s more at most, then the bot takes over.
+                    else if (_onlineTime >= OnlineWait && (pvp.State != OnlineState.Handshake || _onlineTime >= OnlineWait + 2f))
                     {
                         // Nobody of this arena showed up in time: play a bot instead.
                         Debug.Log("[Online] no opponent after " + OnlineWait + " s: bot match");

@@ -31,7 +31,7 @@ result.gold_doubled	¡Oro duplicado!
 result.continue	CONTINUAR
 deck.title	MAZO
 deck.counter	Animales {0}/5     Monstruos de envío {1}/4
-deck.sends_title	MONSTRUOS DE ENVÍO (elige 4)
+deck.sends_title	MONSTRUOS DE ENVÍO
 deck.send_label	{0}\n{1} pts{2}
 deck.once	 (una vez)
 deck.hint	Toca un animal para añadirlo o quitarlo.
@@ -78,9 +78,15 @@ status.2	Silenciado
 status.3	Congelado
 status.4	Armadura rota
 status.5	Marcado
+status.6	Maremoto
+status.7	Hechizado
 ability.1	¡Tambores!
 ability.2	¡Furioso!
 ability.3	¡Embestida!
+ability.4	¡Excavar!
+ability.5	¡Curar!
+ability.6	¡Niebla!
+ability.7	¡Desvanecer!
 ability.104	¡Sobrecarga!
 guide.title	ELEMENTOS
 guide.button	Elementos
@@ -336,6 +342,21 @@ skill.nectarhaste	+{0}% de velocidad de ataque a los 3 atacantes más cercanos (
 skill.rootarea	Enraíza a los monstruos de un área 0,6 s (Nv4: 0,75 s, una vez cada 4 s cada uno). A los jefes los ralentiza
 skill.silence	Cada 4.º golpe silencia al objetivo 1 s: sin habilidades ni aceleraciones. Jefes: la mitad
 skill.aegisguard	Protege a los {0} aliados más cercanos: +{1}% de daño y bloquea 1 aturdimiento / bloqueo de casilla. Nv4: +1 aliado. Nv7: bloquea 2
+skill.starfall	Cada 6.º ataque hace caer 2 estrellas (Nv4: 3) sobre los grupos más grandes, {0}% de daño cada una. Nv7: cada 4.º ataque
+skill.tidallance	+{1}% de daño a monstruos con más de media vida. Cada 5.º ataque, un maremoto golpea todo el camino tras el objetivo ({0}%). Nv4: ola más larga. Nv7: cada 4.º
+skill.solarflare	Los golpes queman y se acumulan ({0} por pulso), el fuego salta a 1 vecino (Nv7: 2). +{1}% de daño a monstruos en llamas. Nv4: quema más tiempo
+skill.worldtree	+{0} caramelos por nivel en cada oleada. Cada 4 oleadas: +1 nivel a un aliado al azar (Nv7: cada 3). Nv4: protege a 2 aliados (+{1}% de daño, bloquea 1 aturdimiento / bloqueo)
+skill.starcharm	Ralentiza un {1}%. Cada 4.º golpe hechiza al objetivo: camina hacia atrás 0,7 s (jefes: ralentizados). Nv4: hechiza 1 más. Nv7: cada 3.er golpe
+skill.chainlightning	El rayo salta a {0} monstruos más (Nv4: +1) con {1}% de daño. Nv7: los monstruos alcanzados quedan aturdidos un instante
+skill.glacierhowl	Ralentiza un {1}%. Cada 5.º ataque, un aullido congela a los monstruos alrededor del objetivo 0,6 s (Nv4: 0,8 s; jefes: ralentizados). Nv7: cada 4.º
+skill.magmacharge	Cada 4.º ataque embiste: explosión mucho más amplia, +{0}% de daño, empuja a los monstruos (no a jefes). Nv4: empuje mayor. Nv7: la explosión quema
+skill.bloomdisplay	Cada 4 s: +{0}% de velocidad de ataque (Nv4: +5%) y +{1}% de daño a los 4 atacantes más cercanos. Nv7: 6 aliados
+skill.crystalroll	Rompe un {0}% de armadura (Nv4: +10%). +{1}% de daño a monstruos con armadura, élites y jefes. Nv7: cada 3.ª rodada es un 50% más amplia
+skill.lanternglow	Revela monstruos invisibles alrededor del objetivo. Ralentiza un {0}% y marca +{1}% de daño recibido (Nv4: +5%). Nv7: cada 5.º golpe aturde
+skill.tigerpounce	+{0}% de daño a monstruos enviados. Cada 4.º ataque es un salto de daño doble (Nv4: también golpea a un vecino). Nv7: cada 3.º
+skill.bamboocombo	+{0}% de daño por cada golpe seguido al mismo monstruo (máx. 5, Nv4: 6, Nv7: 8). Nv7: cada 6.º golpe ataca dos veces
+skill.cometshower	Cada ataque lanza además {0} cometa (Nv4: +1, Nv7: +1) a otro monstruo, {1}% de daño en área
+skill.bubbletrap	Ralentiza un {0}%. Cada 4.º golpe atrapa al objetivo en una burbuja: aturdido 0,8 s (Nv4: 1 s; jefes: ralentizados) y recibe +15% de daño
 arena.1	Pradera Verde
 arena.2	Bosque Profundo
 arena.3	Volcán
@@ -345,7 +366,7 @@ shop.free_tag	GRATIS
 shop.best_value	MEJOR PRECIO
 shop.popular	POPULAR
 shop.save_10	AHORRA 10%
-shop.legendary_chance	¡LEGENDARIO!
+shop.legendary_chance	¡OPCIÓN SSS!
 pass.tier_short	NIVEL
 pass.unlock_premium	Desbloquear Premium
 lobby.pass_short	Pase {0}/{1}
@@ -478,7 +499,30 @@ reject.not_ready	La habilidad se está cargando
 reject.no_target	Sin objetivo
 reject.invalid_cell	No se puede colocar ahí
 reject.not_on_board	Invoca primero a este animal - las mejoras solo funcionan en animales de tu zoo
-deck.spells_title	Hechizos del cuidador (toca para cambiar)
+deck.spells_title	HECHIZOS DEL CUIDADOR
+deck.swap_hint	Toca una carta para cambiarla · usando {0} de {1}
+send.rat_rush.desc	Muy rápido y barato. Bueno para subir ingresos pronto.
+send.sneaky_ghost.desc	Invisible: solo los animales que ven lo oculto pueden golpearlo hasta que se revele.
+send.shield_turtle.desc	Muy resistente y recibe un 50% menos de daño en área.
+send.candy_crow.desc	Roba 30 caramelos si llega a la puerta.
+send.brick_golem.desc	Resistente. Al morir bloquea una de sus casillas un rato.
+send.mini_king.desc	Un minijefe que llama ratitas. Una vez por partida.
+send.twin_slime.desc	Al morir se divide en 2 slimes más pequeños.
+send.digger_mole.desc	Se entierra cada pocos segundos: entonces los animales no lo alcanzan.
+send.healer_shroom.desc	Cura a los monstruos cercanos cada 2 segundos.
+send.fog_wisp.desc	Invisible, y vuelve a ocultar a los monstruos cercanos una y otra vez.
+send.bomb_beetle.desc	Al morir explota y aturde 2 de sus animales 1 s.
+send.pixie_swarm.desc	Seis duendes diminutos y muy rápidos. Malas noticias para mazos de un solo objetivo.
+deck.swap_badge	CAMBIAR
+deck.send_info	{0} monstruos · {1} caramelos · +{2} ingreso/oleada
+spell.poison_fog	Niebla Venenosa
+spell.poison_fog.desc	Una nube venenosa: los monstruos del área reciben daño durante 3 segundos y se ralentizan un 25%.
+spell.star_mark	Marca Estelar
+spell.star_mark.desc	Marca a todos los monstruos del área: +30% de daño recibido durante 4 segundos. También revela a los invisibles.
+spell.shield_dome	Cúpula Escudo
+spell.shield_dome.desc	Protege a todos tus animales 6 segundos: +15% de daño y bloquea 1 aturdimiento / bloqueo. Sin apuntar.
+spell.lucky_star	Estrella de la Suerte
+spell.lucky_star.desc	+1 nivel a tu animal de menor nivel. Sin apuntar.
 deck.spell_cost	{0} caramelos
 deck.spell_swap	Elige un hechizo para este espacio
 tutorial.spell	¡Hechizos! Toca Meteoro o Congelar junto a INVOCAR y luego toca el camino donde se juntan los enemigos.
@@ -549,13 +593,13 @@ shop.sold	Vendido
 shop.gold_price	{0} de oro
 shop.gems_price	{0} gemas
 shop.gacha	Invocación de animales
-shop.gacha_text	Invoca fragmentos de animales. ¡Cada tirada puede ser Legendaria!
-shop.pity	Legendario garantizado en {0} tiradas
+shop.gacha_text	Invoca fragmentos. ¡Cada tirada puede ser SSS!
+shop.pity	Rango S o mejor en {0} tiradas
 shop.pull1	x1  {0} gemas
 shop.pull10	x10  {0} gemas
 shop.rates	Probabilidades
 shop.rate_line	{0}: {1}%  ({2} fragmentos)
-shop.pity_rule	Un Legendario está garantizado al menos una vez cada {0} tiradas.
+shop.pity_rule	Un rango S (o mejor) garantizado al menos una vez cada {0} tiradas.
 shop.chests	Cofres
 shop.chest_info	{0}+ fragmentos, {1}+ de oro
 shop.gold	Oro
@@ -712,7 +756,50 @@ unit.nectar_bee	Abeja néctar
 unit.sprout_elephant	Elefante brote
 unit.moon_moth	Polilla lunar
 unit.aegis_ram	Carnero Égida
+unit.celestial_qilin	Qilin Celestial
+unit.abyss_leviathan	Leviatán Abisal
+unit.solar_lion	León Solar
+unit.worldtree_tortoise	Tortuga Árbol del Mundo
+unit.ninetail_star_fox	Zorro Estelar de Nueve Colas
+unit.thunder_griffin	Grifo del Trueno
+unit.glacier_wolf	Lobo Glaciar
+unit.magma_rhino	Rinoceronte de Magma
+unit.bloom_peacock	Pavo Real Florido
+unit.crystal_pangolin	Pangolín de Cristal
+unit.lantern_jellyfish	Medusa Farol
+unit.flame_tiger_cub	Cachorro de Tigre Llameante
+unit.bamboo_red_panda	Panda Rojo del Bambú
+unit.comet_hamster	Hámster Cometa
+unit.puddle_duckling	Patito de Charco
+unit.sprout_anteater	Oso Hormiguero Brote
+unit.leaf_okapi	Okapi de Hoja
+unit.moss_kiwi	Kiwi de Musgo
+unit.bloom_snail	Caracol Florido
+unit.drop_platypus	Ornitorrinco Gota
+unit.brook_moose	Alce del Arroyo
+unit.frost_bear	Osezno Polar Escarcha
+unit.river_otter	Nutria de Río
+unit.moon_lemur	Lémur Lunar
+unit.star_eagle	Águila Estelar
+unit.sun_alpaca	Alpaca Solar
+unit.prism_hummingbird	Colibrí Prisma
+unit.ember_devil	Demonio Ascua
+unit.blaze_bison	Bisonte Llameante
+unit.torch_toucan	Tucán Antorcha
+unit.chili_chameleon	Camaleón Chile
 enemy.slime	Baba
+enemy.spore_puff	Bola de Esporas
+enemy.dash_lizard	Lagarto Veloz
+enemy.pebble_golem	Gólem de Guijarros
+enemy.shadow_blob	Mancha Sombría
+enemy.balloon_bat	Murciélago Globo
+enemy.shield_beetle	Escarabajo Escudo
+enemy.send_splitter	Slime Gemelo
+enemy.send_mole	Topo Excavador
+enemy.send_mushroom	Seta Sanadora
+enemy.send_wisp	Fuego Fatuo de Niebla
+enemy.send_bomb	Escarabajo Bomba
+enemy.send_pixies	Duende
 enemy.imp	Diablillo
 enemy.rock_beetle	Escarabajo roca
 enemy.armored_knight	Caballero acorazado
@@ -732,6 +819,12 @@ enemy.armored_scorpion	Escorpión acorazado
 enemy.clockwork_gorilla	Gorila mecánico
 enemy.void_hermit_crab	Cangrejo ermitaño del vacío
 send.rat_rush	Avalancha de ratas
+send.twin_slime	Slime Gemelo
+send.digger_mole	Topo Excavador
+send.healer_shroom	Seta Sanadora
+send.fog_wisp	Fuego Fatuo de Niebla
+send.bomb_beetle	Escarabajo Bomba
+send.pixie_swarm	Enjambre de Duendes
 send.sneaky_ghost	Fantasma sigiloso
 send.shield_turtle	Tortuga escudo
 send.candy_crow	Cuervo caramelero
@@ -819,3 +912,90 @@ notify.login	¡Tu regalo del día {0} te espera!
 notify.monthly	Las gemas de tu tarjeta mensual están listas.
 notify.comeback	¡Los monstruos han vuelto! Tus animales te necesitan.
 notify.missions	¡Hay nuevas misiones!
+stats.button	Estadísticas
+stats.title	Estadísticas
+stats.you	{0} (tú)
+stats.total	Daño {0}
+stats.line	Envíos quitaron {0} corazones · Fusiones {1} · Hechizos {2}
+stats.spells	Hechizos
+stats.none	Sin daño
+stats.mvp	MVP
+reject.sends_locked	Los envíos se abren tras la primera oleada
+battle.send_unlock	Oleada {0}
+talent.1	Cazajefes
+talent_desc.1	+90% de daño a élites y jefes.
+talent.2	Interceptor
+talent_desc.2	+50% de daño a monstruos enviados por el rival.
+talent.3	Crítico
+talent_desc.3	Cada 3.er ataque hace daño doble.
+talent.4	Maestro del contra
+talent_desc.4	Los golpes que contrarrestan el elemento hacen +75%.
+talent.5	Explosión amplia
+talent_desc.5	Radio de área +30%.
+talent.6	Núcleo
+talent_desc.6	+35% de daño al objetivo principal.
+talent.7	Humo helado
+talent_desc.7	Cada golpe ralentiza un 12% durante 1 s.
+talent.8	Quebrar
+talent_desc.8	Cada golpe rompe un 12% de armadura durante 2 s.
+talent.9	Persistente
+talent_desc.9	Ralentizaciones y aturdimientos duran un 60% más.
+talent.10	Aguijón
+talent_desc.10	+25% de daño.
+talent.11	Azote de jefes
+talent_desc.11	Aturdimientos completos en jefes, +20% de daño a jefes.
+talent.12	Marca
+talent_desc.12	Los monstruos golpeados reciben +7% de daño durante 2 s.
+talent.13	Generoso
+talent_desc.13	+3 caramelos por nivel en cada oleada.
+talent.14	Firme
+talent_desc.14	Los jefes no pueden aturdirlo ni bloquear su casilla.
+talent.15	Ánimo
+talent_desc.15	Los animales adyacentes hacen +10% de daño.
+talent.16	Carga rápida
+talent_desc.16	Su habilidad activa carga un 30% más rápido.
+talent.title	{0}: talentos
+talent.intro	Elige una rama por nivel para este animal de {0}. Cámbiala gratis fuera de partida.
+talent.tier	Nivel {0}
+talent.tier_locked	Nivel {0} · carta nivel {1}
+talent.need_level	Necesita carta nivel {0}
+talent.selected	En uso
+talent.pick	Toca para elegir
+talent.locked	Bloqueado
+talent.button	Talentos {0}/{1}
+talent.button_locked	Talentos · desde nivel {0}
+battle.hex	Hechizo
+battle.hex_pending	Listo
+battle.hex_title	Hechiza la próxima oleada de {0} · {1} caramelos
+battle.hex_hint	Todos los monstruos normales de su próxima oleada tendrán tu elemento. Lo verán venir.
+battle.hex_their_damage	Su daño: {0}%
+battle.hexed	¡{0} te hechizó: próxima oleada toda {1}!
+battle.hex_cast	Hechizado: su próxima oleada es {0}
+battle.hex_wave	Oleada hechizada: monstruos {0}
+battle.sold	+{0} caramelos
+battle.target	Objetivo:\n{0}
+battle.sell	Vender
+battle.sell_confirm	¿Seguro?
+battle.talents	Talentos: {0}
+target.0	Primero
+target.1	Grupo
+target.2	Más fuerte
+target.3	Enviados
+reject.already_hexed	Su próxima oleada ya está hechizada
+reject.hex_locked	El hechizo se abre en la oleada 3
+mayhem.5	Relámpago
+mayhem.6	Avalancha de jefes
+mayhem.7	Un solo elemento
+mayhem.8	Guerra de hechizos
+mayhem_desc.5	Monstruos 40% más rápidos, oleadas cortas, +50% de caramelos iniciales.
+mayhem_desc.6	Un jefe cada 2 oleadas, premio doble en el duelo, muerte súbita antes.
+mayhem_desc.7	Esta semana todos los monstruos son {0} (+50% al contrarrestar). ¡Arma tu mazo!
+mayhem_desc.8	Hechizo de elemento desde la oleada 2 a mitad de precio.
+rank.name	Rango {0}
+shop.pity_high	SS en {0} tiradas · SSS en {1} tiradas
+shop.pity_rule_ss	Un SS garantizado al menos una vez cada {0} tiradas.
+shop.pity_rule_sss	Un SSS garantizado al menos una vez cada {0} tiradas.
+battle.aura	Aura de rango {0}: todo el equipo +{1}% de daño
+battle.aura_full	Aura de rango {0}: todo el equipo +{1}% de daño, +{2}% de velocidad
+battle.evolve	Evolucionar
+battle.evolved	¡Evolucionó a nivel {0}!

@@ -162,13 +162,13 @@ namespace ZooDefense.Tests
         {
             var cfg = MiniJson.Object("{\"bot_wait_seconds\": 15, \"reconnect_seconds\": \"25\", \"ad_every\": 0, \"live_event\": 3, \"meta_overrides\": {\"winGold\": 60}}");
             var t = LiveTuning.FromConfig(cfg);
-            Assert.AreEqual(15f, t.botWaitSeconds);
+            Assert.AreEqual(LiveTuning.MaxBotWaitSeconds, t.botWaitSeconds, "remote value is capped");
             Assert.AreEqual(25f, t.reconnectSeconds);
             Assert.AreEqual(1, t.adEvery, "clamped");
             Assert.AreEqual(3, t.liveEvent);
             Assert.AreEqual("{\"winGold\":60}", t.metaOverrides);
             var d = LiveTuning.FromConfig(null);
-            Assert.AreEqual(10f, d.botWaitSeconds, "defaults offline");
+            Assert.AreEqual(6f, d.botWaitSeconds, "defaults offline");
             Assert.AreEqual(-1, d.liveEvent);
         }
 

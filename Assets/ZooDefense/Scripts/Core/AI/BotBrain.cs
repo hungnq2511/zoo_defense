@@ -28,6 +28,10 @@ namespace ZooDefense.Core
 
         /// <summary>When false the bot ignores the newer mechanics (used to compare balance with the classic game).</summary>
         public bool UseAdvanced = true;
+        /// <summary>When false the bot never evolves animals with candy (balance comparisons).</summary>
+        public bool UseEvolve = true;
+        /// <summary>When false the bot never hexes (balance comparisons).</summary>
+        public bool UseHex = true;
 
         public void Think(Match m, List<Command> output)
         {
@@ -44,9 +48,11 @@ namespace ZooDefense.Core
                 if (TryReflect(m, b, tick, output)) return;
                 if (TrySkill(m, b, tick, output)) return;
                 if (TrySpell(m, b, tick, output)) return;
+                if (UseHex && TryHex(m, b, tick, output)) return;
             }
             if (TrySend(m, b, tick, output)) return;
             bool full = b.CountFreeCells() == 0;
+            if (UseAdvanced && UseEvolve && Difficulty > 0 && (full || b.CountFreeCells() <= 2) && _rng.Chance(50) && TryEvolve(m, b, tick, output, full)) return;
             if (UseAdvanced && (full || b.CountFreeCells() <= 3) && _rng.Chance(40) && TryUpgradeUnit(m, b, tick, output, full)) return;
             // Merging only when the board is full turned out stronger in bot-vs-bot tests; easy bots merge carelessly.
             if ((full || (Difficulty == 0 && _rng.Chance(25))) && TryMerge(m, b, tick, output)) return;
@@ -65,6 +71,60 @@ namespace ZooDefense.Core
         }
 
         // ------------------------------------------------------------------ new mechanics
+
+        /// <summary>Evolve the strongest attacker (highest level, then highest damage) when there is candy to spare.</summary>
+        bool TryEvolve(Match m, Board b, int tick, List<Command> output, bool full)
+        {
+            int best = -1, bestScore = int.MinValue;
+            for (int i = 0; i < b.Cells.Length; i++)
+            {
+                var u = b.Cells[i];
+                if (u == null || u.level >= m.Balance.maxLevel || b.IsCellLocked(i)) continue;
+                var d = m.Content.Units[u.def];
+                if (d.damage <= 0) continue;
+                int score = u.level * 1000 + d.damage;
+                if (score > bestScore) { bestScore = score; best = i; }
+            }
+            if (best < 0) return false;
+            int price = b.EvolvePrice(b.Cells[best]);
+            if (b.Candy < price + (full ? 0 : b.CardPrice)) return false;
+            output.Add(new Command(tick, Player, CommandType.Evolve, best));
+            return true;
+        }
+
+        /// <summary>
+        /// Element Hex: force the opponent's next wave into the element their board handles worst
+        /// (their animals' damage against it, element bonuses and resistances included).
+        /// </summary>
+        bool TryHex(Match m, Board b, int tick, List<Command> output)
+        {
+            if (Difficulty == 0 || m.IsSolo || m.IsCoop || m.Wave < m.Balance.hexUnlockWave) return false;
+            var opp = b.Opponent;
+            if (opp.HexNext != Element.None) return false;
+            int cost = b.HexCost;
+            if (b.Candy < cost + b.CardPrice + 20) return false;
+            if (!_rng.Chance(Difficulty == 1 ? 6 : 12)) return false;
+            int best = 0, bestScore = int.MaxValue, total = 0;
+            for (int x = (int)Element.Fire; x <= (int)Element.Grass; x++)
+            {
+                int score = 0;
+                for (int i = 0; i < opp.Cells.Length; i++)
+                {
+                    var u = opp.Cells[i];
+                    if (u == null) continue;
+                    var d = m.Content.Units[u.def];
+                    if (d.damage <= 0) continue;
+                    score += u.level * ElementRules.DamagePercent(m.Balance, d.element, (Element)x, d.skill == UnitSkill.AlwaysCounter, false);
+                }
+                total += score;
+                if (score < bestScore) { bestScore = score; best = x; }
+            }
+            if (best == 0 || total <= 0) return false;
+            // Only worth it when the opponent really is lopsided (at least 8% weaker than average against that element).
+            if ((long)bestScore * 300 > (long)total * 92) return false;
+            output.Add(new Command(tick, Player, CommandType.Hex, best));
+            return true;
+        }
 
         /// <summary>Deck slot worth paying extra for (a merge partner on the board), or -1 to take the random summon.</summary>
         int PickSummonSlot(Match m, Board b)
@@ -240,6 +300,7 @@ namespace ZooDefense.Core
         /// </summary>
         bool TrySend(Match m, Board b, int tick, List<Command> output)
         {
+            if (m.Wave < m.Balance.sendUnlockWave) return false;
             if (b.Opponent.IncomingSends.Count >= m.Balance.maxIncomingSendsPerWave) return false;
             int chance = Difficulty == 0 ? 12 : (Difficulty == 1 ? 30 : 45);
             if (!_rng.Chance(chance)) return false;
@@ -294,24 +355,62 @@ namespace ZooDefense.Core
         }
 
         /// <summary>Random but valid deck for a bot opponent.</summary>
+        /// <summary>How often each rarity (C..SSS) appears in bot decks, relative.</summary>
+        static readonly int[] DeckWeight = { 4, 10, 10, 7, 3, 1 };   // C is per animal lower: 25 commons would otherwise fill most bot decks
+
+        static string WeightedPick(ContentDatabase content, List<string> pool, ref DetRandom rng)
+        {
+            int total = 0;
+            foreach (var id in pool) total += DeckWeight[Math.Min(DeckWeight.Length - 1, (int)content.Unit(id).rarity)];
+            int roll = rng.Next(Math.Max(1, total));
+            foreach (var id in pool)
+            {
+                roll -= DeckWeight[Math.Min(DeckWeight.Length - 1, (int)content.Unit(id).rarity)];
+                if (roll < 0) return id;
+            }
+            return pool[pool.Count - 1];
+        }
+
+        /// <summary>Four different pickable send-monsters (the boss remnant is never picked).</summary>
+        public static string[] RandomSendDeck(ContentDatabase content, int seed, int size = 4)
+        {
+            var rng = new DetRandom(seed);
+            var pool = new List<string>();
+            foreach (var s in content.Sends) if (s.cost > 0) pool.Add(s.id);
+            var deck = new List<string>();
+            while (deck.Count < size && pool.Count > 0)
+            {
+                int k = rng.Next(pool.Count);
+                deck.Add(pool[k]);
+                pool.RemoveAt(k);
+            }
+            return deck.ToArray();
+        }
+
         public static string[] RandomDeck(ContentDatabase content, int seed, int size = 5)
         {
             var rng = new DetRandom(seed);
             var pool = new List<string>();
             for (int i = 0; i < content.Units.Count; i++) pool.Add(content.Units[i].id);
             var deck = new string[size];
-            int supports = 0, damage = 0;
+            int supports = 0, damage = 0, top = 0;
             for (int i = 0; i < size; i++)
             {
                 // At most one Support and at least two damage dealers keep bot decks playable.
+                // Rarer animals show up less often, and at most one SS / SSS per bot deck (they are hard to get).
                 string pick;
                 Role role;
+                Rarity rarity;
                 int guard = 0;
                 do
                 {
-                    pick = pool[rng.Next(pool.Count)];
-                    role = content.Unit(pick).role;
-                } while (++guard < 50 && ((role == Role.Support && supports >= 1) || (i >= size - 2 && damage < 2 && role != Role.Damage && role != Role.Area)));
+                    pick = WeightedPick(content, pool, ref rng);
+                    var u = content.Unit(pick);
+                    role = u.role;
+                    rarity = u.rarity;
+                } while (++guard < 50 && ((role == Role.Support && supports >= 1) || (rarity >= Rarity.SS && top >= 1)
+                    || (i >= size - 2 && damage < 2 && role != Role.Damage && role != Role.Area)));
+                if (rarity >= Rarity.SS) top++;
                 pool.Remove(pick);
                 deck[i] = pick;
                 if (role == Role.Support) supports++;

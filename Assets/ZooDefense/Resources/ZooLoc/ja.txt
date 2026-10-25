@@ -31,7 +31,7 @@ result.gold_doubled	ゴールドが2倍に！
 result.continue	つづける
 deck.title	デッキ
 deck.counter	どうぶつ {0}/5     送りモンスター {1}/4
-deck.sends_title	送りモンスター（4体えらぶ）
+deck.sends_title	送りモンスター
 deck.send_label	{0}\n{1} pt{2}
 deck.once	 (1回のみ)
 deck.hint	どうぶつをタップして追加・削除します。
@@ -78,9 +78,15 @@ status.2	沈黙
 status.3	凍結
 status.4	装甲破壊
 status.5	マーク
+status.6	大津波
+status.7	魅了
 ability.1	太鼓！
 ability.2	激怒！
 ability.3	ダッシュ！
+ability.4	もぐる!
+ability.5	回復!
+ability.6	霧!
+ability.7	消える!
 ability.104	オーバードライブ！
 guide.title	属性
 guide.button	属性
@@ -336,6 +342,21 @@ skill.nectarhaste	近くのアタッカー3体の攻撃速度 +{0}%（Lv4: {1}%�
 skill.rootarea	範囲内のモンスターを0.6秒拘束（Lv4: 0.75秒、各4秒に1回）。ボスにはスロー
 skill.silence	4回目ごとにターゲットを1秒沈黙: スキルも加速も使えない。ボスは半分
 skill.aegisguard	近くの仲間 {0} 体を守る: ダメージ +{1}%、スタン・マスロックを1回防ぐ。Lv4: +1体。Lv7: 2回防ぐ
+skill.starfall	6回ごとの攻撃で流れ星を2つ(Lv4: 3つ)敵の密集地に落とす。各{0}%ダメージ。Lv7: 4回ごと
+skill.tidallance	HP半分以上の敵に+{1}%ダメージ。5回ごとの攻撃で津波が対象の後ろの道全体を襲う({0}%)。Lv4: 波が長くなる。Lv7: 4回ごと
+skill.solarflare	攻撃で燃焼が重なる(1回{0})。炎が近くの1体に燃え移る(Lv7: 2体)。燃えている敵に+{1}%ダメージ。Lv4: 長く燃える
+skill.worldtree	毎ウェーブ、レベルごとに+{0}キャンディ。4ウェーブごとにランダムな仲間1体を+1レベル(Lv7: 3ウェーブごと)。Lv4: 仲間2体を守る(+{1}%ダメージ、スタン/ロックを1回防ぐ)
+skill.starcharm	{1}%スロー。4回ごとの攻撃で対象を魅了: 0.7秒間後ろ向きに歩く(ボス: スロー)。Lv4: もう1体魅了。Lv7: 3回ごと
+skill.chainlightning	雷がさらに{0}体に連鎖(Lv4: +1)、{1}%ダメージ。Lv7: 連鎖した敵を短くスタン
+skill.glacierhowl	{1}%スロー。5回ごとの攻撃で遠吠えが対象の周りの敵を0.6秒凍らせる(Lv4: 0.8秒、ボス: スロー)。Lv7: 4回ごと
+skill.magmacharge	4回ごとの攻撃で突進: とても広い爆発、+{0}%ダメージ、敵をノックバック(ボス以外)。Lv4: 押し出し強化。Lv7: 爆発が燃える
+skill.bloomdisplay	4秒ごと: 近くの攻撃役4体に攻撃速度+{0}%(Lv4: +5%)とダメージ+{1}%。Lv7: 6体
+skill.crystalroll	装甲を{0}%破壊(Lv4: +10%)。装甲持ち・エリート・ボスに+{1}%ダメージ。Lv7: 3回に1回の転がりが50%広い
+skill.lanternglow	対象の周りの透明な敵を照らし出す。{0}%スロー、被ダメージ+{1}%のマーク(Lv4: +5%)。Lv7: 5回ごとにスタン
+skill.tigerpounce	送られてきた敵に+{0}%ダメージ。4回ごとの攻撃は2倍ダメージの飛びかかり(Lv4: 近くの1体にも当たる)。Lv7: 3回ごと
+skill.bamboocombo	同じ敵への連続ヒットごとに+{0}%ダメージ(最大5、Lv4: 6、Lv7: 8)。Lv7: 6回ごとに2回攻撃
+skill.cometshower	毎攻撃で別の敵に彗星を{0}つ追加で投げる(Lv4: +1、Lv7: +1)。{1}%範囲ダメージ
+skill.bubbletrap	{0}%スロー。4回ごとの攻撃で対象を泡に閉じ込める: 0.8秒スタン(Lv4: 1秒、ボス: スロー)、被ダメージ+15%
 arena.1	みどりの草原
 arena.2	ふかい森
 arena.3	火山
@@ -345,7 +366,7 @@ shop.free_tag	無料
 shop.best_value	お得
 shop.popular	人気
 shop.save_10	10%お得
-shop.legendary_chance	レジェンド！
+shop.legendary_chance	SSSチャンス！
 pass.tier_short	段階
 pass.unlock_premium	プレミアム解放
 lobby.pass_short	パス {0}/{1}
@@ -478,7 +499,30 @@ reject.not_ready	スキルをチャージ中
 reject.no_target	ターゲットなし
 reject.invalid_cell	そこには置けません
 reject.not_on_board	先にこのどうぶつを召喚してください - 強化は動物園にいるどうぶつにだけ効きます
-deck.spells_title	飼育員の魔法（タップで変更）
+deck.spells_title	飼育員の魔法
+deck.swap_hint	カードをタップして入れ替え · {0}/{1} 使用中
+send.rat_rush.desc	とても速くて安い。序盤の収入アップに。
+send.sneaky_ghost.desc	透明: 透明な敵が見える動物だけが攻撃できる(見つかるまで)。
+send.shield_turtle.desc	とても硬く、範囲ダメージを50%減らす。
+send.candy_crow.desc	ゲートに着くとキャンディを30盗む。
+send.brick_golem.desc	硬い。倒れると相手のマスを少しの間ロックする。
+send.mini_king.desc	子ネズミを呼ぶミニボス。1試合1回。
+send.twin_slime.desc	倒れると小さなスライム2体に分かれる。
+send.digger_mole.desc	数秒ごとに地面にもぐる: その間は動物の攻撃が当たらない。
+send.healer_shroom.desc	2秒ごとに周りのモンスターを回復する。
+send.fog_wisp.desc	透明で、周りのモンスターも何度も隠す。
+send.bomb_beetle.desc	倒れると爆発し、相手の動物2体を1秒スタンさせる。
+send.pixie_swarm.desc	とても速い小さなピクシー6体。単体攻撃のデッキに強い。
+deck.swap_badge	変更
+deck.send_info	{0}体 · キャンディ{1} · 収入 +{2}/ウェーブ
+spell.poison_fog	毒の霧
+spell.poison_fog.desc	毒の雲: 範囲内の敵に3秒間ダメージを与え、25%スローにする。
+spell.star_mark	星のしるし
+spell.star_mark.desc	範囲内の敵すべてにしるし: 4秒間被ダメージ+30%。透明な敵も見えるようになる。
+spell.shield_dome	シールドドーム
+spell.shield_dome.desc	自分の動物すべてを6秒間守る: ダメージ+15%、スタン/マスロックを1回防ぐ。狙い不要。
+spell.lucky_star	ラッキースター
+spell.lucky_star.desc	いちばんレベルの低い動物を+1レベル。狙い不要。
 deck.spell_cost	キャンディ {0}
 deck.spell_swap	このスロットに入れる魔法をえらぶ
 tutorial.spell	魔法！召喚の横のメテオかフリーズをタップして、敵が集まっている道をタップしよう。
@@ -549,13 +593,13 @@ shop.sold	売り切れ
 shop.gold_price	{0} ゴールド
 shop.gems_price	{0} ジェム
 shop.gacha	どうぶつ召喚
-shop.gacha_text	どうぶつのかけらを召喚。毎回レジェンドのチャンス！
-shop.pity	{0} 回以内にレジェンド確定
+shop.gacha_text	動物のかけらを召喚。毎回SSSのチャンス！
+shop.pity	{0}回以内にSランク以上確定
 shop.pull1	x1  {0} ジェム
 shop.pull10	x10  {0} ジェム
 shop.rates	排出率
 shop.rate_line	{0}: {1}%（かけら {2} 個）
-shop.pity_rule	{0} 回に最低1回はレジェンドが確定します。
+shop.pity_rule	{0}回ごとに少なくとも1回Sランク以上が確定。
 shop.chests	宝箱
 shop.chest_info	かけら {0}+、ゴールド {1}+
 shop.gold	ゴールド
@@ -712,7 +756,50 @@ unit.nectar_bee	みつばち
 unit.sprout_elephant	新芽ゾウ
 unit.moon_moth	月の蛾
 unit.aegis_ram	イージスラム
+unit.celestial_qilin	天界の麒麟
+unit.abyss_leviathan	深淵のリヴァイアサン
+unit.solar_lion	太陽の獅子
+unit.worldtree_tortoise	世界樹の亀
+unit.ninetail_star_fox	九尾の星狐
+unit.thunder_griffin	雷のグリフォン
+unit.glacier_wolf	氷河の狼
+unit.magma_rhino	マグマのサイ
+unit.bloom_peacock	花咲く孔雀
+unit.crystal_pangolin	水晶のセンザンコウ
+unit.lantern_jellyfish	ランタンクラゲ
+unit.flame_tiger_cub	炎紋の子トラ
+unit.bamboo_red_panda	竹のレッサーパンダ
+unit.comet_hamster	彗星ハムスター
+unit.puddle_duckling	水たまりのアヒルの子
+unit.sprout_anteater	新芽のアリクイ
+unit.leaf_okapi	葉っぱのオカピ
+unit.moss_kiwi	苔のキーウィ
+unit.bloom_snail	花咲くカタツムリ
+unit.drop_platypus	しずくのカモノハシ
+unit.brook_moose	小川のヘラジカ
+unit.frost_bear	霜の子グマ
+unit.river_otter	川のカワウソ
+unit.moon_lemur	月のキツネザル
+unit.star_eagle	星のワシ
+unit.sun_alpaca	太陽のアルパカ
+unit.prism_hummingbird	プリズムハチドリ
+unit.ember_devil	熾火のデビル
+unit.blaze_bison	炎のバイソン
+unit.torch_toucan	たいまつのオオハシ
+unit.chili_chameleon	トウガラシのカメレオン
 enemy.slime	スライム
+enemy.spore_puff	胞子キノコ
+enemy.dash_lizard	ダッシュトカゲ
+enemy.pebble_golem	小石ゴーレム
+enemy.shadow_blob	影のぷよ
+enemy.balloon_bat	風船コウモリ
+enemy.shield_beetle	盾カブト
+enemy.send_splitter	双子スライム
+enemy.send_mole	穴掘りモグラ
+enemy.send_mushroom	いやしキノコ
+enemy.send_wisp	霧のおにび
+enemy.send_bomb	爆弾カブト
+enemy.send_pixies	ちびピクシー
 enemy.imp	インプ
 enemy.rock_beetle	岩カブトムシ
 enemy.armored_knight	鎧の騎士
@@ -732,6 +819,12 @@ enemy.armored_scorpion	鎧サソリ
 enemy.clockwork_gorilla	からくりゴリラ
 enemy.void_hermit_crab	虚無ヤドカリ
 send.rat_rush	ネズミラッシュ
+send.twin_slime	双子スライム
+send.digger_mole	穴掘りモグラ
+send.healer_shroom	いやしキノコ
+send.fog_wisp	霧のおにび
+send.bomb_beetle	爆弾カブト
+send.pixie_swarm	ピクシーの群れ
 send.sneaky_ghost	こっそりゴースト
 send.shield_turtle	盾ガメ
 send.candy_crow	キャンディガラス
@@ -819,3 +912,90 @@ notify.login	{0}日目のプレゼントが待っています！
 notify.monthly	マンスリーカードのジェムを受け取れます。
 notify.comeback	モンスターが戻ってきた！動物たちが待っています。
 notify.missions	新しいミッションが届きました！
+stats.button	統計
+stats.title	試合の統計
+stats.you	{0}（あなた）
+stats.total	ダメージ {0}
+stats.line	送りで{0}ハート · 合体 {1} · 呪文 {2}
+stats.spells	呪文
+stats.none	ダメージなし
+stats.mvp	MVP
+reject.sends_locked	送りは最初のウェーブの後に解放
+battle.send_unlock	ウェーブ{0}
+talent.1	ボスハンター
+talent_desc.1	エリートとボスへのダメージ+90%。
+talent.2	迎撃
+talent_desc.2	相手が送ったモンスターへのダメージ+50%。
+talent.3	クリティカル
+talent_desc.3	3回に1回の攻撃が2倍ダメージ。
+talent.4	相性の達人
+talent_desc.4	有利属性のヒットがさらに+75%。
+talent.5	広域爆発
+talent_desc.5	範囲半径+30%。
+talent.6	集中砲火
+talent_desc.6	メインターゲットへのダメージ+35%。
+talent.7	冷気の煙
+talent_desc.7	ヒットごとに1秒間12%スロー。
+talent.8	粉砕
+talent_desc.8	ヒットごとに2秒間アーマー12%破壊。
+talent.9	持続
+talent_desc.9	スローとスタンが60%長く続く。
+talent.10	毒針
+talent_desc.10	ダメージ+25%。
+talent.11	ボスキラー
+talent_desc.11	ボスへのスタンが半減されず、ボスへのダメージ+20%。
+talent.12	マーク
+talent_desc.12	ヒットしたモンスターは2秒間被ダメージ+7%。
+talent.13	気前よし
+talent_desc.13	各ウェーブ開始時にレベル×3キャンディ。
+talent.14	不動
+talent_desc.14	ボスにスタンもマス封鎖もされない。
+talent.15	応援
+talent_desc.15	隣接する動物のダメージ+10%。
+talent.16	クイックチャージ
+talent_desc.16	アクティブスキルのチャージが30%速い。
+talent.title	{0}：タレント
+talent.intro	{0}の動物は段階ごとに1つ選べます。試合外なら無料で変更可能。
+talent.tier	段階{0}
+talent.tier_locked	段階{0}・カードLv{1}
+talent.need_level	カードLv{0}が必要
+talent.selected	使用中
+talent.pick	タップで選択
+talent.locked	未開放
+talent.button	タレント {0}/{1}
+talent.button_locked	タレント・Lv{0}で開放
+battle.hex	呪い
+battle.hex_pending	設置済
+battle.hex_title	{0}の次ウェーブを呪う・{1}キャンディ
+battle.hex_hint	相手の次ウェーブの通常モンスターは全て選んだ属性になります。相手にも予告されます。
+battle.hex_their_damage	相手のダメージ：{0}%
+battle.hexed	{0}の呪い：次のウェーブは全て{1}！
+battle.hex_cast	呪い成功：相手の次ウェーブは{0}
+battle.hex_wave	呪われたウェーブ：{0}のモンスター
+battle.sold	+{0}キャンディ
+battle.target	狙い:\n{0}
+battle.sell	売る
+battle.sell_confirm	本当に？
+battle.talents	タレント：{0}
+target.0	先頭
+target.1	密集
+target.2	最強
+target.3	送り
+reject.already_hexed	相手の次ウェーブは既に呪われています
+reject.hex_locked	呪いはウェーブ3から
+mayhem.5	電撃戦
+mayhem.6	ボスラッシュ
+mayhem.7	単一属性
+mayhem.8	呪い合戦
+mayhem_desc.5	モンスター40%速い、ウェーブが短い、初期キャンディ+50%。
+mayhem_desc.6	2ウェーブごとにボス、ボス対決の報酬2倍、サドンデスが早い。
+mayhem_desc.7	今週は全モンスターが{0}（有利+50%）。デッキを合わせよう！
+mayhem_desc.8	属性の呪いがウェーブ2から半額。
+rank.name	{0}ランク
+shop.pity_high	SSは{0}回以内・SSSは{1}回以内に確定
+shop.pity_rule_ss	{0}回ごとに少なくとも1回SSが確定。
+shop.pity_rule_sss	{0}回ごとに少なくとも1回SSSが確定。
+battle.aura	{0}ランクのオーラ：全員ダメージ+{1}%
+battle.aura_full	{0}ランクのオーラ：全員ダメージ+{1}%、攻撃速度+{2}%
+battle.evolve	進化
+battle.evolved	レベル{0}に進化！

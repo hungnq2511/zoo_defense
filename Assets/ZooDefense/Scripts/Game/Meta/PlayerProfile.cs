@@ -165,6 +165,17 @@ namespace ZooDefense.Game
             return levels;
         }
 
+        /// <summary>Bots pick talents too (random branches for the tiers their card levels unlock).</summary>
+        public static int[] BotTalents(BalanceConfig b, int[] levels, int seed)
+        {
+            if (levels == null) return null;
+            var rng = new DetRandom(seed ^ 0x7a1e);
+            var t = new int[levels.Length];
+            for (int i = 0; i < levels.Length; i++)
+                t[i] = Talents.Validate(b, Talents.Pack(1 + rng.Next(2), 1 + rng.Next(2)), levels[i]);
+            return t;
+        }
+
         static readonly string[] BotNames = { "Gojiraaaa", "Cujel", "MochiPaws", "TacoTiger", "NightOwlz", "BubbleKing", "SirHops", "Pandamonium", "FoxyLady", "LeafStorm" };
 
         /// <summary>4 random keeper spells for a bot.</summary>

@@ -13,11 +13,19 @@ namespace ZooDefense.Core
 
     public enum Role { Damage = 0, Area = 1, Control = 2, Support = 3 }
 
-    public enum Rarity { Common = 0, Rare = 1, Epic = 2, Legendary = 3 }
+    /// <summary>
+    /// Six tiers, C (most common) to SSS (rarest). The old names stay as aliases of the first four so older code and
+    /// saved configs keep working. SS and SSS animals also give the whole board an aura (BalanceConfig.rarityAura*).
+    /// </summary>
+    public enum Rarity
+    {
+        C = 0, B = 1, A = 2, S = 3, SS = 4, SSS = 5,
+        Common = C, Rare = B, Epic = A, Legendary = S,
+    }
 
     public enum EnemyKind { Normal = 0, Elite = 1, Boss = 2, Sent = 3 }
 
-    public enum TargetMode { First = 0, Densest = 1, Strongest = 2 }
+    public enum TargetMode { First = 0, Densest = 1, Strongest = 2, Sent = 3 }   // Sent: monsters the opponent sent first
 
     public enum UnitSkill
     {
@@ -42,6 +50,22 @@ namespace ZooDefense.Core
         RootArea = 17,        // area root value ticks (L4 value2), 4 s immunity per enemy; bosses slowed instead
         Silence = 18,         // every 4th hit silences for value ticks (L4 value2): stops enemy abilities
         AegisGuard = 19,      // support: shields value allies (L4 +1) for 3 s: blocks stuns / cell locks, +value2 % damage
+        // ---- Mythic (round 8, all SSS). Signature skills; level 4 and 7 upgrade them.
+        StarFall = 20,        // every 6th attack (L7 4th): 2 stars (L4 3) on the densest groups, value % damage each
+        TidalLance = 21,      // +value2 % on monsters above half HP; every 5th attack (L7 4th) a wave hits the whole lane behind the target at value %
+        SolarFlare = 22,      // hits burn (value per pulse, stacks) and spread a stack to 1 neighbour (L7 2); +value2 % on burning monsters
+        WorldTree = 23,       // value candy per level each wave; every 4 waves (L7 3) +1 level to an ally; L4 shields 2 allies (+value2 % damage)
+        StarCharm = 24,       // slow value2 %; every 4th hit (L7 3rd) charms: the monster walks back for value ticks (bosses slowed). L4 +1 monster
+        ChainLightning = 25,  // chains to value more monsters (L4 +1) at value2 %; L7 chained monsters are stunned briefly
+        GlacierHowl = 26,     // slow value2 %; every 5th attack (L7 4th) freezes monsters around the target value ticks (L4 +4)
+        MagmaCharge = 27,     // every 4th attack: wide blast +value % and knockback; L7 the blast burns (value2 per pulse)
+        BloomDisplay = 28,    // support: value % attack speed (L4 +5) and value2 % damage to 4 nearest attackers (L7 6)
+        CrystalRoll = 29,     // breaks value % armor (L4 +10); +value2 % on armored / elite / boss; L7 every 3rd roll is wider
+        LanternGlow = 30,     // reveals monsters around the target, slow value %, mark value2 % (L4 +5); L7 every 5th hit stuns
+        TigerPounce = 31,     // +value % on sent monsters; every 4th attack (L7 3rd) is a double-damage pounce; L4 pounce splashes a neighbour
+        BambooCombo = 32,     // +value % per hit in a row on the same monster (max 5, L4 6, L7 8); L7 every 6th hit strikes twice
+        CometShower = 33,     // every attack throws value extra comets (L4 +1, L7 +1) at other monsters, value2 % splash damage
+        BubbleTrap = 34,      // slow value %; every 4th hit bubbles the target: stunned value2 ticks (L4 +4), +15 % damage taken. L7 bubble pops
     }
 
     /// <summary>Special behaviour of wave / elite monsters (bosses use BossSkill).</summary>
@@ -51,6 +75,10 @@ namespace ZooDefense.Core
         DrumHaste = 1,   // every abilityInterval: +abilityValue % speed to up to 3 allies nearby for 2 s
         Enrage = 2,      // below 30% HP: +abilityValue % speed (once)
         Dash = 3,        // every abilityInterval: +abilityValue % speed for 0.7 s
+        Burrow = 4,      // every abilityInterval: underground for abilityValue ticks (animals cannot hit it; spells still can)
+        HealPulse = 5,   // every abilityInterval: heals monsters around it by abilityValue % of their max HP
+        FogAura = 6,     // every abilityInterval: hides itself and the monsters around it again (until something reveals them)
+        Fade = 7,        // every abilityInterval: turns invisible again (until something reveals it)
     }
 
     public enum BossSkill
@@ -71,6 +99,10 @@ namespace ZooDefense.Core
         Rage = 4,       // all units attack value2 % faster for value ticks (no target)
         CandyRain = 5,  // kills give value2 % more candy for value ticks (no target)
         Lightning = 6,  // value damage (scaled by wave HP) to the strongest enemy (no target)
+        PoisonFog = 7,  // area: poison for 3 s (value per pulse, scaled by wave HP) and value2 % slow
+        StarMark = 8,   // area: reveals and marks: +value % damage taken for value2 ticks
+        ShieldDome = 9, // all your animals: block 1 stun / cell lock and +value2 % damage for value ticks (no target)
+        LuckyStar = 10, // +1 level to your lowest-level animal (no target)
     }
 
     /// <summary>Choices offered every few waves; each player keeps the one they pick for the rest of the match.</summary>
@@ -134,6 +166,10 @@ namespace ZooDefense.Core
         public EnemyAbility ability;
         public int abilityIntervalTicks;
         public int abilityValue;
+        // Round 9 monsters
+        public int splitCount;           // on death: splits into this many small copies (35% HP each, they do not split again)
+        public int deathHealPercent;     // on death: heals monsters around it by this % of their max HP
+        public int deathStunUnits;       // on death: stuns this many random animals for 1 s (shields block it)
     }
 
     [Serializable]
@@ -206,17 +242,19 @@ namespace ZooDefense.Core
         public int baseEnemiesPerWave = 6;
         public int enemiesPerWaveStep = 1;
         public int maxEnemiesPerWave = 22;
-        public int hpGrowthPercentPerWave = 9;
+        public int hpGrowthPercentPerWave = 10;
         /// <summary>Enemy HP scale of wave 1 (permille). Higher start + gentler growth = pressure from the first minute.</summary>
         public int waveHpStartPermille = 1700;
         public int eliteEveryNWaves = 3;
         public int bossEveryNWaves = 5;
-        public int suddenDeathWave = 13;
+        public int suddenDeathWave = 12;
         public int suddenDeathHpPercent = 15;
         public int waveBonusBase = 40;
         public int waveBonusPerWave = 15;
         public int killCandyGrowthPercentPerWave = 8;
 
+        /// <summary>Sends unlock when this wave starts: both players build a defence before the first attack (no opening rush).</summary>
+        public int sendUnlockWave = 2;
         /// <summary>Max sends travelling to one player at the same time.</summary>
         public int maxIncomingSendsPerWave = 3;
         /// <summary>Sent monsters arrive this long after being sent (live, not at the next wave).</summary>
@@ -257,9 +295,13 @@ namespace ZooDefense.Core
         public int unitUpgradeBaseCost = 50;
         public int unitUpgradeCostStep = 50;
         public int unitUpgradePercent = 15;
-        /// <summary>Extra candy for choosing which animal to summon (by rarity: common, rare, epic, legendary).
+        /// <summary>Extra candy for choosing which animal to summon (by rarity C, B, A, S, SS, SSS).
         /// The random Summon keeps the base price, so choosing is a real trade-off.</summary>
-        public int[] summonPickExtra = { 10, 15, 25, 35 };
+        public int[] summonPickExtra = { 10, 15, 25, 35, 40, 50 };
+        /// <summary>Rarity aura (by rarity C..SSS): while an animal of that tier stands on the board, EVERY animal of that
+        /// board gets this % damage / attack speed. Only the best tier on the board counts (no stacking).</summary>
+        public int[] rarityAuraDamagePercent = { 0, 0, 0, 0, 5, 8 };
+        public int[] rarityAuraSpeedPercent = { 0, 0, 0, 0, 0, 8 };
 
         // ---- Candy balloons: float across the board, tap before they leave.
         public int balloonFirstDelayTicks = 300;
@@ -279,12 +321,36 @@ namespace ZooDefense.Core
         // ---- Reflect an incoming send back to the sender (paid with send points).
         public int reflectCostPercent = 60;
 
+        // ---- Tactics: sell an animal, hex the opponent's next wave, card talents.
+        /// <summary>Selling returns this % of the cards in the animal (base price x 2^(level-1)).</summary>
+        public int sellRefundPercent = 40;
+        /// <summary>Element Hex: forces every normal monster of the opponent's next wave into one element.</summary>
+        public int hexUnlockWave = 3;
+        public int hexBaseCost = 70;
+        public int hexCostStep = 35;
+        public int hexCostPercent = 100;
+        /// <summary>PvP: monster HP follows both players' average card power (this % of it), so matches last about
+        /// as long at every trophy level. Upgrades still matter against the opponent. 0 = off.</summary>
+        public int waveHpCardScalePercent = 100;
+        /// <summary>
+        /// Evolve (tap an animal, pay candy, +1 level). Price = current card price x evolveCardCostPercent[level-1] %:
+        /// 0.75 of a summon for level 1->2 rising to 1.25 for 6->7, so each step costs visibly more. Far cheaper than
+        /// merging at the top (a level 7 by merges needs 64 summons), so level 7 stays reachable.
+        /// Bot audit Oct 2026: evolving bot beats a non-evolving one ~55%; level 7 on ~6% of boards.
+        /// </summary>
+        public int[] evolveCardCostPercent = { 75, 85, 95, 105, 115, 125 };
+        public int evolvePricePercent = 100;   // global multiplier on the table above
+        /// <summary>Card level that unlocks talent tier 1 / tier 2.</summary>
+        public int talentTier1Level = 9;
+        public int talentTier2Level = 12;
+
         // ---- Active unit skills (tap a glowing animal).
         public int skillMinLevel = 3;
         public int skillChargeTicks = 360;
         public int skillChargeReductionPerLevel = 30;
 
-        public string[] normalEnemyIds = { "slime", "imp", "rock_beetle", "bandit_raccoon", "crystal_bat" };
+        public string[] normalEnemyIds = { "slime", "imp", "rock_beetle", "bandit_raccoon", "crystal_bat",
+            "spore_puff", "dash_lizard", "pebble_golem", "shadow_blob", "balloon_bat", "shield_beetle" };
         public string[] eliteEnemyIds = { "armored_knight", "drum_goblin", "armored_scorpion" };
         /// <summary>Boss rotation; each match starts at a different point (from the seed) so bosses vary.</summary>
         public string[] bossEnemyIds = { "boss_summoner", "clockwork_gorilla", "boss_stunner", "void_hermit_crab", "boss_healer" };

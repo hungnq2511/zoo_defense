@@ -61,6 +61,10 @@ namespace ZooDefense.Core
         UpgradeUnit = 15,   // A = deck slot: powers up that animal for the rest of the match
         SummonUnit = 16,    // A = deck slot, B = cell (-1 = random free cell): summon a chosen animal (costs more)
         Assist = 17,        // raid only. A = 0: give candy to the partner, 1: rage the partner's team
+        Sell = 18,          // A = cell: remove the animal for part of its candy value
+        SetTarget = 19,     // A = cell, B = (int)TargetMode: what that animal shoots first
+        Hex = 20,           // A = (int)Element: the opponent's next wave monsters all take this element
+        Evolve = 21,        // A = cell: pay candy to raise that animal one level (no merge partner needed)
     }
 
     /// <summary>
@@ -100,6 +104,9 @@ namespace ZooDefense.Core
         public int hasteTicks, hastePercent;   // nectar bee buff
         public int guardTicks, guardCharges, guardBonus;   // aegis ram shield
         public int knockbackReadyTick;
+        /// <summary>Player-chosen target priority (-1 = the animal's default).</summary>
+        public int target = -1;
+        public int comboUid, comboStacks;   // bamboo red panda: hits in a row on one monster
     }
 
     public sealed class EnemyInstance
@@ -116,6 +123,7 @@ namespace ZooDefense.Core
         public int stunTicks;
         public int burnTicks;
         public int burnDamage;   // per burn pulse
+        public int burnSource = -1;   // unit def that set the burn (match stats only)
         public bool revealed;
         public int sender = -1;  // player index who sent it, -1 for wave enemies
         public int skillTimer;
@@ -132,6 +140,9 @@ namespace ZooDefense.Core
         public int pendingTicks = -1, pendingCell = -1;   // telegraphed boss skill
         public bool raid;                        // the shared raid boss (HP lives in Match.RaidHp)
         public int speedPercent = 100;
+        public int charmTicks;                   // star fox: walks backwards
+        public int burrowTicks;                  // mole: underground, animals cannot target it
+        public bool splitChild;                  // splitter offspring: never splits again
     }
 
     public struct PendingSpawn
@@ -190,6 +201,16 @@ namespace ZooDefense.Core
         AssistGiven,
         // raid boss arrived (a = boss uid on this board, b = shared HP)
         RaidBossArrived,
+        // a = unit uid, b = cell, c = candy refunded
+        UnitSold,
+        // a = unit uid, b = (int)TargetMode
+        TargetChanged,
+        // board = the hexed board, a = element, b = caster board, c = wave it applies to
+        HexCast,
+        // board = the hexed board, a = element (the wave started hexed)
+        HexApplied,
+        // a = unit uid, b = new level, c = candy paid
+        UnitEvolved,
     }
 
     public enum RejectReason : byte
@@ -198,6 +219,12 @@ namespace ZooDefense.Core
         AlreadyUsed, MaxLevel, InvalidSlot, MatchOver,
         Cooldown, NotReady, NoTarget, NotOffered,
         NotOnBoard,
+        /// <summary>Sends are locked until BalanceConfig.sendUnlockWave.</summary>
+        SendsLocked,
+        /// <summary>The opponent's next wave is already hexed.</summary>
+        AlreadyHexed,
+        /// <summary>Hex is not unlocked yet (BalanceConfig.hexUnlockWave).</summary>
+        HexLocked,
     }
 
     /// <summary>One-shot notification for presentation (VFX, sounds, toasts). Never read back by the sim.</summary>
@@ -226,6 +253,8 @@ namespace ZooDefense.Core
         public int[] cardLevels;
         /// <summary>Keeper spell ids (up to 4). Missing = DefaultContent.DefaultSpells.</summary>
         public string[] spells;
+        /// <summary>Talent picks per deck entry (Talents.Pack). Missing = none. Only tiers unlocked by cardLevels count.</summary>
+        public int[] talents;
     }
 
     [Serializable]

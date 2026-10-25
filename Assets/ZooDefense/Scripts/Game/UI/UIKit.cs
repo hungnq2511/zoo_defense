@@ -259,4 +259,20 @@ namespace ZooDefense.Game
             }
         }
     }
+
+    /// <summary>Cycles an Image's colour through the rainbow (SSS badges and frames).</summary>
+    public sealed class RainbowTint : MonoBehaviour
+    {
+        Image _img;
+        float _t;
+        void Awake() { _img = GetComponent<Image>(); }
+        void Update()
+        {
+            if (_img == null) return;
+            _t += Time.unscaledDeltaTime;
+            var c = Color.HSVToRGB(Mathf.Repeat(_t * 0.25f, 1f), 0.6f, 1f);
+            c.a = _img.color.a;
+            _img.color = c;
+        }
+    }
 }

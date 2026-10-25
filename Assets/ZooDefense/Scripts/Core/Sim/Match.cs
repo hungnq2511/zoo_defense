@@ -78,6 +78,15 @@ namespace ZooDefense.Core
             _bossOffset = Balance.bossEnemyIds.Length > 0 ? (setup.seed & 0x7fffffff) % Balance.bossEnemyIds.Length : 0;
             for (int i = 0; i < 2; i++)
                 Boards[i] = new Board(this, i, setup.players[i], new DetRandom(setup.seed * 31 + 7 + i * 1013));
+            if (!IsSolo && !IsCoop && Balance.waveHpCardScalePercent > 0)
+            {
+                long sum = 0; int n = 0;
+                for (int i = 0; i < 2; i++)
+                    foreach (var d in Boards[i].Deck) { sum += Boards[i].CardPercent(d); n++; }
+                int avg = n > 0 ? (int)(sum / n) : 100;
+                int scale = 100 + (avg - 100) * Balance.waveHpCardScalePercent / 100;
+                WaveHpPermille = Math.Max(100, (int)((long)WaveHpPermille * scale / 100));
+            }
         }
 
         void PickStarCells()
@@ -203,6 +212,10 @@ namespace ZooDefense.Core
                 case CommandType.SummonUnit: r = board.SummonUnit(c.a, c.b); break;
                 case CommandType.Emote: Emit(new SimEvent(SimEventType.Emote, c.player, c.a)); r = RejectReason.None; break;
                 case CommandType.Assist: r = IsCoop ? board.Assist(c.a) : RejectReason.InvalidSlot; break;
+                case CommandType.Sell: r = board.Sell(c.a); break;
+                case CommandType.SetTarget: r = board.SetTarget(c.a, c.b); break;
+                case CommandType.Hex: r = (IsSolo || IsCoop) ? RejectReason.InvalidSlot : board.Hex(c.a); break;
+                case CommandType.Evolve: r = board.Evolve(c.a); break;
                 default: r = RejectReason.InvalidSlot; break;
             }
             if (r != RejectReason.None)

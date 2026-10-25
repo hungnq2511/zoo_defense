@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using ZooDefense.Core;
@@ -42,8 +43,8 @@ namespace ZooDefense.Tests
         public void DefaultContent_IsValid()
         {
             var c = Content();
-            Assert.AreEqual(30, c.Units.Count);   // 20 launch animals + Expansion 1
-            Assert.AreEqual(7, c.Sends.Count);   // 6 sends + the boss-duel remnant
+            Assert.AreEqual(61, c.Units.Count);   // 20 launch animals + Expansion 1 + 15 mythic (round 8) + 16 wild friends (round 9)
+            Assert.AreEqual(13, c.Sends.Count);   // 12 sends + the boss-duel remnant
         }
 
         [Test]
@@ -108,8 +109,9 @@ namespace ZooDefense.Tests
         {
             var m = new Match(Content(), Setup(3));
             var a = m.Boards[0];
+            while (m.Wave < m.Balance.sendUnlockWave) m.Step();   // sends unlock at wave 2
             int candy = a.Candy, cost = a.SendCost(0), income = a.SendIncome(0);
-            m.Submit(new Command(0, 0, CommandType.SendMonster, 0));
+            m.Submit(new Command(m.Tick, 0, CommandType.SendMonster, 0));
             m.Step();
             Assert.AreEqual(1, m.Boards[1].IncomingSends.Count, "travelling to the opponent");
             Assert.AreEqual(candy - cost, a.Candy);
@@ -117,6 +119,32 @@ namespace ZooDefense.Tests
             // It arrives live (not at the next wave) after the travel time.
             m.RunUntil(m.Tick + m.Balance.sendTravelTicks + 2);
             Assert.AreEqual(0, m.Boards[1].IncomingSends.Count, "arrived");
+        }
+
+        [Test]
+        public void SendMonster_LockedDuringTheFirstWave()
+        {
+            var m = new Match(Content(), Setup(3));
+            m.Submit(new Command(0, 0, CommandType.SendMonster, 0));
+            m.Step();
+            Assert.AreEqual(0, m.Boards[1].IncomingSends.Count, "no opening rush");
+            Assert.AreEqual(m.Balance.startCandy, m.Boards[0].Candy, "nothing paid");
+        }
+
+        [Test]
+        public void MatchStats_CountDamagePerAnimal()
+        {
+            var m = new Match(Content(), Setup(6));
+            for (int t = 0; t < 20 * 90 && !m.IsOver; t++)
+            {
+                if (t % 20 == 0) { m.Submit(new Command(m.Tick, 0, CommandType.Summon, -1)); m.Submit(new Command(m.Tick, 1, CommandType.Summon, -1)); }
+                m.Step();
+            }
+            long total = 0;
+            foreach (var d in m.Boards[0].DamageByUnit) total += d;
+            Assert.IsTrue(total > 0, "animals dealt damage");
+            for (int i = 0; i < m.Content.Units.Count; i++)
+                if (m.Boards[0].DamageByUnit[i] > 0) Assert.GreaterOrEqual(Array.IndexOf(m.Boards[0].Deck, i), 0, "only deck animals deal damage");
         }
 
         [Test]

@@ -506,6 +506,15 @@ namespace ZooDefense.Game
                 PathMath.Point(_b, e.prevDistance, out x0, out y0);
                 PathMath.Point(_b, e.distance, out x1, out y1);
                 v.root.transform.localPosition = Vector3.Lerp(new Vector3(x0, y0) / 1000f, new Vector3(x1, y1) / 1000f, alpha);
+                if (v.facesRight)
+                {
+                    // Face the way the lane goes (keeps the last facing on vertical stretches).
+                    int ax, ay, bx, by;
+                    PathMath.Point(_b, e.distance, out ax, out ay);
+                    PathMath.Point(_b, e.distance + 120, out bx, out by);
+                    if (bx - ax < -20) v.SetFlip(true);
+                    else if (bx - ax > 20) v.SetFlip(false);
+                }
                 v.Sync(e, dt);
             }
             foreach (var kv in _enemies) if (!kv.Value.seen) _remove.Add(kv.Key);
@@ -744,6 +753,8 @@ namespace ZooDefense.Game
                 case 2: return Art.Hex(0xD6B8FF);   // silenced
                 case 3: return Art.Hex(0x9AE6FF);   // frozen
                 case 4: return Art.Hex(0xFFB070);   // armor break
+                case 6: return Art.Hex(0x5FC8FF);   // tidal wave
+                case 7: return Art.Hex(0xC9A2FF);   // charmed
                 default: return Art.Hex(0xFF9AD5);  // marked
             }
         }
@@ -821,6 +832,47 @@ namespace ZooDefense.Game
                         _fx.SpriteFx(icon, p, p + up * 0.55f * ws, 0.2f * ws, 0.5f * ws, 0.8f, Color.white, 0f, 0.03f * n++);
                         _fx.Puff(p, Art.Hex(0xFF4D4D), 1.1f * ws, 0.5f);
                     }
+                    break;
+                }
+                case SpellKind.PoisonFog:
+                {
+                    // A purple cloud settles on the area and bubbles for a while.
+                    _fx.SpriteFx(icon, at + up * 0.6f * ws, at, 0.6f * ws, 1.4f * ws, 0.5f, Color.white, 0f, 0f, false, 0f, 0.1f, 0.3f);
+                    _fx.SpriteFx(Art.Glow, at, at, radius * 0.6f, radius * 1.05f, 3f, new Color(0.62f, 0.35f, 0.9f, 0.45f), 0f, 0.2f);
+                    for (int i = 0; i < 8; i++)
+                    {
+                        float ang = i * Mathf.PI / 4f + 0.2f;
+                        var p = at + new Vector3(Mathf.Cos(ang), Mathf.Sin(ang) * 0.7f, 0f) * radius * 0.35f;
+                        _fx.SpriteFx(Art.Circle, p, p + up * 0.5f * ws, 0.15f * ws, 0.32f * ws, 0.9f, new Color(0.75f, 0.5f, 1f, 0.8f), 0f, 0.3f + i * 0.25f);
+                    }
+                    break;
+                }
+                case SpellKind.StarMark:
+                {
+                    // A star drops, then a golden ring marks every monster in the area.
+                    _fx.SpriteFx(icon, at + up * 2.5f * ws, at, 0.9f * ws, 1.3f * ws, 0.3f, Color.white, 360f, 0f, true, 0f, 0f, 0.2f);
+                    _fx.SpriteFx(Art.Circle, at, at, 0.3f * ws, radius, 0.45f, new Color(1f, 0.85f, 0.3f, 0.55f), 0f, 0.3f);
+                    _fx.Puff(at, Art.Hex(0xFFE066), radius * 0.7f, 0.5f);
+                    break;
+                }
+                case SpellKind.ShieldDome:
+                {
+                    // A glassy dome over the zoo and a little shield on every animal.
+                    _fx.SpriteFx(Art.Glow, transform.position, transform.position, 1f * ws, Width * ws * 1.15f, 0.8f, new Color(0.45f, 0.85f, 1f, 0.45f), 0f);
+                    int n = 0;
+                    foreach (var kv in _units)
+                    {
+                        var p = kv.Value.root.transform.position;
+                        _fx.SpriteFx(icon, p + up * 0.2f * ws, p + up * 0.5f * ws, 0.25f * ws, 0.5f * ws, 0.9f, Color.white, 0f, 0.03f * n++);
+                    }
+                    break;
+                }
+                case SpellKind.LuckyStar:
+                {
+                    // A lucky star flies over the board (the level-up pop shows on the animal itself).
+                    var top = CellWorld(_b.gridCols * (_b.gridRows - 1) + _b.gridCols / 2) + up * 1.6f * ws;
+                    _fx.SpriteFx(icon, top + new Vector3(-1.2f, 0.4f, 0f) * ws, top, 0.6f * ws, 1.2f * ws, 0.6f, Color.white, 360f, 0f, false, 0f, 0f, 0.4f);
+                    _fx.Puff(top, Art.Hex(0x9BFFB5), 1.6f * ws, 0.5f);
                     break;
                 }
                 case SpellKind.CandyRain:
@@ -921,10 +973,11 @@ namespace ZooDefense.Game
                 if (level == _shownLevel) return;
                 _shownLevel = level;
                 _level.text = level.ToString();
-                var sprite = Art.Unit(_def.id, level);
+                int look = Art.BattleLook(level);   // art changes at level 3 and 5
+                var sprite = Art.Unit(_def.id, look);
                 _art.sprite = sprite;
                 _still = sprite;
-                _cast = sprite != null ? Art.UnitCast(_def.id, level) : null;
+                _cast = sprite != null ? Art.UnitCast(_def.id, look) : null;
                 _castT = -1f;
                 _hasArt = sprite != null;
                 _art.gameObject.SetActive(_hasArt);
@@ -1053,6 +1106,8 @@ namespace ZooDefense.Game
                 _size = Mathf.Max(0.3f, def.size / 1000f);
                 _color = Color.Lerp(Art.ElementColor(e.element), Art.Hex(0x4B2E6B), def.kind == EnemyKind.Sent ? 0.55f : 0.3f);
                 _walk = Art.EnemyWalk(def.id);
+                facesRight = Art.EnemyFacesRight(def.id);
+                SetFlip(false);
                 _walkFrame = -1;
                 _walkTime = (e.uid * 0.37f) % 1f;   // desync identical enemies walking side by side
                 var sprite = _walk != null ? _walk.frames[0] : Art.Enemy(def.id);
@@ -1127,6 +1182,10 @@ namespace ZooDefense.Game
                 Apply();
                 return !_motion.DeathFinished;
             }
+
+            /// <summary>True when the art is a right-facing side view (mirrored on lanes going left).</summary>
+            public bool facesRight;
+            public void SetFlip(bool flip) { if (_art.flipX != flip) _art.flipX = flip; }
 
             public void Sync(EnemyInstance e, float dt)
             {

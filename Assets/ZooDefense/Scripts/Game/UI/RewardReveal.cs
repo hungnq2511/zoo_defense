@@ -219,7 +219,7 @@ namespace ZooDefense.Game
             }
         }
 
-        static Color TierColor(int tier) { return Art.RarityColor((Rarity)Mathf.Clamp(tier, 0, 3)); }
+        static Color TierColor(int tier) { return Art.RarityColor((Rarity)Mathf.Clamp(tier, 0, (int)Rarity.SSS)); }
 
         void Skip()
         {
@@ -241,7 +241,7 @@ namespace ZooDefense.Game
             _t += dt;
 
             // Flash + ring fade
-            if (_flash.color.a > 0f) _flash.color = new Color(1f, 1f, 1f, Mathf.Max(0f, _flash.color.a - dt * 2.5f));
+            if (_flash.color.a > 0f) _flash.color = new Color(_flash.color.r, _flash.color.g, _flash.color.b, Mathf.Max(0f, _flash.color.a - dt * 2.5f));
             var ringImg = _ring.GetComponent<Image>();
             if (ringImg.color.a > 0f)
             {
@@ -294,7 +294,7 @@ namespace ZooDefense.Game
                 {
                     var c = _cards[_flipIndex++];
                     c.flipAt = _t;
-                    _nextFlip = _t + (c.tier >= 2 ? 0.6f : 0.2f);
+                    _nextFlip = _t + (c.tier >= 4 ? 1.4f : (c.tier >= 2 ? 0.6f : 0.2f));   // SS / SSS: a real moment
                 }
                 bool allDone = _flipIndex >= _cards.Count;
                 foreach (var c in _cards)
@@ -308,10 +308,19 @@ namespace ZooDefense.Game
                         c.back.gameObject.SetActive(false);
                         c.front.gameObject.SetActive(true);
                         if (c.rays != null) c.rays.gameObject.SetActive(true);
-                        if (c.tier >= 2) { AudioService.Play(Sfx.Chest, 0.8f); _flash.color = new Color(1f, 1f, 1f, 0.35f); }
+                        if (c.tier >= 4)
+                        {
+                            AudioService.Play(Sfx.Win, 1f);
+                            AudioService.Play(Sfx.Chest, 1f);
+                            var tc = TierColor(c.tier);
+                            _flash.color = new Color(tc.r, tc.g, tc.b, 0.75f);
+                            if (c.rays != null) { c.rays.localScale = Vector3.one * 1.4f; if (c.tier >= 5) c.rays.gameObject.AddComponent<RainbowTint>(); }
+                        }
+                        else if (c.tier >= 2) { AudioService.Play(Sfx.Chest, 0.8f); _flash.color = new Color(1f, 1f, 1f, 0.35f); }
                         else AudioService.Play(Sfx.Reward, 0.35f);
                     }
-                    float punch = c.tier >= 2 && k >= 1f ? 1f + 0.06f * Mathf.Max(0f, 1f - (_t - c.flipAt - FlipTime) * 3f) : 1f;
+                    float punchAmp = c.tier >= 4 ? 0.18f : 0.06f;
+                    float punch = c.tier >= 2 && k >= 1f ? 1f + punchAmp * Mathf.Max(0f, 1f - (_t - c.flipAt - FlipTime) * (c.tier >= 4 ? 1.5f : 3f)) : 1f;
                     c.root.localScale = new Vector3(Mathf.Max(0.02f, sx) * punch, punch, 1f);
                     if (k < 1f) allDone = false;
                 }

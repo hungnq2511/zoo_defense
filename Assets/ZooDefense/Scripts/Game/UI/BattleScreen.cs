@@ -64,6 +64,8 @@ namespace ZooDefense.Game
         float _bannerTime, _myBubbleTime, _oppBubbleTime, _focusTime, _emoteCooldown, _t;
         DeckCard[] _deckCards;
         SendButton[] _sends;
+        HexButton _hex;
+        HexPicker _hexPicker;
         SpellButton[] _spells;
         readonly List<IncomingRow> _incoming = new List<IncomingRow>();
         UnitSheet _sheet;
@@ -72,6 +74,8 @@ namespace ZooDefense.Game
         float _endTimer = -1f;
         RectTransform _tugMine, _duelPanel, _waveChip;
         Element _shownWaveElement = (Element)(-1), _shownNextElement = (Element)(-1);
+        bool _shownHexNext;
+        int _shownAura;
         Image _thumbFlash;
         Bar _duelMine, _duelOpp;
         float _tugShare = 0.5f;
@@ -126,22 +130,26 @@ namespace ZooDefense.Game
             // Out-of-match card levels: the player's upgrades, the bot near the player's average.
             var deck = _tutorial ? (string[])TutorialDeck.Clone() : (_cfg != null && _cfg.playerDeck != null ? _cfg.playerDeck : profile.deck);
             var levels = _tutorial ? null : (_cfg != null && _cfg.playerLevels != null ? _cfg.playerLevels : App.Meta.DeckLevels(deck));
+            // Talents only with your own card levels (modes with fixed levels - mirror, tournament, daily - are talent-free).
+            var talents = _tutorial || (_cfg != null && _cfg.playerLevels != null) ? null : App.Meta.DeckTalents(deck);
             var botDeck = _tutorial ? (string[])TutorialDeck.Clone() : (_botDeckOverride != null ? (string[])_botDeckOverride.Clone() : BotBrain.RandomDeck(content, _seed ^ 0x5bd1e995));
             var botLevels = _tutorial ? null : (_cfg != null && _cfg.botLevels != null ? _cfg.botLevels : MetaRules.BotCardLevels(levels, botDeck.Length, _seed ^ 0x2c1b3c6d));
             if (botLevels != null && _botLevelOffset != 0 && (_cfg == null || _cfg.botLevels == null))
                 for (int i = 0; i < botLevels.Length; i++) botLevels[i] = Mathf.Clamp(botLevels[i] + _botLevelOffset, 1, 15);
+            var botTalents = talents != null && (_cfg == null || _cfg.botLevels == null) ? MetaRules.BotTalents(content.Balance, botLevels, _seed ^ 0x1f2e) : null;
             var setup = IsOnline ? _cfg.online.setup : _cfg != null && _cfg.replay != null ? _cfg.replay.setup : new MatchSetup
             {
                 seed = _seed,
                 players = new[]
                 {
-                    new PlayerSetup { name = profile.playerName, deck = deck, sendDeck = profile.sendDeck, cardLevels = levels, spells = profile.spells },
+                    new PlayerSetup { name = profile.playerName, deck = deck, sendDeck = profile.sendDeck, cardLevels = levels, talents = talents, spells = profile.spells },
                     new PlayerSetup
                     {
                         name = _opponentName,
                         deck = botDeck,
-                        sendDeck = _tutorial ? new[] { "rat_rush", "rat_rush", "rat_rush", "rat_rush" } : new[] { "rat_rush", "sneaky_ghost", "candy_crow", "brick_golem" },
+                        sendDeck = _tutorial ? new[] { "rat_rush", "rat_rush", "rat_rush", "rat_rush" } : BotBrain.RandomSendDeck(content, _seed ^ 0x5e4d),
                         cardLevels = botLevels,
+                        talents = botTalents,
                         spells = MetaRules.BotSpells(content, _seed),
                     },
                 },
@@ -353,9 +361,17 @@ namespace ZooDefense.Game
             _points.rectTransform.Stretch(0, 0, 80, 30);
             UIKit.Label(pts, Loc.T("battle.per_wave"), 18, new Color(1f, 1f, 1f, 0.8f), TextAnchor.LowerCenter).rectTransform.Stretch(0, 0, 0, 10);
 
-            _sendsRoot = UIKit.Rect("sends", info).Place(left, left, new Vector2(340, 0), new Vector2(450, StripHeight - 20));
+            // Sends + the Element Hex button (PvP only) share the row.
+            bool hexOn = !_match.IsSolo && !_match.IsCoop;
+            float sendsW = hexOn ? 362f : 450f;
+            _sendsRoot = UIKit.Rect("sends", info).Place(left, left, new Vector2(340, 0), new Vector2(sendsW, StripHeight - 20));
             _sends = new SendButton[_me.SendDeck.Length];
-            float w = 450f / Mathf.Max(4, _sends.Length);
+            float w = sendsW / Mathf.Max(4, _sends.Length);
+            if (hexOn)
+            {
+                _hex = new HexButton(info, new Vector2(340 + sendsW + 4, 0), new Vector2(88, StripHeight - 20), ToggleHexPicker);
+                _hexPicker = new HexPicker(this);
+            }
             for (int i = 0; i < _sends.Length; i++)
             {
                 int slot = i;
@@ -691,7 +707,7 @@ namespace ZooDefense.Game
                 {
                     if (IsReplay) { App.Show(new ReplaysScreen()); return; }
                     var record = MatchRecord.From(_match);
-                    if (!_tutorial) ReplayStore.Add(record, _opponentName, _match.Winner == _runner.LocalPlayer ? 0 : (_match.Winner < 0 ? -1 : 1), App.Now);
+                    if (!_tutorial) ReplayStore.Add(record, _opponentName, _match.Winner == _runner.LocalPlayer ? 0 : (_match.Winner < 0 ? -1 : 1), App.Now, _runner.LocalPlayer);
                     var summary = new MatchSummary
                     {
                         winner = _match.Winner == _runner.LocalPlayer ? 0 : (_match.Winner < 0 ? -1 : 1),
@@ -739,12 +755,33 @@ namespace ZooDefense.Game
                 _wave.color = _match.IsSuddenDeath ? Palette.Red : Ink;
                 _timer.text = (seconds / 60) + ":" + (seconds % 60).ToString("00");
             }
-            var waveEl = _match.Wave == 0 ? Element.None : _match.WaveElement;
-            if (waveEl != _shownWaveElement || _match.NextWaveElement != _shownNextElement)
+            // SS / SSS on the board: the whole team gets the rarity aura (announce it when it starts).
+            int aura = _me.AuraTier;
+            if (aura != _shownAura)
+            {
+                if (aura >= (int)Rarity.SS && aura > _shownAura)
+                {
+                    var r = (Rarity)aura;
+                    string auraText = _me.AuraSpeedPercent > 0
+                        ? Loc.F("battle.aura_full", Art.RarityLetter(r), _me.AuraDamagePercent, _me.AuraSpeedPercent)
+                        : Loc.F("battle.aura", Art.RarityLetter(r), _me.AuraDamagePercent);
+                    ShowBanner(auraText, Palette.Text, 2.4f,
+                        Color.Lerp(Art.RarityColor(r), Color.black, 0.35f));
+                    AudioService.Play(Sfx.Upgrade, 0.8f);
+                }
+                _shownAura = aura;
+            }
+
+            // An opponent's Element Hex replaces the element of your wave (purple ring).
+            bool hexNow = _me.HexThisWave != Element.None, hexNext = _me.HexNext != Element.None;
+            var waveEl = _match.Wave == 0 ? Element.None : (hexNow ? _me.HexThisWave : _match.WaveElement);
+            var nextEl = _me.NextWaveElementHere;
+            if (waveEl != _shownWaveElement || nextEl != _shownNextElement || hexNext != _shownHexNext)
             {
                 _shownWaveElement = waveEl;
-                _shownNextElement = _match.NextWaveElement;
-                WaveChip.Draw(_waveChip, waveEl, _match.NextWaveElement);
+                _shownNextElement = nextEl;
+                _shownHexNext = hexNext;
+                WaveChip.Draw(_waveChip, waveEl, nextEl, hexNow, hexNext);
             }
             int span = _match.Wave == 0 ? b.firstWaveDelayTicks : b.waveDurationTicks;
             _waveBar.Set(1f - ticksLeft / (float)Mathf.Max(1, span), "");
@@ -788,7 +825,18 @@ namespace ZooDefense.Game
                 var def = App.Content.Sends[_me.SendDeck[i]];
                 bool used = def.oncePerMatch && _me.SendUsed[i];
                 int cost = _me.SendCost(i);
-                _sends[i].Set(cost, !used && !oppFull && _me.Candy >= cost, used, _me.HasComebackDiscount);
+                bool locked = _match.Wave < b.sendUnlockWave;
+                _sends[i].Set(cost, !locked && !used && !oppFull && _me.Candy >= cost, used, _me.HasComebackDiscount, locked ? b.sendUnlockWave : 0);
+            }
+
+            if (_hex != null)
+            {
+                int hexCost = _me.HexCost;
+                int unlock = _match.Balance.hexUnlockWave;   // Hex War mayhem opens it earlier
+                bool hexLocked = _match.Wave < unlock;
+                bool pending = _opp.HexNext != Element.None;
+                _hex.Set(hexCost, !hexLocked && !pending && _me.Candy >= hexCost, hexLocked ? unlock : 0, pending);
+                if (_hexPicker.IsOpen) _hexPicker.Refresh();
             }
 
             for (int i = 0; i < _spells.Length; i++)
@@ -975,6 +1023,10 @@ namespace ZooDefense.Game
                 case SpellKind.Gust: return Art.Hex(0x58B36A);
                 case SpellKind.Rage: return Art.Hex(0xD43A44);
                 case SpellKind.CandyRain: return Art.Hex(0xE05AAE);
+                case SpellKind.PoisonFog: return Art.Hex(0x8A4FD0);
+                case SpellKind.StarMark: return Art.Hex(0xE0A82E);
+                case SpellKind.ShieldDome: return Art.Hex(0x3FA7C9);
+                case SpellKind.LuckyStar: return Art.Hex(0x47B86A);
                 default: return Art.Hex(0xE8C21E);
             }
         }
@@ -1046,6 +1098,26 @@ namespace ZooDefense.Game
                     if (mine) { _sendsMade++; AudioService.Play(Sfx.Send); App.Toast(Loc.F("battle.sent", Loc.SendName(c.Sends[e.a]))); }
                     else { AudioService.Play(Sfx.Boss, 0.4f); App.Toast(Loc.F("battle.opp_sending", _opp.PlayerName, Loc.SendName(c.Sends[e.a]))); }
                     break;
+                case SimEventType.HexCast:
+                {
+                    string el = Loc.ElementName((Element)e.a);
+                    if (mine && e.b != e.board)
+                    {
+                        AudioService.Play(Sfx.Boss, 0.7f);
+                        ShowBanner(Loc.F("battle.hexed", _opp.PlayerName, el), Palette.Text, 3f, new Color(0.45f, 0.15f, 0.7f, 0.92f));
+                    }
+                    else if (mine) { AudioService.Play(Sfx.Send); App.Toast(Loc.F("battle.hex_cast", el)); }
+                    break;
+                }
+                case SimEventType.HexApplied:
+                    if (mine) ShowBanner(Loc.F("battle.hex_wave", Loc.ElementName((Element)e.a)), Palette.Text, 2.2f, new Color(0.45f, 0.15f, 0.7f, 0.92f));
+                    break;
+                case SimEventType.UnitEvolved:
+                    if (mine) { AudioService.Play(Sfx.Upgrade); App.Toast(Loc.F("battle.evolved", e.b)); }
+                    break;
+                case SimEventType.UnitSold:
+                    if (mine) { AudioService.Play(Sfx.Reward, 0.5f); App.Toast(Loc.F("battle.sold", e.c)); }
+                    break;
                 case SimEventType.SendReflected:
                     AudioService.Play(Sfx.Send);
                     ShowBanner(Loc.F(mine ? "battle.reflected" : "battle.opp_reflected", Loc.SendName(c.Sends[e.a])), Palette.Text, 1.6f, mine ? Palette.Green : Palette.Red);
@@ -1101,6 +1173,28 @@ namespace ZooDefense.Game
             }
         }
 
+        void ToggleHexPicker()
+        {
+            if (_hexPicker == null) return;
+            if (_hexPicker.IsOpen) _hexPicker.Close(); else _hexPicker.Open();
+        }
+
+        /// <summary>How hard a board's animals hit monsters of an element (% of neutral, weighted by level).</summary>
+        static int BoardDamageAgainst(Match m, Board board, Element monster)
+        {
+            long sum = 0, weight = 0;
+            for (int i = 0; i < board.Cells.Length; i++)
+            {
+                var u = board.Cells[i];
+                if (u == null) continue;
+                var d = m.Content.Units[u.def];
+                if (d.damage <= 0) continue;
+                sum += (long)u.level * ElementRules.DamagePercent(m.Balance, d.element, monster, d.skill == UnitSkill.AlwaysCounter, false);
+                weight += u.level;
+            }
+            return weight > 0 ? (int)(sum / weight) : 100;
+        }
+
         void ShowEmote(bool mine, int id)
         {
             var t = mine ? _myBubble : _oppBubble;
@@ -1133,7 +1227,9 @@ namespace ZooDefense.Game
             readonly RectTransform _root, _portrait;
             readonly Image _glow, _elementDot;
             readonly Text _name, _level, _element, _atk, _spd, _bonus, _skill, _upgradePrice, _summonPrice, _upgradeTitle, _matchup;
-            readonly Button _upgrade, _summon;
+            readonly Text _targetLabel, _sellLabel, _sellPrice, _talents;
+            readonly Button _upgrade, _summon, _target, _sell;
+            float _sellArmedUntil;
             int _uid = -1, _shownDef = -1, _shownLevel = -1;
 
             public int Cell { get; private set; }
@@ -1177,13 +1273,27 @@ namespace ZooDefense.Game
                 _skill = InkLabel(c, "", 24, TextAnchor.MiddleLeft);
                 _skill.rectTransform.Place(top, top, new Vector2(300, -236), new Vector2(740, 36));
 
+                // Talent picks of this card (from the deck screen), under the skill line.
+                _talents = InkLabel(c, "", 22, TextAnchor.MiddleLeft);
+                _talents.rectTransform.Place(top, top, new Vector2(300, -270), new Vector2(740, 30));
+
+                // Bottom row: power up · summon same · target priority · sell
                 _upgrade = UIKit.ChunkyButton(c, "upgrade", "", Palette.Green, Upgrade, 30);
-                _upgrade.GetComponent<RectTransform>().Place(Vector2.zero, Vector2.zero, new Vector2(16, 10), new Vector2(510, 124));
-                _upgradePrice = PriceFace(_upgrade, "", 34, 38, Palette.Text);
+                _upgrade.GetComponent<RectTransform>().Place(Vector2.zero, Vector2.zero, new Vector2(16, 10), new Vector2(350, 124));
+                _upgradePrice = PriceFace(_upgrade, "", 26, 36, Palette.Text);
                 _upgradeTitle = _upgrade.transform.Find("face").GetComponentsInChildren<Text>()[1];
-                _summon = UIKit.ChunkyButton(c, "summon", "", Gold, SummonSame, 30);
-                _summon.GetComponent<RectTransform>().Place(new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-16, 10), new Vector2(510, 124));
-                _summonPrice = PriceFace(_summon, Loc.T("battle.summon"), 34, 38, Palette.Text);
+                // Evolve: pay candy to raise THIS animal one level (no merge partner needed). Summoning a chosen animal
+                // is already on the deck bar, so this slot goes to the level-up.
+                _summon = UIKit.ChunkyButton(c, "evolve", "", Gold, Evolve, 30);
+                _summon.GetComponent<RectTransform>().Place(Vector2.zero, Vector2.zero, new Vector2(376, 10), new Vector2(290, 124));
+                _summonPrice = PriceFace(_summon, Loc.T("battle.evolve"), 28, 36, Palette.Text);
+                _target = UIKit.ChunkyButton(c, "target", "", Palette.Blue, CycleTarget, 22);
+                _target.GetComponent<RectTransform>().Place(new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-198, 10), new Vector2(176, 124));
+                _targetLabel = _target.GetComponentInChildren<Text>();
+                _sell = UIKit.ChunkyButton(c, "sell", "", Palette.Red, Sell, 26);
+                _sell.GetComponent<RectTransform>().Place(new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-16, 10), new Vector2(176, 124));
+                _sellPrice = PriceFace(_sell, Loc.T("battle.sell"), 26, 30, Palette.Text);
+                _sellLabel = _sell.transform.Find("face").GetComponentsInChildren<Text>()[1];
 
                 var close = UIKit.ChunkyButton(c, "close", "×", Wood, Hide, 44);
                 close.GetComponent<RectTransform>().Place(new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-10, -8), new Vector2(84, 84));
@@ -1201,13 +1311,37 @@ namespace ZooDefense.Game
                 return value;
             }
 
-            /// <summary>Summon one more of the shown animal (merge partner), into a random free cell.</summary>
-            void SummonSame()
+            /// <summary>Evolve the shown animal one level with candy.</summary>
+            void Evolve()
+            {
+                if (Cell < 0 || _s._me.Cells[Cell] == null) return;
+                _s._runner.Submit(CommandType.Evolve, Cell);
+            }
+
+            /// <summary>Target priority: first in line -> strongest -> densest -> sent monsters -> ...</summary>
+            void CycleTarget()
             {
                 var u = Cell >= 0 ? _s._me.Cells[Cell] : null;
                 if (u == null) return;
-                int slot = _s._me.DeckSlotOf(u.def);
-                if (slot >= 0) _s._runner.Submit(CommandType.SummonUnit, slot, -1);
+                int next = ((int)_s._me.TargetOf(u) + 1) % 4;
+                _s._runner.Submit(CommandType.SetTarget, Cell, next);
+                AudioService.Play(Sfx.Click);
+            }
+
+            /// <summary>Two taps: the first arms the button (2 s), the second sells.</summary>
+            void Sell()
+            {
+                var u = Cell >= 0 ? _s._me.Cells[Cell] : null;
+                if (u == null) return;
+                if (Time.unscaledTime > _sellArmedUntil)
+                {
+                    _sellArmedUntil = Time.unscaledTime + 2f;
+                    AudioService.Play(Sfx.Click);
+                    return;
+                }
+                _sellArmedUntil = 0f;
+                _s._runner.Submit(CommandType.Sell, Cell);
+                Hide();
             }
 
             void Upgrade()
@@ -1262,7 +1396,7 @@ namespace ZooDefense.Game
                     _shownDef = u.def;
                     _shownLevel = u.level;
                     UIKit.Clear(_portrait);
-                    Icons.Unit(_portrait, def, u.level >= 5 ? 7 : (u.level >= 3 ? 4 : 1), 256).Stretch();
+                    Icons.Unit(_portrait, def, Art.BattleLook(u.level), 256).Stretch();
                     var rc = Art.RarityColor(def.rarity);
                     _glow.color = new Color(rc.r, rc.g, rc.b, 0.75f);
                     _name.text = Loc.UnitName(def);
@@ -1273,7 +1407,16 @@ namespace ZooDefense.Game
                     _element.text = Loc.ElementName(def.element) + " · " + Loc.RoleName(def.role);
                     _matchup.text = ElementGuide.ShortLine(def);
                     _upgradeTitle.text = Loc.F("battle.upgrade", Loc.UnitName(def));
+                    var t1 = me.TalentAt(u.def, 0);
+                    var t2 = me.TalentAt(u.def, 1);
+                    _talents.text = t1 == TalentKind.None && t2 == TalentKind.None ? ""
+                        : Loc.F("battle.talents", TalentText.Name(t1, t2));
                 }
+                _targetLabel.text = Loc.F("battle.target", Loc.T("target." + (int)me.TargetOf(u)));
+                bool armed = Time.unscaledTime <= _sellArmedUntil;
+                _sellLabel.text = Loc.T(armed ? "battle.sell_confirm" : "battle.sell");
+                _sellPrice.text = "+" + me.SellValue(u);
+                _sell.interactable = !me.IsCellLocked(Cell);
                 _atk.text = me.HitDamage(u).ToString();
                 float perSecond = b.tickRate / (float)Mathf.Max(1, me.AttackInterval(u));
                 _spd.text = Loc.F("battle.per_sec", perSecond.ToString("0.0"));
@@ -1288,9 +1431,10 @@ namespace ZooDefense.Game
                 int cost = slot >= 0 ? me.UnitUpgradeCost(slot) : 0;
                 _upgradePrice.text = max ? Loc.T("deck.max") : cost.ToString();
                 _upgrade.interactable = !max && me.Candy >= cost;
-                int price = slot >= 0 ? me.SummonPrice(slot) : me.CardPrice;
-                _summonPrice.text = price.ToString();
-                _summon.interactable = slot >= 0 && me.Candy >= price && me.CountFreeCells() > 0;
+                bool maxLevel = u.level >= b.maxLevel;
+                int evolve = me.EvolvePrice(u);
+                _summonPrice.text = maxLevel ? Loc.T("deck.max") : evolve.ToString();
+                _summon.interactable = !maxLevel && !me.IsCellLocked(Cell) && me.Candy >= evolve;
             }
         }
 
@@ -1363,6 +1507,7 @@ namespace ZooDefense.Game
 
                 if (_step == Step.BuyMore && (_s._me.Purchases >= 4 || _t > 20f)) Show(Step.Merge);
                 if (_step == Step.Spell && _t > 25f) Show(Step.Send);
+                if (_step == Step.Send && _s._match.Wave < _s._match.Balance.sendUnlockWave) _t = 0f;   // sends open at wave 2: wait
                 if (_step == Step.Send && _t > 25f) Show(Step.Finish);   // no points yet: move on
                 if (_step == Step.Finish) { _finishTime -= dt; if (_finishTime <= 0f) Show(Step.Done); }
             }
@@ -1641,11 +1786,132 @@ namespace ZooDefense.Game
                 _cost.rectTransform.Stretch(30, 0, 0, 0);
             }
 
-            public void Set(int cost, bool enabled, bool used, bool discount)
+            /// <summary>unlockWave > 0: sends are still locked, show the wave they open.</summary>
+            public void Set(int cost, bool enabled, bool used, bool discount, int unlockWave = 0)
             {
-                _cost.text = used ? Loc.T("battle.send_used") : (discount ? cost + "*" : cost.ToString());
+                _cost.text = unlockWave > 0 ? Loc.F("battle.send_unlock", unlockWave)
+                    : (used ? Loc.T("battle.send_used") : (discount ? cost + "*" : cost.ToString()));
                 _button.interactable = enabled;
                 _frame.color = enabled ? Palette.Purple : Palette.Panel;
+            }
+        }
+
+        /// <summary>Element Hex button in the send row: purple, price, "wave 3" while locked, check mark when it is pending.</summary>
+        sealed class HexButton
+        {
+            readonly Button _button;
+            readonly Text _cost;
+            readonly Image _frame;
+
+            public HexButton(Transform parent, Vector2 pos, Vector2 size, System.Action onClick)
+            {
+                _button = UIKit.Button(parent, "hex", "", Palette.Panel, onClick);
+                _frame = (Image)_button.targetGraphic;
+                _button.GetComponent<RectTransform>().Place(new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), pos, size);
+                var art = Art.Icon("icon_hex");
+                var icon = UIKit.Icon(_button.transform, "icon", art != null ? art : Art.Diamond, art != null ? Color.white : Palette.Purple);
+                icon.rectTransform.Place(new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0, -10), new Vector2(size.x - 26, size.x - 26));
+                var name = UIKit.Label(_button.transform, Loc.T("battle.hex"), 17, Palette.TextDim);
+                name.rectTransform.Band(false, 26, 44, 2);
+                var price = UIKit.Rect("price", _button.transform).Band(false, 40, 4, 2);
+                Icons.Currency(price, "candy").rectTransform.Place(new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0, 0), new Vector2(30, 30));
+                _cost = UIKit.Label(price, "", 24, Palette.Primary);
+                _cost.rectTransform.Stretch(26, 0, 0, 0);
+            }
+
+            public void Set(int cost, bool enabled, int unlockWave, bool pending)
+            {
+                _cost.text = unlockWave > 0 ? Loc.F("battle.send_unlock", unlockWave) : (pending ? Loc.T("battle.hex_pending") : cost.ToString());
+                _button.interactable = unlockWave == 0;
+                _frame.color = enabled ? Art.Hex(0x8A3FD1) : Palette.Panel;
+            }
+        }
+
+        /// <summary>
+        /// Element Hex picker: choose the element of the opponent's next wave. Shows how hard their board hits each
+        /// element (their animals' element matchups), the weakest one highlighted.
+        /// </summary>
+        sealed class HexPicker
+        {
+            readonly BattleScreen _s;
+            readonly RectTransform _root;
+            readonly Text[] _pct = new Text[3];
+            readonly Image[] _rim = new Image[3];
+            readonly Button[] _buttons = new Button[3];
+            readonly Text _title;
+            float _refreshAt;
+
+            public bool IsOpen { get { return _root.gameObject.activeSelf; } }
+
+            public HexPicker(BattleScreen s)
+            {
+                _s = s;
+                _root = UIKit.Panel(s.Root, "hexPicker", new Color(0.2f, 0.08f, 0.32f, 0.96f)).rectTransform
+                    .Place(new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0, -(BoardTop + 4f)), new Vector2(980, 300));
+                _title = UIKit.Label(_root, "", 28, Palette.Text, TextAnchor.UpperLeft);
+                _title.rectTransform.Stretch(24, 110, 14, 230);
+                UIKit.Label(_root, Loc.T("battle.hex_hint"), 22, Palette.TextDim, TextAnchor.UpperLeft).rectTransform.Stretch(24, 110, 54, 196);
+                var close = UIKit.ChunkyButton(_root, "close", "×", Wood, Close, 40);
+                close.GetComponent<RectTransform>().Place(new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-10, -10), new Vector2(80, 80));
+                var els = new[] { Element.Fire, Element.Water, Element.Grass };
+                for (int i = 0; i < 3; i++)
+                {
+                    var el = els[i];
+                    var b = UIKit.Button(_root, "el" + i, "", new Color(0f, 0f, 0f, 0.35f), () => Cast(el), 24);
+                    _buttons[i] = b;
+                    var rt = b.GetComponent<RectTransform>().Place(new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(24 + i * 316, 16), new Vector2(300, 170));
+                    _rim[i] = UIKit.Panel(rt, "rim", new Color(0f, 0f, 0f, 0f));
+                    _rim[i].rectTransform.Stretch(-4, -4, -4, -4);
+                    _rim[i].raycastTarget = false;
+                    _rim[i].transform.SetAsFirstSibling();
+                    var emblem = ElementGuide.Emblem(el);
+                    var dot = UIKit.Icon(rt, "dot", emblem != null ? emblem : Art.Circle, emblem != null ? Color.white : Art.ElementColor(el));
+                    dot.rectTransform.Place(new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(14, 0), new Vector2(100, 100));
+                    UIKit.Outlined(UIKit.Label(rt, Loc.ElementName(el), 32, Palette.Text, TextAnchor.UpperLeft), 2f).rectTransform.Stretch(126, 8, 16, 90);
+                    _pct[i] = UIKit.Label(rt, "", 22, Palette.TextDim, TextAnchor.LowerLeft);
+                    _pct[i].rectTransform.Stretch(126, 8, 70, 16);
+                }
+                _root.gameObject.SetActive(false);
+            }
+
+            public void Open()
+            {
+                _root.gameObject.SetActive(true);
+                _root.SetAsLastSibling();
+                _refreshAt = 0f;
+                Refresh();
+            }
+
+            public void Close() { _root.gameObject.SetActive(false); }
+
+            void Cast(Element el)
+            {
+                _s._runner.Submit(CommandType.Hex, (int)el);
+                Close();
+            }
+
+            public void Refresh()
+            {
+                if (Time.unscaledTime < _refreshAt) return;
+                _refreshAt = Time.unscaledTime + 0.5f;
+                var m = _s._match;
+                _title.text = Loc.F("battle.hex_title", _s._opp.PlayerName, _s._me.HexCost);
+                var els = new[] { Element.Fire, Element.Water, Element.Grass };
+                int best = 0, bestPct = int.MaxValue;
+                var pct = new int[3];
+                for (int i = 0; i < 3; i++)
+                {
+                    pct[i] = BoardDamageAgainst(m, _s._opp, els[i]);
+                    if (pct[i] < bestPct) { bestPct = pct[i]; best = i; }
+                }
+                bool can = _s._opp.HexNext == Element.None && _s._me.Candy >= _s._me.HexCost && m.Wave >= m.Balance.hexUnlockWave;
+                for (int i = 0; i < 3; i++)
+                {
+                    _pct[i].text = Loc.F("battle.hex_their_damage", pct[i]);
+                    _pct[i].color = i == best ? Palette.Green : Palette.TextDim;
+                    _rim[i].color = i == best ? Palette.Green : new Color(0f, 0f, 0f, 0f);
+                    _buttons[i].interactable = can;
+                }
             }
         }
 
