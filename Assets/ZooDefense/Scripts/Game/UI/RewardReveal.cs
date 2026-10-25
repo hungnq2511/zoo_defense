@@ -179,6 +179,7 @@ namespace ZooDefense.Game
             // Front
             var front = Deco.Frame(c.root, "front", color, Art.Hex(0x221836), 7f);
             c.front = (RectTransform)front.parent;
+            if (tier >= 5) Deco.RainbowRim(front);
             var g = UIKit.Icon(front, "glow", Art.Glow, new Color(color.r, color.g, color.b, 0.6f));
             g.preserveAspect = false;
             g.rectTransform.Place(new Vector2(0.5f, 1f), new Vector2(0.5f, 0.5f), new Vector2(0, -size.x * 0.42f), new Vector2(size.x * 1.1f, size.x));
@@ -193,6 +194,17 @@ namespace ZooDefense.Game
             else if (r.type == RewardType.Gold) name = Loc.T("reward.name.gold");
             else if (r.type == RewardType.Gems) name = Loc.T("reward.name.gems");
             else if (r.type == RewardType.PassXp) name = Loc.T("reward.name.xp");
+            if (r.type == RewardType.Shards)
+            {
+                // Rarity badge (C .. SSS) in the top-left corner of the card.
+                var udef = _app.Content.Unit(r.id);
+                if (udef != null)
+                {
+                    float h = size.x < 200 ? 34f : 42f;
+                    DeckScreen.RankBadge(front, udef.rarity, h)
+                        .Place(new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(4, -4), DeckScreen.RankSize(udef.rarity, h));
+                }
+            }
             var nameBg = UIKit.Panel(front, "nameBg", Color.Lerp(color, Color.black, 0.45f)).rectTransform;
             nameBg.Band(false, size.y * 0.17f, 4, 4);
             UIKit.Label(nameBg, name, size.x < 200 ? 20 : 24, Palette.Text).rectTransform.Stretch(4, 4, 0, 0);
@@ -315,6 +327,12 @@ namespace ZooDefense.Game
                             var tc = TierColor(c.tier);
                             _flash.color = new Color(tc.r, tc.g, tc.b, 0.75f);
                             if (c.rays != null) { c.rays.localScale = Vector3.one * 1.4f; if (c.tier >= 5) c.rays.gameObject.AddComponent<RainbowTint>(); }
+                            if (c.tier >= 5)
+                            {
+                                // SSS: sparkles keep popping around the card, and a second white flash.
+                                Twinkle.Add(c.root, 18, c.root.rect.size * 1.15f);
+                                _flash.color = new Color(1f, 1f, 1f, 0.9f);
+                            }
                         }
                         else if (c.tier >= 2) { AudioService.Play(Sfx.Chest, 0.8f); _flash.color = new Color(1f, 1f, 1f, 0.35f); }
                         else AudioService.Play(Sfx.Reward, 0.35f);

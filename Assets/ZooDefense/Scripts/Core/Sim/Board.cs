@@ -471,14 +471,25 @@ namespace ZooDefense.Core
                 return RejectReason.None;
             }
 
-            if (b.def == a.def && b.level == a.level)
+            if (b.def == a.def)
             {
-                if (b.level >= _b.maxLevel) return RejectReason.MaxLevel;
-                b.level++;
-                b.energy = Math.Max(b.energy, a.energy);
+                // Merge: the higher-level animal (the dropped-on one on a tie) is the main one and may gain a level;
+                // the other one is always used up. Same level = sure; a lower partner only has a chance (MergeChance).
+                var main = a.level > b.level ? a : b;
+                var feed = main == a ? b : a;
+                if (main.level >= _b.maxLevel) return RejectReason.MaxLevel;
+                if (main == a && IsCellLocked(from)) return RejectReason.CellLocked;
+                int chance = MergeChance(a, b);
+                bool ok = chance >= 100 || _rng.Next(100) < chance;
                 Cells[from] = null;
+                if (main == a) { Cells[to] = a; a.cell = to; }
+                main.energy = Math.Max(main.energy, feed.energy);
+                if (ok) { main.level++; main.luck = 0; }
+                else main.luck = Math.Min(_b.mergeLuckMax, main.luck + _b.mergeLuckPerFail);
                 Merges++;
-                _m.Emit(new SimEvent(SimEventType.UnitMerged, Index, b.uid, b.level, a.uid));
+                var ev = new SimEvent(SimEventType.UnitMerged, Index, main.uid, main.level, feed.uid);
+                ev.d = ok ? chance : -chance;   // presentation: > 0 success, < 0 failed (with the chance it had)
+                _m.Emit(ev);
                 if (HasPerk(PerkType.MergeCandy)) GainCandy(_b.perkMergeCandy);
                 return RejectReason.None;
             }
@@ -490,13 +501,31 @@ namespace ZooDefense.Core
             return RejectReason.None;
         }
 
+        /// <summary>
+        /// Chance (%) that merging these two animals raises the main one (the higher level) by a level; -1 = cannot merge.
+        /// Same level: 100. Otherwise (partner level + 1) / (main level + 1), plus the main animal's luck from failed merges.
+        /// </summary>
+        public int MergeChance(UnitInstance a, UnitInstance b)
+        {
+            if (a == null || b == null || a == b || a.def != b.def) return -1;
+            var main = a.level >= b.level ? a : b;
+            var feed = main == a ? b : a;
+            if (main.level >= _b.maxLevel) return -1;
+            if (feed.level >= main.level) return 100;
+            return Math.Min(100, (feed.level + 1) * 100 / (main.level + 1) + main.luck);
+        }
+
         /// <summary>Candy to evolve an animal one level (0 = already max).</summary>
         public int EvolvePrice(UnitInstance u)
         {
             if (u == null || u.level >= _b.maxLevel) return 0;
             var t = _b.evolveCardCostPercent;
             int cards = t != null && t.Length > 0 ? t[Math.Min(t.Length - 1, u.level - 1)] : 100;   // in % of a summon
-            long price = (long)CardPrice * cards / 100 * _b.evolvePricePercent / 100;
+            // Based on what buying THIS animal costs (its pick price, higher for rarer animals), so evolving is never
+            // much cheaper than buying the merge partner.
+            int slot = DeckSlotOf(u.def);
+            int basePrice = slot >= 0 ? SummonPrice(slot) : CardPrice;
+            long price = (long)basePrice * cards / 100 * _b.evolvePricePercent / 100;
             return (int)Math.Min(int.MaxValue, Math.Max(1L, price));
         }
 
@@ -568,6 +597,7 @@ namespace ZooDefense.Core
         {
             if (slot < 0 || slot >= SendDeck.Length) return RejectReason.InvalidSlot;
             var def = _c.Sends[SendDeck[slot]];
+            if (def.cost <= 0) return RejectReason.InvalidSlot;   // the boss remnant is only thrown by the boss duel, never sent by hand
             if (_m.Wave < _b.sendUnlockWave) return RejectReason.SendsLocked;
             if (def.oncePerMatch && SendUsed[slot]) return RejectReason.AlreadyUsed;
             if (Opponent.IncomingSends.Count >= _b.maxIncomingSendsPerWave) return RejectReason.OpponentWaveFull;
@@ -1020,6 +1050,22 @@ namespace ZooDefense.Core
 
         // ------------------------------------------------------------------ active skills
 
+        /// <summary>Auto skills: area / control animals wait for a crowd (or a boss, or a monster close to the gate).</summary>
+        bool SkillWorthUsing(UnitDef def)
+        {
+            if (def.role == Role.Damage || def.role == Role.Support) return true;
+            int alive = 0;
+            int late = _m.PathLength * 3 / 4;
+            for (int i = 0; i < Enemies.Count; i++)
+            {
+                var e = Enemies[i];
+                if (!e.alive || !e.revealed) continue;
+                alive++;
+                if (e.distance >= late || IsBossLike(_c.Enemies[e.def])) return true;
+            }
+            return alive >= 3;
+        }
+
         internal RejectReason UseSkill(int cell)
         {
             if (cell < 0 || cell >= Cells.Length || Cells[cell] == null) return RejectReason.InvalidCell;
@@ -1407,6 +1453,7 @@ namespace ZooDefense.Core
                 if (IsCellLocked(cell)) continue;
                 if (_m.Wave >= 1 && u.level >= _b.skillMinLevel && u.energy < SkillCharge(u)) u.energy++;
                 var def = _c.Units[u.def];
+                if (_b.autoSkills && IsSkillReady(u) && SkillWorthUsing(def)) UseSkill(cell);   // full charge: the animal casts by itself
                 if ((def.skill == UnitSkill.NectarHaste || def.skill == UnitSkill.AegisGuard || def.skill == UnitSkill.BloomDisplay
                      || (def.skill == UnitSkill.WorldTree && u.level >= 4)) && _m.Wave >= 1 && --u.supportTimer <= 0)
                 {
@@ -2201,7 +2248,7 @@ namespace ZooDefense.Core
                 Match.Mix(ref h, u == null ? -1 : u.def * 16 + u.level);
                 Match.Mix(ref h, u == null ? 0 : u.energy);
                 Match.Mix(ref h, u == null ? 0 : u.hasteTicks * 7 + u.guardCharges * 131 + u.attackCount);
-                Match.Mix(ref h, u == null ? 0 : u.target * 64 + u.comboStacks);
+                Match.Mix(ref h, u == null ? 0 : u.target * 64 + u.comboStacks + u.luck * 4096);
                 Match.Mix(ref h, LockedUntilWave[i]);
             }
             for (int i = 0; i < Shop.Length; i++) Match.Mix(ref h, Shop[i]);

@@ -301,7 +301,7 @@ enemy_desc.send_turtle	Geschickt: nimmt halben Schaden von Flächenangriffen.
 enemy_desc.send_crow	Geschickt: klaut 30 Süßigkeiten, wenn es durchkommt.
 enemy_desc.send_golem	Geschickt: sperrt beim Tod eines deiner Felder.
 enemy_desc.send_king	Geschickt: ein Mini-Boss, der Ratten ruft.
-battle.unit_info	{0}  St. {1}  ({2} {3})\nAuf ein gleiches Tier derselben Stufe ziehen, um zu verschmelzen
+battle.unit_info	{0}  St {1}  ({2} {3})\nAuf das gleiche Tier ziehen zum Verschmelzen (jede Stufe: % = Chance)
 reject.candy	Nicht genug Süßigkeiten
 reject.points	Nicht genug Schick-Punkte
 reject.board_full	Kein freies Feld - verschmelze zwei gleiche Tiere
@@ -419,11 +419,12 @@ battle.you	Du
 battle.summon_random	ZUFALL
 loading.title	Zoo wird geladen...
 mm.practice	Trainingsspiel
-tip.0	Verschmelze zwei gleiche Tiere derselben Stufe zu einem stärkeren.
+tip.0	Verschmelze zwei gleiche Tiere: gleiche Stufe steigt sicher auf, ein niedrigerer Partner hat eine Chance (wird beim Ziehen gezeigt).
+battle.merge_fail	Daneben! +10% Glück
 tip.1	Goldene Sternfelder geben +30% Schaden - stell dein bestes Tier dorthin!
 tip.2	Monster zu schicken kostet Süßigkeiten, erhöht aber jede Welle dein Einkommen - günstige Monster bringen am meisten.
 tip.3	Lass rosa Ballons platzen für gratis Süßigkeiten.
-tip.4	Ab Stufe 3 leuchtet ein Tier: tippe darauf für seine Fähigkeit.
+tip.4	Ab Stufe 3 lädt ein Tier seine Fähigkeit auf und setzt sie voll aufgeladen selbst ein.
 tip.5	Tippe im Kampf auf eine Tierkarte zum Beschwören oder zieh sie auf das gewünschte Feld.
 result.x2_title	x2 GOLD
 result.watch_ad	Werbung ansehen
@@ -669,7 +670,7 @@ tutorial.skip	Überspringen
 tutorial.coach	Trainer Panda
 tutorial.buy	Tippe unten auf eine Tierkarte, um genau dieses Tier zu beschwören, oder ZIEH sie auf ein Feld. ZUFALL ist günstiger. Goldene Sternfelder geben +30% Schaden!
 tutorial.buy_more	Super! Das ↑-Abzeichen auf einer Karte verstärkt dieses Tier für dieses Spiel. Lass rosa Ballons platzen für gratis Süßigkeiten!
-tutorial.merge	Zieh ein Tier auf ein gleiches Tier derselben Stufe, um sie zu verschmelzen. Ab Stufe 3 leuchtet es: tippe für eine Fähigkeit!
+tutorial.merge	Ziehe ein Tier auf das gleiche Tier zum Verschmelzen. Gleiche Stufe = sicher; niedrigere Stufe = nur eine Chance. Ab Stufe 3 lädt es eine Fähigkeit!
 tutorial.send	Tippe auf ein Monster im roten Streifen, um es zu schicken: kostet Süßigkeiten, bringt aber jede Welle Einkommen! Geschickte Monster kommen in 5 s an - tippe auf Zurückwerfen, um ihre zurückzuschicken.
 tutorial.finish	Das war's! Verschmelze und schicke weiter, bis dein Gegner keine Herzen mehr hat.
 settings.title	Optionen

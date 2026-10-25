@@ -1045,7 +1045,7 @@ namespace ZooDefense.Game
                     if (mine) { AudioService.Play(Sfx.Buy); FlyToCell(e.c, e.b); }
                     break;
                 case SimEventType.UnitMerged:
-                    if (mine) AudioService.Play(Sfx.Merge);
+                    if (mine) AudioService.Play(e.d < 0 ? Sfx.Error : Sfx.Merge);
                     break;
                 case SimEventType.UnitAttacked:
                     if (mine)

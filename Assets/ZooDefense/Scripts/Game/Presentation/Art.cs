@@ -197,7 +197,7 @@ namespace ZooDefense.Game
                 case 2: return Hex(0xB46BFF);
                 case 3: return Hex(0xFFB020);
                 case 4: return Hex(0xFF3D6E);
-                case 5: return Hex(0x34F0D8);
+                case 5: return Hex(0xFF2BD6);   // hot magenta (the old cyan looked like B blue); SSS frames also shimmer
                 default: return Hex(0xB9C3CF);
             }
         }

@@ -301,10 +301,10 @@ enemy_desc.send_turtle	Enviado: recebe metade do dano de ataques em área.
 enemy_desc.send_crow	Enviado: rouba 30 doces se passar.
 enemy_desc.send_golem	Enviado: trava uma das suas casas ao morrer.
 enemy_desc.send_king	Enviado: um minichefe que chama ratos.
-battle.unit_info	{0}  Nv {1}  ({2} {3})\nArraste sobre um animal igual do mesmo nível para fundir
+battle.unit_info	{0}  Nv {1}  ({2} {3})\nArraste sobre o mesmo animal para fundir (qualquer nível: o % é a chance)
 reject.candy	Doces insuficientes
 reject.points	Pontos de envio insuficientes
-reject.board_full	Nenhuma casa livre - funda dois animais iguais
+reject.board_full	Sem casa livre - funda dois animais iguais
 reject.locked	Essa casa está travada
 reject.wave_full	A próxima onda do oponente está cheia (máx. 3)
 reject.used	Só pode ser enviado uma vez por partida
@@ -419,11 +419,12 @@ battle.you	Você
 battle.summon_random	ALEATÓRIO
 loading.title	Carregando o zoo...
 mm.practice	Partida de treino
-tip.0	Funda dois animais iguais do mesmo nível para criar um mais forte.
+tip.0	Funda dois animais iguais: mesmo nível sempre sobe, um parceiro de nível menor tem uma chance (mostrada ao arrastar).
+battle.merge_fail	Errou! +10% de sorte
 tip.1	Casas estrela douradas dão +30% de dano - coloque seu melhor animal nelas!
 tip.2	Enviar monstros custa doces, mas aumenta sua renda a cada onda - envios baratos rendem mais.
 tip.3	Estoure os balões rosa para ganhar doces grátis.
-tip.4	A partir do nível 3 o animal brilha: toque nele para usar a habilidade.
+tip.4	A partir do nível 3, o animal carrega a habilidade e a usa sozinho quando está cheia.
 tip.5	Na batalha, toque em uma carta de animal para invocá-lo ou arraste-a para a casa que quiser.
 result.x2_title	OURO x2
 result.watch_ad	Ver anúncio
@@ -669,7 +670,7 @@ tutorial.skip	Pular
 tutorial.coach	Treinador Panda
 tutorial.buy	Toque em uma carta de animal abaixo para invocar exatamente esse animal, ou ARRASTE-A para uma casa. ALEATÓRIO é mais barato. Casas estrela douradas dão +30% de dano!
 tutorial.buy_more	Ótimo! O selo ↑ em uma carta fortalece esse animal nesta partida. Estoure os balões rosa para ganhar doces grátis!
-tutorial.merge	Arraste um animal sobre o mesmo animal do mesmo nível para fundi-los. A partir do nível 3 ele brilha: toque para usar uma habilidade!
+tutorial.merge	Arraste um animal sobre o mesmo animal para fundir. Mesmo nível = sobe com certeza; nível menor = só uma chance. A partir do nível 3 carrega uma habilidade!
 tutorial.send	Toque em um monstro na faixa vermelha para enviá-lo: custa doces, mas aumenta a renda a cada onda! Monstros enviados chegam em 5 s - toque em Refletir para mandar os deles de volta.
 tutorial.finish	É isso! Continue fundindo e enviando até o oponente ficar sem corações.
 settings.title	Ajustes

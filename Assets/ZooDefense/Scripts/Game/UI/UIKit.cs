@@ -270,9 +270,72 @@ namespace ZooDefense.Game
         {
             if (_img == null) return;
             _t += Time.unscaledDeltaTime;
-            var c = Color.HSVToRGB(Mathf.Repeat(_t * 0.25f, 1f), 0.6f, 1f);
+            var c = Color.HSVToRGB(Mathf.Repeat(_t * 0.3f, 1f), 0.75f, 1f);
             c.a = _img.color.a;
             _img.color = c;
+        }
+    }
+
+    /// <summary>"Blink blink": sparkles that pop in and out at random spots around a rect (SSS cards).</summary>
+    public sealed class Twinkle : MonoBehaviour
+    {
+        RectTransform[] _stars;
+        Image[] _imgs;
+        float[] _phase, _speed;
+        Vector2 _area;
+        float _t;
+
+        public static Twinkle Add(RectTransform host, int count, Vector2 area)
+        {
+            var tw = host.gameObject.AddComponent<Twinkle>();
+            tw.Build(host, count, area);
+            return tw;
+        }
+
+        void Build(RectTransform host, int count, Vector2 area)
+        {
+            _area = area;
+            _stars = new RectTransform[count];
+            _imgs = new Image[count];
+            _phase = new float[count];
+            _speed = new float[count];
+            var sprite = Art.Icon("sparkle");
+            if (sprite == null) sprite = Art.Diamond;
+            for (int i = 0; i < count; i++)
+            {
+                _imgs[i] = UIKit.Icon(host, "sparkle" + i, sprite, Color.white);
+                _imgs[i].raycastTarget = false;
+                _stars[i] = _imgs[i].rectTransform;
+                _phase[i] = UnityEngine.Random.value;
+                _speed[i] = 0.9f + UnityEngine.Random.value * 0.9f;
+                Respawn(i);
+            }
+        }
+
+        void Respawn(int i)
+        {
+            // Mostly on the border, some inside.
+            float x = (UnityEngine.Random.value - 0.5f) * _area.x, y = (UnityEngine.Random.value - 0.5f) * _area.y;
+            if (UnityEngine.Random.value < 0.7f) { if (UnityEngine.Random.value < 0.5f) x = Mathf.Sign(x) * _area.x * 0.5f; else y = Mathf.Sign(y) * _area.y * 0.5f; }
+            float s = 18f + UnityEngine.Random.value * 26f;
+            _stars[i].Place(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(x, y), new Vector2(s, s));
+            _imgs[i].color = Color.HSVToRGB(UnityEngine.Random.value, 0.35f, 1f);
+        }
+
+        void Update()
+        {
+            if (_stars == null) return;
+            _t += Time.unscaledDeltaTime;
+            for (int i = 0; i < _stars.Length; i++)
+            {
+                float k = _phase[i] + _t * _speed[i];
+                float f = Mathf.Repeat(k, 1f);
+                if ((int)k != (int)(k - Time.unscaledDeltaTime * _speed[i])) Respawn(i);
+                float a = Mathf.Sin(f * Mathf.PI);           // 0 -> 1 -> 0
+                _stars[i].localScale = new Vector3(a, a, 1f);
+                _stars[i].localRotation = Quaternion.Euler(0f, 0f, f * 90f);
+                var c = _imgs[i].color; c.a = a; _imgs[i].color = c;
+            }
         }
     }
 }

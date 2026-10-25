@@ -26,6 +26,7 @@ namespace ZooDefense.Game
         SpriteRenderer[] _tiles;
         SpriteRenderer[] _locks;
         SpriteRenderer[] _highlights;
+        TextMesh[] _chances;   // merge chance (%) shown on targets while dragging
         SpriteRenderer[] _stars;
         SpriteRenderer _selected;
         readonly List<SpriteRenderer> _pathFill = new List<SpriteRenderer>();
@@ -101,6 +102,7 @@ namespace ZooDefense.Game
             _tiles = new SpriteRenderer[cells];
             _locks = new SpriteRenderer[cells];
             _highlights = new SpriteRenderer[cells];
+            _chances = new TextMesh[cells];
             _stars = new SpriteRenderer[cells];
             var topA = Art.Hex(0xA9D878);
             var topB = Art.Hex(0x9BCF6C);
@@ -130,6 +132,8 @@ namespace ZooDefense.Game
                     }
                 _highlights[c] = WorldKit.Box("hl" + c, _field, new Vector2(0.96f, 0.96f), new Color(1f, 1f, 0.4f, 0.5f), Order.CellHighlight + 6, pos);
                 _highlights[c].gameObject.SetActive(false);
+                _chances[c] = WorldKit.Text("chance" + c, _field, "", 0.34f, Color.white, Order.CellHighlight + 8, pos + new Vector3(0f, 0.28f, 0f));
+                _chances[c].gameObject.SetActive(false);
                 // Star cell marker: golden tile rim + a star in the corner (damage bonus spot).
                 _stars[c] = WorldKit.Box("star" + c, _field, new Vector2(0.86f, 0.82f), new Color(1f, 0.85f, 0.3f, 0.32f), OStar, pos + new Vector3(0f, 0.03f, 0f));
                 for (int side = -1; side <= 1; side += 2)
@@ -403,15 +407,25 @@ namespace ZooDefense.Game
 
         public float WorldScale { get { return transform.lossyScale.x; } }
 
+        /// <summary>While dragging: every animal of the same kind lights up with the merge chance
+        /// (green = sure, yellow = 50%+, orange = risky).</summary>
         public void ShowMergeTargets(int fromCell)
         {
             var a = fromCell >= 0 ? Board.Cells[fromCell] : null;
             for (int c = 0; c < _highlights.Length; c++)
             {
                 var u = Board.Cells[c];
-                bool on = a != null && c != fromCell && u != null && u.def == a.def && u.level == a.level && u.level < _b.maxLevel && !Board.IsCellLocked(c);
-                _highlights[c].color = new Color(1f, 1f, 0.4f, 0.5f);
+                int chance = a != null && c != fromCell && !Board.IsCellLocked(c) ? Board.MergeChance(a, u) : -1;
+                bool on = chance >= 0;
+                if (on)
+                {
+                    var col = chance >= 100 ? new Color(0.45f, 1f, 0.45f, 0.55f) : (chance >= 50 ? new Color(1f, 0.95f, 0.35f, 0.55f) : new Color(1f, 0.55f, 0.3f, 0.55f));
+                    _highlights[c].color = col;
+                    _chances[c].text = chance + "%";
+                    _chances[c].color = Color.Lerp(col, Color.white, 0.5f);
+                }
                 _highlights[c].gameObject.SetActive(on);
+                _chances[c].gameObject.SetActive(on && !Compact);
             }
         }
 
@@ -423,6 +437,7 @@ namespace ZooDefense.Game
                 bool on = c == cell;
                 if (on) _highlights[c].color = new Color(0.45f, 1f, 0.45f, 0.6f);
                 _highlights[c].gameObject.SetActive(on);
+                _chances[c].gameObject.SetActive(false);
             }
         }
 
@@ -451,6 +466,7 @@ namespace ZooDefense.Game
                 }
                 v.seen = true;
                 v.SetLevel(u.level);
+                v.SetLuck(u.luck);
                 v.SetStunned(u.stunTicks > 0 || Board.IsCellLocked(c));
                 v.SetBuffs(u.guardTicks > 0 && u.guardCharges > 0, u.hasteTicks > 0);
                 int charge = Board.SkillCharge(u);
@@ -680,6 +696,18 @@ namespace ZooDefense.Game
                     _fx.Puff(_gate.transform.position, Art.Hex(0xFF4D4D), 1.4f * WorldScale, 0.45f);
                     if (!Compact) _fx.FloatText(_gate.transform.position, "-" + e.b, Art.Hex(0xFF4D4D), 0.45f);
                     break;
+                case SimEventType.UnitMerged when e.d < 0:
+                {
+                    // Failed merge: the partner is gone, the main animal keeps its level and gains luck.
+                    UnitView u;
+                    if (_units.TryGetValue(e.a, out u))
+                    {
+                        u.Hit();
+                        _fx.Puff(u.root.transform.position, Art.Hex(0x8E8AA8), 1.1f * WorldScale, 0.35f);
+                        if (!Compact) _fx.FloatText(u.root.transform.position, Loc.T("battle.merge_fail"), Art.Hex(0xFF9A8A), 0.34f);
+                    }
+                    break;
+                }
                 case SimEventType.UnitMerged:
                 case SimEventType.UnitLevelUp:
                 {
@@ -935,8 +963,11 @@ namespace ZooDefense.Game
                 _initials = WorldKit.Text("initials", _placeholder, Art.Initials(def.displayName), 0.3f, Art.Hex(0x3B2412), Order.Units + 3, Vector3.zero);
                 _badge = WorldKit.Sprite("badge", root.transform, Art.Circle, Art.Hex(0x2B2140), Order.Units + 4, new Vector3(0.32f, -0.32f, 0f), 0.3f);
                 _level = WorldKit.Text("level", _badge.transform, "1", 0.6f, Color.white, Order.Units + 5, Vector3.zero);
-                // Skill charge: thin bar under the animal, golden glow when ready (tap to use).
-                _readyGlow = WorldKit.Sprite("ready", root.transform, Art.Circle, new Color(1f, 0.85f, 0.2f, 0.45f), Order.Units - 1, new Vector3(0f, -0.1f, 0f), 0.95f);
+                // Merge luck from failed merges: "+20%" above the left shoulder.
+                _luck = WorldKit.Text("luck", root.transform, "", 0.2f, Art.Hex(0x7CFF9B), Order.Units + 5, new Vector3(-0.3f, 0.36f, 0f));
+                _luck.gameObject.SetActive(false);
+                // Skill charge: thin bar under the animal, magenta glow when ready (gold would look like a star cell).
+                _readyGlow = WorldKit.Sprite("ready", root.transform, Art.Circle, new Color(1f, 0.24f, 0.8f, 0.55f), Order.Units - 1, new Vector3(0f, -0.1f, 0f), 0.95f);
                 _energyBg = WorldKit.Sprite("energy_bg", root.transform, Art.Square, new Color(0f, 0f, 0f, 0.55f), Order.Units + 4, new Vector3(0f, -0.43f, 0f));
                 _energyBg.transform.localScale = new Vector3(0.6f, 0.07f, 1f);
                 _energyFill = WorldKit.Sprite("energy", root.transform, Art.Square, Art.Hex(0x5BD6FF), Order.Units + 5, new Vector3(0f, -0.43f, 0f));
@@ -966,6 +997,16 @@ namespace ZooDefense.Game
                 }
                 _ready = ready && !_dragging;
                 _readyGlow.gameObject.SetActive(_ready);
+            }
+
+            TextMesh _luck;
+            int _shownLuck;
+            public void SetLuck(int luck)
+            {
+                if (luck == _shownLuck) return;
+                _shownLuck = luck;
+                _luck.text = luck > 0 ? "+" + luck + "%" : "";
+                _luck.gameObject.SetActive(luck > 0 && !_compact);
             }
 
             public void SetLevel(int level)

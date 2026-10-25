@@ -55,7 +55,7 @@ namespace ZooDefense.Core
             if (UseAdvanced && UseEvolve && Difficulty > 0 && (full || b.CountFreeCells() <= 2) && _rng.Chance(50) && TryEvolve(m, b, tick, output, full)) return;
             if (UseAdvanced && (full || b.CountFreeCells() <= 3) && _rng.Chance(40) && TryUpgradeUnit(m, b, tick, output, full)) return;
             // Merging only when the board is full turned out stronger in bot-vs-bot tests; easy bots merge carelessly.
-            if ((full || (Difficulty == 0 && _rng.Chance(25))) && TryMerge(m, b, tick, output)) return;
+            if ((full || (Difficulty > 0 && b.CountFreeCells() <= 4) || (Difficulty == 0 && _rng.Chance(25))) && TryMerge(m, b, tick, output)) return;
             if (!full && b.Candy >= b.CardPrice)
             {
                 // Current game: pick an animal (costs a little more) or the cheaper random Summon.
@@ -324,18 +324,30 @@ namespace ZooDefense.Core
             return true;
         }
 
+        /// <summary>
+        /// Merge: same-level pairs first (sure, lowest level first); otherwise feed a low animal into the highest one of
+        /// the same kind when the chance is decent (any chance when the board is full and nothing else fits).
+        /// </summary>
         bool TryMerge(Match m, Board b, int tick, List<Command> output)
         {
-            int bestFrom = -1, bestTo = -1, bestLevel = int.MaxValue;
+            int bestFrom = -1, bestTo = -1, bestScore = int.MinValue;
+            bool full = b.CountFreeCells() == 0;
             for (int i = 0; i < b.Cells.Length; i++)
             {
                 var a = b.Cells[i];
-                if (a == null || a.level >= m.Balance.maxLevel) continue;
-                for (int j = i + 1; j < b.Cells.Length; j++)
+                if (a == null) continue;
+                for (int j = 0; j < b.Cells.Length; j++)
                 {
+                    if (j == i) continue;
                     var c = b.Cells[j];
-                    if (c == null || c.def != a.def || c.level != a.level || b.IsCellLocked(j)) continue;
-                    if (a.level < bestLevel) { bestLevel = a.level; bestFrom = i; bestTo = j; }
+                    if (c == null || c.def != a.def || b.IsCellLocked(j) || b.IsCellLocked(i)) continue;
+                    if (a.level > c.level) continue;                      // drag the lower (or equal) one onto the main one
+                    int chance = b.MergeChance(a, c);
+                    if (chance < 0) continue;
+                    // Grow the top animal of each kind: higher main level first, then the better chance.
+                    if (chance < (full ? 25 : 45)) continue;
+                    int score = c.level * 1000 + chance;
+                    if (score > bestScore) { bestScore = score; bestFrom = i; bestTo = j; }
                 }
             }
             if (bestFrom < 0) return false;

@@ -1,0 +1,6 @@
+<linker>
+  <!-- Unity calls UnityEngine.RemoteSettings from native code at launch (legacy Unity Connect).
+       Keep the Analytics engine modules whole so managed stripping cannot remove it (launch crash, Oct 2026). -->
+  <assembly fullname="UnityEngine.UnityAnalyticsModule" preserve="all" ignoreIfMissing="1" />
+  <assembly fullname="UnityEngine.UnityAnalyticsCommonModule" preserve="all" ignoreIfMissing="1" />
+</linker>

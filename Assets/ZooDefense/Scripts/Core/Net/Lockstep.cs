@@ -36,7 +36,7 @@ namespace ZooDefense.Core
     /// </summary>
     public sealed class LockstepSync
     {
-        public const int ProtocolVersion = 11;   // 3: balance; 4: talents, sell, target, hex, wave HP by card power; 5: rarity tiers + aura; 6: evolve with candy; 7: 15 mythic SSS animals; 8: 16 common animals; 9: 4 new spells; 10: 6 sends + 6 wave monsters; 11: evolve price ~1 summon
+        public const int ProtocolVersion = 14;   // 3: balance; 4: talents, sell, target, hex, wave HP by card power; 5: rarity tiers + aura; 6: evolve with candy; 7: 15 mythic SSS animals; 8: 16 common animals; 9: 4 new spells; 10: 6 sends + 6 wave monsters; 11: evolve price ~1 summon; 12: auto skills, evolve by pick price; 13: evolve price = merge cost; 14: chance merges
         /// <summary>Frames kept for a resend after a reconnection (ticks behind the current one).</summary>
         public const int KeepFrames = 400;
         /// <summary>Input delay in ticks (4 = 0.2 s at 20 Hz): hides network latency below that.</summary>

@@ -150,6 +150,7 @@ namespace ZooDefense.EditorTools
         static bool Build(bool bumpBuild, out string file)
         {
             file = null;
+            if (!IosBuild.CheckAnalyticsModule()) return false;   // same launch crash on Android
             var c = LoadConfig();
             // Application.cloudProjectId = the id baked into the build (ProjectSettings cloudProjectId); CloudProjectSettings.projectId
             // is empty in batch mode when the Editor is not signed in, so it is not used here.

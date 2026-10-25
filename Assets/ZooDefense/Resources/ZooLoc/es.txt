@@ -301,10 +301,10 @@ enemy_desc.send_turtle	Enviado: recibe la mitad de daño de los ataques de área
 enemy_desc.send_crow	Enviado: roba 30 caramelos si logra pasar.
 enemy_desc.send_golem	Enviado: bloquea una de tus casillas al morir.
 enemy_desc.send_king	Enviado: un minijefe que llama ratas.
-battle.unit_info	{0}  Nv {1}  ({2} {3})\nArrástralo sobre un animal igual del mismo nivel para fusionar
+battle.unit_info	{0}  Nv {1}  ({2} {3})\nArrastra sobre el mismo animal para fusionar (cualquier nivel: el % es la probabilidad)
 reject.candy	No tienes suficientes caramelos
 reject.points	No tienes suficientes puntos de envío
-reject.board_full	No hay casillas libres - fusiona dos animales iguales
+reject.board_full	No hay casillas libres: fusiona dos animales iguales
 reject.locked	Esa casilla está bloqueada
 reject.wave_full	La siguiente oleada del rival está llena (máx. 3)
 reject.used	Solo se puede enviar una vez por partida
@@ -419,11 +419,12 @@ battle.you	Tú
 battle.summon_random	ALEATORIO
 loading.title	Cargando el zoo...
 mm.practice	Partida de práctica
-tip.0	Fusiona dos animales iguales del mismo nivel para crear uno más fuerte.
+tip.0	Fusiona dos animales iguales: mismo nivel siempre sube, un compañero de menos nivel tiene una probabilidad (se ve al arrastrar).
+battle.merge_fail	¡Fallo! +10% de suerte
 tip.1	Las casillas estrella doradas dan +30% de daño - ¡pon ahí a tu mejor animal!
 tip.2	Enviar monstruos cuesta caramelos pero sube tus ingresos cada oleada - los envíos baratos rinden más.
 tip.3	Revienta los globos rosas para conseguir caramelos gratis.
-tip.4	Desde el nivel 3 un animal brilla: tócalo para usar su habilidad.
+tip.4	Desde el nivel 3 un animal carga su habilidad y la usa solo cuando está llena.
 tip.5	En batalla, toca una carta de animal para invocarlo o arrástrala a la casilla que quieras.
 result.x2_title	ORO x2
 result.watch_ad	Ver anuncio
@@ -669,7 +670,7 @@ tutorial.skip	Saltar
 tutorial.coach	Entrenador Panda
 tutorial.buy	Toca una carta de animal abajo para invocar justo ese animal, o ARRÁSTRALA a una casilla. ALEATORIO es más barato. ¡Las casillas estrella doradas dan +30% de daño!
 tutorial.buy_more	¡Genial! La insignia ↑ de una carta potencia a ese animal durante esta partida. ¡Revienta los globos rosas para conseguir caramelos gratis!
-tutorial.merge	Arrastra un animal sobre el mismo animal del mismo nivel para fusionarlos. Desde el nivel 3 brilla: ¡tócalo para usar una habilidad!
+tutorial.merge	Arrastra un animal sobre el mismo animal para fusionar. Mismo nivel = sube seguro; uno de menor nivel solo tiene probabilidad. ¡Desde el nivel 3 carga una habilidad!
 tutorial.send	Toca un monstruo de la franja roja para enviarlo: cuesta caramelos, ¡pero suma ingresos cada oleada! Los monstruos enviados llegan en 5 s - toca Reflejar para devolverles los suyos.
 tutorial.finish	¡Eso es todo! Sigue fusionando y enviando hasta que tu rival se quede sin corazones.
 settings.title	Ajustes

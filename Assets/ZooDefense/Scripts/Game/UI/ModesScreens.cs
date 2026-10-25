@@ -579,7 +579,7 @@ namespace ZooDefense.Game
     /// <summary>Last matches kept on the device for replay viewing (the command log replays the match exactly).</summary>
     public static class ReplayStore
     {
-        const string Key = "zoo_replays_v10";   // v10: evolve price (older command logs replay differently)
+        const string Key = "zoo_replays_v13";   // v13: chance merges (older command logs replay differently)
         public const int Max = 5;
 
         [Serializable]

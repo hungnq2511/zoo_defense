@@ -120,8 +120,24 @@ namespace ZooDefense.EditorTools
             EditorApplication.Exit(ok ? 0 : 1);
         }
 
+        /// <summary>
+        /// Unity turns the legacy Unity Connect switch on by itself (Unity Gaming Services / Cloud Diagnostics). The player
+        /// then calls UnityEngine.RemoteSettings at launch, which lives in the Unity Analytics engine module: without that
+        /// module the app crashes 2 s after start (TestFlight builds 2610251531 / 2610251556, Oct 2026). Make sure the
+        /// module is in Packages/manifest.json (link.xml keeps it from being stripped).
+        /// </summary>
+        public static bool CheckAnalyticsModule()
+        {
+            const string manifest = "Packages/manifest.json";
+            if (!File.Exists(manifest) || File.ReadAllText(manifest).Contains("\"com.unity.modules.unityanalytics\"")) return true;
+            Debug.LogError("[Build] Packages/manifest.json is missing \"com.unity.modules.unityanalytics\": the app would crash at launch. "
+                + "Add it (Window > Package Manager > Built-in > Unity Analytics > Enable) and build again.");
+            return false;
+        }
+
         static bool Build(bool bumpBuild)
         {
+            if (!CheckAnalyticsModule()) return false;
             // Application.cloudProjectId = the id baked into the build (ProjectSettings cloudProjectId); CloudProjectSettings.projectId
             // is empty in batch mode when the Editor is not signed in, so it is not used here.
             // Without the Unity Cloud project link the build cannot reach Unity Services: no online matches,

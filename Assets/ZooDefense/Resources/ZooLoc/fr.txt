@@ -301,10 +301,10 @@ enemy_desc.send_turtle	Envoyé : subit moitié moins de dégâts des attaques de
 enemy_desc.send_crow	Envoyé : vole 30 bonbons s'il passe.
 enemy_desc.send_golem	Envoyé : bloque une de tes cases à sa mort.
 enemy_desc.send_king	Envoyé : un mini boss qui appelle des rats.
-battle.unit_info	{0}  Niv. {1}  ({2} {3})\nFais-le glisser sur un animal identique du même niveau pour fusionner
+battle.unit_info	{0}  Niv {1}  ({2} {3})\nGlisse sur le même animal pour fusionner (tout niveau : le % est la chance)
 reject.candy	Pas assez de bonbons
 reject.points	Pas assez de points d'envoi
-reject.board_full	Aucune case libre - fusionne deux animaux identiques
+reject.board_full	Plus de case libre - fusionne deux animaux identiques
 reject.locked	Cette case est bloquée
 reject.wave_full	La prochaine vague de l'adversaire est pleine (max 3)
 reject.used	Ne peut être envoyé qu'une fois par match
@@ -419,11 +419,12 @@ battle.you	Toi
 battle.summon_random	HASARD
 loading.title	Chargement du zoo...
 mm.practice	Match d'entraînement
-tip.0	Fusionne deux animaux identiques du même niveau pour en créer un plus fort.
+tip.0	Fusionne deux animaux identiques : même niveau = montée sûre, un partenaire plus faible a une chance (affichée pendant le glisser).
+battle.merge_fail	Raté ! +10 % de chance
 tip.1	Les cases étoile dorées donnent +30% de dégâts - places-y ton meilleur animal !
 tip.2	Envoyer des monstres coûte des bonbons mais augmente ton revenu à chaque vague - les envois bon marché rapportent le plus.
 tip.3	Éclate les ballons roses pour des bonbons gratuits.
-tip.4	Dès le niveau 3, un animal brille : touche-le pour utiliser sa compétence.
+tip.4	Dès le niveau 3, un animal charge sa compétence et la lance tout seul quand elle est pleine.
 tip.5	En combat, touche une carte animal pour l'invoquer, ou fais-la glisser sur la case de ton choix.
 result.x2_title	OR x2
 result.watch_ad	Regarder une pub
@@ -669,7 +670,7 @@ tutorial.skip	Passer
 tutorial.coach	Coach Panda
 tutorial.buy	Touche une carte animal en bas pour invoquer cet animal précis, ou FAIS-LA GLISSER sur une case. HASARD coûte moins cher. Les cases étoile dorées donnent +30% de dégâts !
 tutorial.buy_more	Super ! Le badge ↑ sur une carte renforce cet animal pour ce match. Éclate les ballons roses pour des bonbons gratuits !
-tutorial.merge	Fais glisser un animal sur le même animal de même niveau pour les fusionner. Dès le niveau 3, il brille : touche-le pour une compétence !
+tutorial.merge	Glisse un animal sur le même animal pour fusionner. Même niveau = montée sûre ; plus faible = seulement une chance. Dès le niveau 3, il charge une compétence !
 tutorial.send	Touche un monstre dans la bande rouge pour l'envoyer : ça coûte des bonbons mais rapporte un revenu à chaque vague ! Les monstres envoyés arrivent en 5 s - touche Renvoyer pour leur retourner les leurs.
 tutorial.finish	C'est tout ! Continue de fusionner et d'envoyer jusqu'à ce que ton adversaire n'ait plus de cœurs.
 settings.title	Réglages

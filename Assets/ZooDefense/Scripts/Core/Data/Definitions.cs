@@ -227,7 +227,7 @@ namespace ZooDefense.Core
         public int cardPriceStep = 5;
         public int rerollCost = 15;
         public int maxLevel = 7;
-        public int[] levelDamagePercent = { 100, 210, 330, 480, 680, 950, 1300 };
+        public int[] levelDamagePercent = { 100, 200, 300, 420, 560, 720, 900 };
         public int elementBonusPercent = 30;
         /// <summary>Element triangle, the other way round: a Fire animal hitting a Water monster deals this % less.</summary>
         public int elementResistPercent = 25;
@@ -242,7 +242,7 @@ namespace ZooDefense.Core
         public int baseEnemiesPerWave = 6;
         public int enemiesPerWaveStep = 1;
         public int maxEnemiesPerWave = 22;
-        public int hpGrowthPercentPerWave = 10;
+        public int hpGrowthPercentPerWave = 11;   // 11 since the chance-merge rule (Oct 2026): taller boards, keeps matches ~5 min
         /// <summary>Enemy HP scale of wave 1 (permille). Higher start + gentler growth = pressure from the first minute.</summary>
         public int waveHpStartPermille = 1700;
         public int eliteEveryNWaves = 3;
@@ -333,12 +333,15 @@ namespace ZooDefense.Core
         /// as long at every trophy level. Upgrades still matter against the opponent. 0 = off.</summary>
         public int waveHpCardScalePercent = 100;
         /// <summary>
-        /// Evolve (tap an animal, pay candy, +1 level). Price = current card price x evolveCardCostPercent[level-1] %:
-        /// 0.75 of a summon for level 1->2 rising to 1.25 for 6->7, so each step costs visibly more. Far cheaper than
-        /// merging at the top (a level 7 by merges needs 64 summons), so level 7 stays reachable.
-        /// Bot audit Oct 2026: evolving bot beats a non-evolving one ~55%; level 7 on ~6% of boards.
+        /// Evolve (tap an animal, pay candy, +1 level, always works). Price = THIS animal's pick price x
+        /// evolveCardCostPercent[level-1] %. Merging a level-1 partner into a level L animal works with chance 2/(L+1),
+        /// so on average it costs (L+1)/2 animals: the table is that average (1, 1.5, 2, 2.5, 3, 3.5 animals).
+        /// Evolving = paying the average to be sure.
         /// </summary>
-        public int[] evolveCardCostPercent = { 75, 85, 95, 105, 115, 125 };
+        public int[] evolveCardCostPercent = { 100, 150, 200, 250, 300, 350 };
+        /// <summary>Merge pity: each failed merge gives the main animal +this % on its next merge (capped).</summary>
+        public int mergeLuckPerFail = 10;
+        public int mergeLuckMax = 60;
         public int evolvePricePercent = 100;   // global multiplier on the table above
         /// <summary>Card level that unlocks talent tier 1 / tier 2.</summary>
         public int talentTier1Level = 9;
@@ -346,6 +349,8 @@ namespace ZooDefense.Core
 
         // ---- Active unit skills (tap a glowing animal).
         public int skillMinLevel = 3;
+        /// <summary>Animals cast their skill by themselves as soon as it is charged (tapping still works).</summary>
+        public bool autoSkills = true;
         public int skillChargeTicks = 360;
         public int skillChargeReductionPerLevel = 30;
 

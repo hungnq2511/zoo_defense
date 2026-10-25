@@ -102,7 +102,8 @@ namespace ZooDefense.Game
 
             var service = new MetaService(meta, content, p.meta);
             if (!ValidDeck(p.deck, 5, id => content.UnitIndex(id) >= 0 && service.IsUnlocked(id))) p.deck = (string[])DefaultContent.DefaultDeck.Clone();
-            if (!ValidDeck(p.sendDeck, 4, id => content.SendIndex(id) >= 0)) p.sendDeck = (string[])DefaultContent.DefaultSendDeck.Clone();
+            // Only sends with a price can be in a deck (old versions let the free Boss Remnant be picked).
+            if (!ValidDeck(p.sendDeck, 4, id => content.SendIndex(id) >= 0 && content.Send(id).cost > 0)) p.sendDeck = (string[])DefaultContent.DefaultSendDeck.Clone();
             if (!ValidDeck(p.spells, 4, id => content.SpellIndex(id) >= 0)) p.spells = (string[])DefaultContent.DefaultSpells.Clone();
             if (p.decks == null) p.decks = new List<DeckPreset>();
             while (p.decks.Count < 3) p.decks.Add(new DeckPreset { units = (string[])p.deck.Clone() });

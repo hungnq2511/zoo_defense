@@ -107,6 +107,7 @@ namespace ZooDefense.Core
         /// <summary>Player-chosen target priority (-1 = the animal's default).</summary>
         public int target = -1;
         public int comboUid, comboStacks;   // bamboo red panda: hits in a row on one monster
+        public int luck;                    // merge pity: +% to the next merge chance after failed merges
     }
 
     public sealed class EnemyInstance

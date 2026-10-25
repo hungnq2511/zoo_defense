@@ -345,6 +345,46 @@ namespace ZooDefense.Tests
         }
 
         [Test]
+        public void ChanceMerge_SameLevelSure_LowerPartnerHasAChance_FailGivesLuck()
+        {
+            var m = NewMatch(startCandy: 20000);
+            var a = m.Boards[0];
+            Do(m, 0, CommandType.SummonUnit, 0, 0);
+            Do(m, 0, CommandType.SummonUnit, 0, 1);
+            var main = a.Cells[1];
+            Assert.AreEqual(100, a.MergeChance(a.Cells[0], main), "same level is sure");
+            Do(m, 0, CommandType.Move, 0, 1);
+            Assert.AreEqual(2, main.level);
+            Assert.IsNull(a.Cells[0]);
+
+            // Level 2 main + level 1 partner: (1+1)/(2+1) = 66%.
+            Do(m, 0, CommandType.SummonUnit, 0, 0);
+            Assert.AreEqual(66, a.MergeChance(a.Cells[0], main));
+            int fails = 0, wins = 0;
+            for (int k = 0; k < 40 && main.level < m.Balance.maxLevel; k++)
+            {
+                if (a.Cells[0] == null) Do(m, 0, CommandType.SummonUnit, 0, 0);
+                int before = main.level, luck = main.luck, chance = a.MergeChance(a.Cells[0], main);
+                Do(m, 0, CommandType.Move, 0, 1);
+                Assert.IsNull(a.Cells[0], "the partner is always used up");
+                if (main.level > before) { wins++; Assert.AreEqual(0, main.luck, "success resets luck"); }
+                else { fails++; Assert.AreEqual(System.Math.Min(m.Balance.mergeLuckMax, luck + m.Balance.mergeLuckPerFail), main.luck, "fail adds luck"); }
+                Assert.IsTrue(chance >= 0 && chance <= 100);
+            }
+            Assert.Greater(wins, 0);
+            // Dragging the higher animal onto the lower one moves it into that cell.
+            Do(m, 0, CommandType.SummonUnit, 0, 5);
+            var low = a.Cells[5];
+            if (main.level < m.Balance.maxLevel)
+            {
+                Do(m, 0, CommandType.Move, 1, 5);
+                Assert.IsTrue(ReferenceEquals(main, a.Cells[5]), "the main animal ends where it was dropped");
+                Assert.IsNull(a.Cells[1]);
+            }
+            Assert.IsNotNull(low);
+        }
+
+        [Test]
         public void TacticsReplay_IsDeterministic()
         {
             var m = NewMatch(11, new[] { 12, 12, 12, 12, 12 }, new[] { 4, 5, 7, 8, 3 });

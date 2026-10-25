@@ -195,6 +195,7 @@ namespace ZooDefense.Game
             var rt = btn.GetComponent<RectTransform>();
             rt.Place(new Vector2(0f, 1f), new Vector2(0f, 1f), pos, size);
             var c = Deco.Frame(btn.transform, "frame", unlocked ? rarity : Art.Hex(0x4A4060), CardFill);
+            if (unlocked && def.rarity == Rarity.SSS) Deco.RainbowRim(c);
 
             // Element dot + rarity text strip
             var dot = UIKit.Icon(c, "element", Art.Circle, Art.ElementColor(def.element)).rectTransform;

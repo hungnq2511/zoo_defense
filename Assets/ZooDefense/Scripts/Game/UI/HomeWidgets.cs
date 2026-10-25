@@ -150,6 +150,13 @@ namespace ZooDefense.Game
         /// Game card frame: coloured border, dark inner panel tinted from the top. Content goes into the returned
         /// rect (it fills the inner area). The frame object itself is the returned rect's parent.
         /// </summary>
+        /// <summary>Makes a Frame's rim cycle through the rainbow (pass the content rect Frame returned).</summary>
+        public static void RainbowRim(RectTransform frameContent)
+        {
+            var rim = frameContent != null && frameContent.parent != null ? frameContent.parent.Find("rim") : null;
+            if (rim != null && rim.GetComponent<RainbowTint>() == null) rim.gameObject.AddComponent<RainbowTint>();
+        }
+
         public static RectTransform Frame(Transform parent, string name, Color border, Color fill, float thickness = 7f)
         {
             var root = UIKit.Panel(parent, name, Color.Lerp(border, Color.black, 0.35f)).rectTransform;
